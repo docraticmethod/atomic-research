@@ -10,8 +10,7 @@
       "component": "neural language models",
       "description": "Transformer-based models for scientific text understanding and generation"
     },
-    {
-      "component": "scientific document embeddings",
+    {      "component": "scientific document embeddings",
       "description": "Dense vector representations of papers, abstracts, and scientific concepts"
     },
     {
