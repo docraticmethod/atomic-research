@@ -1,4 +1,4 @@
-Here is the complete revised SYSTEM_INSTRUCTIONS.md:
+The architect is EDITING existing content. Here is the complete revised SYSTEM_INSTRUCTIONS.md:
 
 # SYSTEM_INSTRUCTIONS.md
 
@@ -244,4 +244,16 @@ There is **no general band rule** to recompute for tangentiality — PAP-07 is t
 
 ## 8. Definition of Done
 
-- **Docker sandbox built first**; the p
+- **Docker sandbox built first**; the application builds clean and runs entirely inside the container; `.env` mounted (not baked), confirmed gitignored, key never in any layer or commit.
+- All 10 papers ranked 1–10, each position defensible by the deterministic rule; order stable and reproducible; unit-tested.
+- `THRESHOLD = 0.60` is the single "component cleared" constant (not the admission gate); "components cleared above threshold" is deterministic and unit-tested; no numeric feed-admission cutoff applied — all 10 fixtures pre-admitted, PAP-10 included.
+- Recommended action (`Read now / Save / Skip`) assigned to every paper by the deterministic threshold mapping (0.80 / 0.60–0.80 / <0.60), reproducible and unit-tested; never an LLM output.
+- Recency confirmed as a gate only — never a ranking signal; all fixtures verified in-window.
+- LLM produces only the three per-paper rationale types plus the post-ranking feed summary; 11 model calls per run (10-request batch + 1 feed_summary); rank and action passed in as given.
+- Every paper renders full per-paper output — component match(es) + per-component similarity, relevance rationale (depth/breadth framed), recommended action, missing-information note (always present), per-position rationale — regardless of recommended action; `Skip`-actioned papers (e.g. PAP-10) never dropped or hidden.
+- PAP-07 explicitly flagged loose/tangential in its rationale; the flag annotates without changing rank; PAP-02 carries breadth framing.
+- `feed_summary` generated from the sorted top-N after ranking; rendered at the top of the left panel; degrades independently of the per-paper feed; call ordering enforced in code (summary unreachable before ranking).
+- Two-panel editorial UI per spec — dark theme, serif titles, position 1 selected on load, all right-panel sections collapsed to label, independent scroll, feed summary region above the list.
+- Degraded-state contract holds under simulated LLM failure for both per-paper rationale and feed_summary, independently; no blank panels, no dropped papers; malformed JSON caught, logged to observability, surfaced as retryable.
+- Observability complete: Weave traces every Anthropic call and every `@weave.op()` team function; one W&B run logs aggregate metrics + eval results; both share the single gitignored `.env` key and cross-reference the same iteration.
+- No guardrail skill, no `memory.ts`, no per-case fan-out; no production-pipeline code, no live OpenAlex/arXiv/embedding calls.
