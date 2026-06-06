@@ -16,10 +16,12 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.0",
+    "@wandb/sdk": "^0.5.1",
     "ajv": "^8.20.0",
     "better-sqlite3": "^12.9.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "weave": "^0.15.1",
     "zod": "^4.4.3"
   },
   "engines": {

@@ -1,0 +1,18 @@
+services:
+  pipeline:
+    build: .
+    command: npm run run:pipeline
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./data:/app/data:ro
+      - ./public:/app/public
+
+  dashboard:
+    build: .
+    command: npm run start:dash
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./data:/app/data:ro
+      - ./public:/app/public

@@ -93,10 +93,13 @@ describe('Phase 4 — degraded-state hardening', () => {
           match_explanations: Object.fromEntries(p.components.map(c => [c.component, 'explanation'])),
           relevance_rationale: p.paper_id === 'PAP-07'
             ? 'This is a tangential match — the paper is superficially related.'
+            : p.paper_id === 'PAP-02'
+            ? 'This is a breadth match — cross-component relevance across citation network analysis and scientific document embeddings.'
             : 'Relevant paper.',
           position_rationale: p.paper_id === 'PAP-07'
             ? 'Ranked here; loose connection.'
             : 'Correct rank.',
+          missing_information: 'nothing material missing',
         }), p.paper_id, logger);
 
         return {
@@ -114,7 +117,7 @@ describe('Phase 4 — degraded-state hardening', () => {
           relevance_rationale: rationale.relevanceRationale,
           position_rationale: rationale.positionRationale,
           tangential_flag: rationale.tangentialFlag,
-          missing_information: null,
+          missing_information: rationale.missingInformation,
           rationale_status: rationale.status,
         };
       });
@@ -138,7 +141,7 @@ describe('Phase 4 — degraded-state hardening', () => {
 
     test('eval still passes when non-PAP-07 papers have unavailable rationale', async () => {
       const output = await buildOutputWithFailures(['PAP-01', 'PAP-06']);
-      const result = evaluate(output, logger);
+      const result = await evaluate(output, logger);
       assert.strictEqual(result.passed, true, `eval failed: ${result.errors.join('; ')}`);
     });
   });

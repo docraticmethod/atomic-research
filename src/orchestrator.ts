@@ -1,13 +1,13 @@
 import { readFile } from 'node:fs/promises';
 import { sequence } from './sequencer.js';
-import { runBatch } from './subagent.js';
+import { runBatch, runFeedSummary } from './subagent.js';
 import { parseRationale } from './parse-rationale.js';
 import { evaluate } from './eval.js';
 import { validateCandidatePapers, validateResearcherProfile } from './schemas.js';
-import type { OutputPaper, CandidatePaper, ResearcherProfile } from './schemas.js';
+import type { OutputPaper, CandidatePaper, ResearcherProfile, OutputArtifact } from './schemas.js';
 import type { Logger } from './logger.js';
 
-export async function orchestrate(logger: Logger): Promise<OutputPaper[]> {
+export async function orchestrate(logger: Logger): Promise<OutputArtifact> {
   const [profileRaw, papersRaw] = await Promise.all([
     readFile('data/researcher_profile.json', 'utf-8'),
     readFile('data/candidate_papers.json', 'utf-8'),
@@ -25,12 +25,14 @@ export async function orchestrate(logger: Logger): Promise<OutputPaper[]> {
 
   logger.info('fixtures loaded', { papers: papers.length });
 
+  // Phase 1: deterministic sequencing (pure, no LLM)
   const sequenced = sequence(papers);
   logger.info('sequencing complete', {
     order: sequenced.map(p => `${p.rank}:${p.paper_id}:${p.recommended_action}`),
   });
 
-  const batchResults = await runBatch(sequenced, profile, logger);
+  // Phase 2: per-paper rationale batch (10 requests in one batch submission)
+  const batchResults = await runBatch(sequenced, profile, papers, logger);
 
   const output: OutputPaper[] = sequenced.map(paper => {
     const hit = batchResults.find(r => r.paper_id === paper.paper_id);
@@ -53,15 +55,18 @@ export async function orchestrate(logger: Logger): Promise<OutputPaper[]> {
       relevance_rationale: rationale.relevanceRationale,
       position_rationale: rationale.positionRationale,
       tangential_flag: rationale.tangentialFlag,
-      missing_information: null,
+      missing_information: rationale.missingInformation,
       rationale_status: rationale.status,
     };
   });
 
-  const evalResult = evaluate(output, logger);
+  const evalResult = await evaluate(output, logger);
   if (!evalResult.passed) {
     throw new Error(`eval failed:\n${evalResult.errors.join('\n')}`);
   }
 
-  return output;
+  // Phase 2B: feed summary — only reachable after ranking + batch are complete
+  const feed_summary = await runFeedSummary(sequenced, logger);
+
+  return { papers: output, feed_summary };
 }

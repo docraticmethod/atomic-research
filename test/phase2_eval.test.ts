@@ -33,12 +33,14 @@ async function buildValidOutput(): Promise<OutputPaper[]> {
     components_cleared_count: p.components_cleared_count,
     relevance_rationale: p.paper_id === 'PAP-07'
       ? 'This paper presents a tangential match — it touches information retrieval superficially but is primarily about blockchain provenance.'
+      : p.paper_id === 'PAP-02'
+      ? 'This is a breadth match — the paper spans multiple components including citation network analysis and scientific document embeddings, giving it cross-component relevance.'
       : 'Strong relevance rationale.',
     position_rationale: p.paper_id === 'PAP-07'
       ? 'Ranked here due to a loose connection; the match is peripheral.'
       : 'Positioned correctly.',
     tangential_flag: p.paper_id === 'PAP-07',
-    missing_information: null,
+    missing_information: 'nothing material missing',
     rationale_status: 'ok',
   }));
 }
@@ -46,7 +48,7 @@ async function buildValidOutput(): Promise<OutputPaper[]> {
 describe('Phase 2 — eval gate', () => {
   test('eval passes with a correctly assembled output', async () => {
     const output = await buildValidOutput();
-    const result = evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
+    const result = await evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
     assert.strictEqual(result.passed, true, `eval failed: ${result.errors.join('; ')}`);
     assert.strictEqual(result.errors.length, 0);
   });
@@ -55,7 +57,7 @@ describe('Phase 2 — eval gate', () => {
     const output = await buildValidOutput();
     const pap07 = output.find(p => p.paper_id === 'PAP-07')!;
     pap07.tangential_flag = false;
-    const result = evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
+    const result = await evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
     assert.strictEqual(result.passed, false);
     assert.ok(result.errors.some(e => e.includes('PAP-07') && e.includes('tangential_flag')));
   });
@@ -65,7 +67,7 @@ describe('Phase 2 — eval gate', () => {
     const pap07 = output.find(p => p.paper_id === 'PAP-07')!;
     pap07.relevance_rationale = 'Great match for all components.';
     pap07.position_rationale  = 'High relevance across the board.';
-    const result = evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
+    const result = await evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
     assert.strictEqual(result.passed, false);
     assert.ok(result.errors.some(e => e.includes('PAP-07') && e.includes('tangential framing')));
   });
@@ -73,7 +75,7 @@ describe('Phase 2 — eval gate', () => {
   test('eval fails when a rank is wrong', async () => {
     const output = await buildValidOutput();
     output[0].rank = 99;
-    const result = evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
+    const result = await evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
     assert.strictEqual(result.passed, false);
     assert.ok(result.errors.some(e => e.includes('rank')));
   });
@@ -82,7 +84,7 @@ describe('Phase 2 — eval gate', () => {
     const output = await buildValidOutput();
     const paper = output.find(p => p.recommended_action === 'Read now')!;
     paper.recommended_action = 'Skip';
-    const result = evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
+    const result = await evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
     assert.strictEqual(result.passed, false);
     assert.ok(result.errors.some(e => e.includes('action')));
   });
@@ -90,7 +92,7 @@ describe('Phase 2 — eval gate', () => {
   test('eval fails when components_cleared_count is wrong', async () => {
     const output = await buildValidOutput();
     output[0].components_cleared_count = 999;
-    const result = evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
+    const result = await evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
     assert.strictEqual(result.passed, false);
     assert.ok(result.errors.some(e => e.includes('cleared_count')));
   });
@@ -102,7 +104,7 @@ describe('Phase 2 — eval gate', () => {
     pap07.relevance_rationale = 'Perfect match.';
     pap07.position_rationale  = 'High relevance.';
     output[0].recommended_action = 'Skip';
-    const result = evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
+    const result = await evaluate(output, silentLogger() as ReturnType<typeof createLogger>);
     assert.strictEqual(result.passed, false);
     assert.ok(result.errors.length >= 2, `expected ≥2 errors, got: ${result.errors.join(' | ')}`);
   });

@@ -96,6 +96,36 @@ body {
   background: var(--bg);
 }
 
+/* ── Feed summary region ────────────────────────────────────────────────── */
+.feed-summary-region {
+  padding: 1rem 1.2rem;
+  border-bottom: 2px solid var(--border-light);
+  background: #111;
+}
+
+.feed-summary-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.45rem;
+}
+
+.feed-summary-text {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.feed-summary-unavailable {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 /* ── Feed list ──────────────────────────────────────────────────────────── */
 .feed-list {
   display: flex;

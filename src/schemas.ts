@@ -3,12 +3,14 @@ import Ajv from 'ajv';
 export type ComponentInput = {
   component: string;
   component_similarity: number;
+  evidence: string;
 };
 
 export type CandidatePaper = {
   paper_id: string;
   title: string;
   date: string;
+  abstract: string;
   components: ComponentInput[];
 };
 
@@ -32,6 +34,7 @@ export type ComponentOutput = {
 
 export type RecommendedAction = 'Read now' | 'Save' | 'Skip';
 export type RationaleStatus = 'ok' | 'unavailable' | 'malformed';
+export type SummaryStatus = 'ok' | 'unavailable' | 'malformed';
 
 export type OutputPaper = {
   paper_id: string;
@@ -45,8 +48,18 @@ export type OutputPaper = {
   relevance_rationale: string;
   position_rationale: string;
   tangential_flag: boolean;
-  missing_information: string | null;
+  missing_information: string;
   rationale_status: RationaleStatus;
+};
+
+export type FeedSummary = {
+  text: string;
+  summary_status: SummaryStatus;
+};
+
+export type OutputArtifact = {
+  papers: OutputPaper[];
+  feed_summary: FeedSummary;
 };
 
 const ajv = new Ajv();
@@ -54,11 +67,12 @@ const ajv = new Ajv();
 ajv.addSchema({
   $id: 'ComponentInput',
   type: 'object',
-  required: ['component', 'component_similarity'],
+  required: ['component', 'component_similarity', 'evidence'],
   additionalProperties: false,
   properties: {
     component: { type: 'string' },
     component_similarity: { type: 'number', minimum: 0, maximum: 1 },
+    evidence: { type: 'string' },
   },
 });
 
@@ -76,12 +90,13 @@ ajv.addSchema({
 ajv.addSchema({
   $id: 'CandidatePaper',
   type: 'object',
-  required: ['paper_id', 'title', 'date', 'components'],
+  required: ['paper_id', 'title', 'date', 'abstract', 'components'],
   additionalProperties: false,
   properties: {
     paper_id: { type: 'string' },
     title: { type: 'string' },
     date: { type: 'string' },
+    abstract: { type: 'string' },
     components: {
       type: 'array',
       minItems: 1,
@@ -140,8 +155,34 @@ ajv.addSchema({
     relevance_rationale: { type: 'string' },
     position_rationale: { type: 'string' },
     tangential_flag: { type: 'boolean' },
-    missing_information: { type: ['string', 'null'] },
+    missing_information: { type: 'string' },
     rationale_status: { type: 'string', enum: ['ok', 'unavailable', 'malformed'] },
+  },
+});
+
+ajv.addSchema({
+  $id: 'FeedSummary',
+  type: 'object',
+  required: ['text', 'summary_status'],
+  properties: {
+    text: { type: 'string' },
+    summary_status: { type: 'string', enum: ['ok', 'unavailable', 'malformed'] },
+  },
+});
+
+ajv.addSchema({
+  $id: 'OutputArtifact',
+  type: 'object',
+  required: ['papers', 'feed_summary'],
+  additionalProperties: false,
+  properties: {
+    papers: {
+      type: 'array',
+      minItems: 10,
+      maxItems: 10,
+      items: { $ref: 'OutputPaper' },
+    },
+    feed_summary: { $ref: 'FeedSummary' },
   },
 });
 
@@ -160,3 +201,4 @@ export const validateOutputPapers = ajv.compile<OutputPaper[]>({
   maxItems: 10,
   items: { $ref: 'OutputPaper' },
 });
+export const validateOutputArtifact = ajv.compile<OutputArtifact>({ $ref: 'OutputArtifact' });
