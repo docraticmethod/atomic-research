@@ -11,7 +11,8 @@
     "verify": "node src/smoke-test-sdk.js",
     "test": "node --import tsx/esm --test test/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "run:pipeline": "tsx src/run.ts"
+    "run:pipeline": "tsx src/run.ts",
+    "start:dash": "tsx src/dash-app-server.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.0",
@@ -25,6 +26,7 @@
     "node": ">=24"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^25.9.2",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"

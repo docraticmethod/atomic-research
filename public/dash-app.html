@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomic Research — Paper Relevance Feed</title>
+  <link rel="stylesheet" href="/dash-app.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header-inner">
+      <h1 class="app-title">Atomic Research</h1>
+      <span class="app-subtitle">Paper Relevance Feed</span>
+    </div>
+  </header>
+  <main class="app-layout">
+    <aside class="feed-panel" id="feed-panel">
+      <div class="feed-list" id="feed-list" role="listbox" aria-label="Ranked papers"></div>
+    </aside>
+    <section class="detail-panel" id="detail-panel" aria-label="Paper detail">
+      <div class="detail-content" id="detail-content"></div>
+    </section>
+  </main>
+  <script type="module" src="/dash-app-client.js"></script>
+</body>
+</html>
