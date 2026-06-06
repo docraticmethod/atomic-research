@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { createLogger } from './logger.js';

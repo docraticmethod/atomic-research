@@ -1,7 +1,7 @@
 import type { RationaleStatus } from './schemas.js';
 import type { Logger } from './logger.js';
 
-const TANGENTIAL_TERMS = ['tangential', 'loose', 'peripheral', 'superficial', 'indirect'];
+const TANGENTIAL_TERMS = ['tangential', 'loose', 'peripheral', 'superficial', 'indirect', 'surface'];
 
 export type ParsedRationale = {
   matchExplanations: Record<string, string>;
@@ -28,7 +28,8 @@ export function parseRationale(
   }
 
   try {
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const cleaned = raw.replace(/^```(?:json)?\s*\n?/m, '').replace(/\n?```\s*$/m, '').trim();
+    const parsed = JSON.parse(cleaned) as Record<string, unknown>;
     const relevance = String(parsed.relevance_rationale ?? '');
     const position = String(parsed.position_rationale ?? '');
     const combined = (relevance + ' ' + position).toLowerCase();
