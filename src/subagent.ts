@@ -22,9 +22,9 @@ export const runBatch = op(async function runBatch(
 ): Promise<BatchResult[]> {
   const client = new Anthropic({ maxRetries: 3 });
 
-  const requests = papers.map(paper => {
+  const requests = await Promise.all(papers.map(async paper => {
     const fixture = fixtures.find(f => f.paper_id === paper.paper_id)!;
-    const { system, user } = buildRationaleMessages(paper, profile, fixture);
+    const { system, user } = await buildRationaleMessages(paper, profile, fixture);
     return {
       custom_id: paper.paper_id,
       params: {
@@ -34,7 +34,7 @@ export const runBatch = op(async function runBatch(
         messages: [{ role: 'user' as const, content: user }],
       },
     };
-  });
+  }));
 
   logger.info('submitting batch', { count: requests.length, model: MODEL });
   const batch = await client.messages.batches.create({ requests });
