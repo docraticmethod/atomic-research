@@ -1,0 +1,122 @@
+[
+  {
+    "paper_id": "PAP-01",
+    "title": "Transformer-Based Scientific Paper Recommendation via Contextual Neural Embeddings",
+    "date": "2024-10-22",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.71 },
+      { "component": "neural language models",         "component_similarity": 0.82 },
+      { "component": "scientific document embeddings", "component_similarity": 0.78 },
+      { "component": "recommendation systems",         "component_similarity": 0.76 },
+      { "component": "citation network analysis",      "component_similarity": 0.65 }
+    ]
+  },
+  {
+    "paper_id": "PAP-02",
+    "title": "Graph Neural Networks for Citation Network Representation Learning",
+    "date": "2024-07-18",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.45 },
+      { "component": "neural language models",         "component_similarity": 0.55 },
+      { "component": "scientific document embeddings", "component_similarity": 0.63 },
+      { "component": "recommendation systems",         "component_similarity": 0.48 },
+      { "component": "citation network analysis",      "component_similarity": 0.71 }
+    ]
+  },
+  {
+    "paper_id": "PAP-03",
+    "title": "Dense Retrieval for Scientific Literature: A Contrastive Learning Approach",
+    "date": "2024-11-02",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.87 },
+      { "component": "neural language models",         "component_similarity": 0.74 },
+      { "component": "scientific document embeddings", "component_similarity": 0.85 },
+      { "component": "recommendation systems",         "component_similarity": 0.62 },
+      { "component": "citation network analysis",      "component_similarity": 0.41 }
+    ]
+  },
+  {
+    "paper_id": "PAP-04",
+    "title": "Federated Learning for Privacy-Preserving Clinical Text Classification",
+    "date": "2024-05-20",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.32 },
+      { "component": "neural language models",         "component_similarity": 0.45 },
+      { "component": "scientific document embeddings", "component_similarity": 0.28 },
+      { "component": "recommendation systems",         "component_similarity": 0.38 },
+      { "component": "citation network analysis",      "component_similarity": 0.22 }
+    ]
+  },
+  {
+    "paper_id": "PAP-05",
+    "title": "Collaborative Filtering with Semantic User Profiles for Research Discovery",
+    "date": "2024-11-30",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.58 },
+      { "component": "neural language models",         "component_similarity": 0.61 },
+      { "component": "scientific document embeddings", "component_similarity": 0.55 },
+      { "component": "recommendation systems",         "component_similarity": 0.68 },
+      { "component": "citation network analysis",      "component_similarity": 0.34 }
+    ]
+  },
+  {
+    "paper_id": "PAP-06",
+    "title": "Multi-Modal Scientific Document Representation with Cross-Attention Fusion",
+    "date": "2024-09-15",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.79 },
+      { "component": "neural language models",         "component_similarity": 0.77 },
+      { "component": "scientific document embeddings", "component_similarity": 0.84 },
+      { "component": "recommendation systems",         "component_similarity": 0.65 },
+      { "component": "citation network analysis",      "component_similarity": 0.52 }
+    ]
+  },
+  {
+    "paper_id": "PAP-07",
+    "title": "Decentralized Research Data Repositories: Blockchain Provenance and Retrieval Primitives",
+    "date": "2024-06-12",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.63 },
+      { "component": "neural language models",         "component_similarity": 0.21 },
+      { "component": "scientific document embeddings", "component_similarity": 0.18 },
+      { "component": "recommendation systems",         "component_similarity": 0.31 },
+      { "component": "citation network analysis",      "component_similarity": 0.44 }
+    ]
+  },
+  {
+    "paper_id": "PAP-08",
+    "title": "Quantum Annealing Heuristics for NP-Hard Drug-Target Binding Optimization",
+    "date": "2024-03-14",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.12 },
+      { "component": "neural language models",         "component_similarity": 0.25 },
+      { "component": "scientific document embeddings", "component_similarity": 0.19 },
+      { "component": "recommendation systems",         "component_similarity": 0.38 },
+      { "component": "citation network analysis",      "component_similarity": 0.15 }
+    ]
+  },
+  {
+    "paper_id": "PAP-09",
+    "title": "Adaptive Optimization for Large-Scale Scientific Natural Language Processing",
+    "date": "2024-08-05",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.65 },
+      { "component": "neural language models",         "component_similarity": 0.74 },
+      { "component": "scientific document embeddings", "component_similarity": 0.71 },
+      { "component": "recommendation systems",         "component_similarity": 0.58 },
+      { "component": "citation network analysis",      "component_similarity": 0.47 }
+    ]
+  },
+  {
+    "paper_id": "PAP-10",
+    "title": "Probabilistic Logic and Knowledge Graph Completion for Biomedical Ontologies",
+    "date": "2024-12-01",
+    "components": [
+      { "component": "information retrieval",          "component_similarity": 0.43 },
+      { "component": "neural language models",         "component_similarity": 0.52 },
+      { "component": "scientific document embeddings", "component_similarity": 0.49 },
+      { "component": "recommendation systems",         "component_similarity": 0.35 },
+      { "component": "citation network analysis",      "component_similarity": 0.45 }
+    ]
+  }
+]

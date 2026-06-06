@@ -1,0 +1,26 @@
+{
+  "researcher_id": "RES-001",
+  "name": "Dr. Sarah Chen",
+  "research_components": [
+    {
+      "component": "information retrieval",
+      "description": "Efficient retrieval of relevant documents from large scientific corpora"
+    },
+    {
+      "component": "neural language models",
+      "description": "Transformer-based models for scientific text understanding and generation"
+    },
+    {
+      "component": "scientific document embeddings",
+      "description": "Dense vector representations of papers, abstracts, and scientific concepts"
+    },
+    {
+      "component": "recommendation systems",
+      "description": "Personalized research paper and content recommendation algorithms"
+    },
+    {
+      "component": "citation network analysis",
+      "description": "Graph-based analysis of academic citation and co-authorship patterns"
+    }
+  ]
+}
