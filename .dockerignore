@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.*
+public/
+traces/
+output/
+*.log
+.git/
+.gitignore
+context-docs/
+test/
+TARGET
+CLAUDE.md

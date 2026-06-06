@@ -1,7 +1,8 @@
-// Consumes /api/papers — never reads output_data.json directly.
+// Consumes /api/papers and /api/feed-summary — never reads output_data.json directly.
 
-const feedList    = document.getElementById('feed-list');
-const detailContent = document.getElementById('detail-content');
+const feedSummaryContent = document.getElementById('feed-summary-content');
+const feedList           = document.getElementById('feed-list');
+const detailContent      = document.getElementById('detail-content');
 
 let allPapers = [];
 let selectedId = null;
@@ -10,12 +11,6 @@ function badgeClass(action) {
   if (action === 'Read now') return 'badge-read';
   if (action === 'Save')     return 'badge-save';
   return 'badge-skip';
-}
-
-function badgeLabel(action) {
-  if (action === 'Read now') return 'Read now';
-  if (action === 'Save')     return 'Save';
-  return 'Skip';
 }
 
 function simBarWidth(sim) {
@@ -33,7 +28,7 @@ function createFeedItem(paper) {
   item.innerHTML = `
     <div class="feed-item-top">
       <span class="rank-num">${paper.rank}</span>
-      <span class="action-badge ${badgeClass(paper.recommended_action)}">${badgeLabel(paper.recommended_action)}</span>
+      <span class="action-badge ${badgeClass(paper.recommended_action)}">${paper.recommended_action}</span>
     </div>
     <div class="feed-item-title">${escHtml(paper.title)}</div>
     <div class="feed-item-meta">
@@ -123,16 +118,12 @@ function renderDetail(paper) {
     ? `<span class="tangential-badge">Tangential match</span>`
     : '';
 
-  const missingSection = paper.missing_information
-    ? makeSection('Missing Information', `<p>${escHtml(paper.missing_information)}</p>`)
-    : null;
-
   const header = document.createElement('div');
   header.className = 'detail-header';
   header.innerHTML = `
     <h2 class="detail-title">${escHtml(paper.title)}</h2>
     <div class="detail-meta-row">
-      <span class="action-badge ${badgeClass(paper.recommended_action)}">${badgeLabel(paper.recommended_action)}</span>
+      <span class="action-badge ${badgeClass(paper.recommended_action)}">${paper.recommended_action}</span>
       <span class="detail-rank">Rank ${paper.rank} / 10</span>
       ${tangentialHtml}
       <span class="detail-date">${paper.date}</span>
@@ -144,12 +135,26 @@ function renderDetail(paper) {
   sections.appendChild(makeSection('Component Matches & Similarities', componentsTable(paper.components, paper.rationale_status)));
   sections.appendChild(makeSection('Relevance Rationale', rationaleBody(paper.relevance_rationale, paper.rationale_status)));
   sections.appendChild(makeSection('Recommended Action', `<p><strong>${escHtml(paper.recommended_action)}</strong> — max similarity ${paper.max_component_similarity.toFixed(2)}, ${paper.components_cleared_count} component(s) cleared.</p>`));
-  if (missingSection) sections.appendChild(missingSection);
+  sections.appendChild(makeSection('Missing Information', `<p>${escHtml(paper.missing_information || 'nothing material missing')}</p>`));
   sections.appendChild(makeSection('Position Rationale', rationaleBody(paper.position_rationale, paper.rationale_status)));
 
   detailContent.innerHTML = '';
   detailContent.appendChild(header);
   detailContent.appendChild(sections);
+}
+
+function renderFeedSummary(summary) {
+  if (!summary || summary.summary_status !== 'ok' || !summary.text) {
+    feedSummaryContent.innerHTML = `
+      <div class="feed-summary-unavailable">
+        <span class="status-chip chip-unavailable">summary unavailable</span>
+        <span class="placeholder-text">— retry the pipeline to regenerate.</span>
+      </div>`;
+    return;
+  }
+  feedSummaryContent.innerHTML = `
+    <div class="feed-summary-label">Feed Summary</div>
+    <p class="feed-summary-text">${escHtml(summary.text)}</p>`;
 }
 
 function escHtml(str) {
@@ -162,9 +167,16 @@ function escHtml(str) {
 
 async function init() {
   try {
-    const res = await fetch('/api/papers');
-    if (!res.ok) throw new Error(`/api/papers returned ${res.status}`);
-    allPapers = await res.json();
+    const [papersRes, summaryRes] = await Promise.all([
+      fetch('/api/papers'),
+      fetch('/api/feed-summary'),
+    ]);
+
+    if (!papersRes.ok) throw new Error(`/api/papers returned ${papersRes.status}`);
+    allPapers = await papersRes.json();
+
+    const summary = summaryRes.ok ? await summaryRes.json() : null;
+    renderFeedSummary(summary);
 
     feedList.innerHTML = '';
     for (const paper of allPapers) {

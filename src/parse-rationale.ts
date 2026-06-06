@@ -7,6 +7,7 @@ export type ParsedRationale = {
   matchExplanations: Record<string, string>;
   relevanceRationale: string;
   positionRationale: string;
+  missingInformation: string;
   tangentialFlag: boolean;
   status: RationaleStatus;
 };
@@ -22,6 +23,7 @@ export function parseRationale(
       matchExplanations: {},
       relevanceRationale: '',
       positionRationale: '',
+      missingInformation: 'nothing material missing',
       tangentialFlag: false,
       status: 'unavailable',
     };
@@ -32,6 +34,7 @@ export function parseRationale(
     const parsed = JSON.parse(cleaned) as Record<string, unknown>;
     const relevance = String(parsed.relevance_rationale ?? '');
     const position = String(parsed.position_rationale ?? '');
+    const missing = String(parsed.missing_information ?? 'nothing material missing');
     const combined = (relevance + ' ' + position).toLowerCase();
     const tangentialFlag =
       paperId === 'PAP-07' && TANGENTIAL_TERMS.some(t => combined.includes(t));
@@ -40,6 +43,7 @@ export function parseRationale(
       matchExplanations: (parsed.match_explanations as Record<string, string>) ?? {},
       relevanceRationale: relevance,
       positionRationale: position,
+      missingInformation: missing,
       tangentialFlag,
       status: 'ok',
     };
@@ -49,6 +53,7 @@ export function parseRationale(
       matchExplanations: {},
       relevanceRationale: '',
       positionRationale: '',
+      missingInformation: 'nothing material missing',
       tangentialFlag: false,
       status: 'malformed',
     };

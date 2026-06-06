@@ -2,121 +2,331 @@
   {
     "paper_id": "PAP-01",
     "title": "Transformer-Based Scientific Paper Recommendation via Contextual Neural Embeddings",
-    "date": "2024-10-22",
+    "date": "2026-01-15",
+    "abstract": "We present a transformer-based recommendation system that retrieves and ranks scientific papers using contextual embeddings derived from SciBERT and fine-tuned with domain-specific contrastive objectives. The system encodes title and abstract into 768-dimensional vectors indexed with FAISS, with citation co-occurrence used as a weak supervision signal. Evaluated on five cross-domain benchmarks, it outperforms prior retrieval and recommendation baselines by 8–14% nDCG.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.71 },
-      { "component": "neural language models",         "component_similarity": 0.82 },
-      { "component": "scientific document embeddings", "component_similarity": 0.78 },
-      { "component": "recommendation systems",         "component_similarity": 0.76 },
-      { "component": "citation network analysis",      "component_similarity": 0.65 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.71,
+        "evidence": "The system retrieves candidate papers from a large corpus using a bi-encoder architecture with FAISS approximate nearest-neighbour indexing; retrieval is the primary pipeline stage before re-ranking."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.82,
+        "evidence": "SciBERT is fine-tuned end-to-end with a contrastive InfoNCE loss over (query paper, relevant paper, hard negative) triples; the model architecture and training recipe are the core contribution."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.78,
+        "evidence": "Papers are represented as 768-dimensional dense embeddings of title and abstract; these embeddings are the retrieval artifact stored in the FAISS index."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.76,
+        "evidence": "The recommendation engine ranks candidate papers by cosine similarity to an embedding of the user's reading history, combining retrieval scores with a lightweight learning-to-rank layer."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.65,
+        "evidence": "Citation co-occurrence pairs serve as weak positive supervision during contrastive pre-training; the citation graph is not analysed structurally beyond this signal."
+      }
     ]
   },
   {
     "paper_id": "PAP-02",
     "title": "Graph Neural Networks for Citation Network Representation Learning",
-    "date": "2024-07-18",
+    "date": "2026-02-20",
+    "abstract": "We propose a graph neural network architecture that learns node representations over academic citation graphs by aggregating both local neighbourhood structure and global bibliometric signals. The model is evaluated on node classification (field-of-study prediction) and link prediction (citation recommendation) tasks across four large citation corpora, achieving state-of-the-art results on all benchmarks.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.45 },
-      { "component": "neural language models",         "component_similarity": 0.55 },
-      { "component": "scientific document embeddings", "component_similarity": 0.63 },
-      { "component": "recommendation systems",         "component_similarity": 0.48 },
-      { "component": "citation network analysis",      "component_similarity": 0.71 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.45,
+        "evidence": "Retrieval is not the primary concern; the paper frames citation recommendation as a link prediction task on a static graph rather than a retrieval problem over a document corpus."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.55,
+        "evidence": "Paper titles are encoded by a lightweight frozen text encoder to initialise node features; the NLM is an input pre-processing step rather than a core methodological contribution."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.63,
+        "evidence": "Node embeddings in the citation graph double as document representations and are evaluated on downstream classification tasks, providing a form of scientific document embedding via graph propagation."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.48,
+        "evidence": "The authors suggest learned embeddings could feed a recommendation pipeline but do not implement or evaluate a full recommendation system; the paper stops at representation learning."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.71,
+        "evidence": "The core contribution is a GNN that propagates information through directed citation edges and undirected co-authorship links, with analysis of degree distributions and structural properties across four citation corpora."
+      }
     ]
   },
   {
     "paper_id": "PAP-03",
     "title": "Dense Retrieval for Scientific Literature: A Contrastive Learning Approach",
-    "date": "2024-11-02",
+    "date": "2026-02-14",
+    "abstract": "We develop a dense retrieval system for scientific corpora using domain-adapted dual encoders trained with contrastive objectives and hard-negative mining from BM25 candidates. The system is benchmarked on five scientific retrieval datasets and outperforms BM25, ColBERT, and DPR baselines. Ablations confirm the importance of domain-specific pre-training and hard-negative curriculum scheduling.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.87 },
-      { "component": "neural language models",         "component_similarity": 0.74 },
-      { "component": "scientific document embeddings", "component_similarity": 0.85 },
-      { "component": "recommendation systems",         "component_similarity": 0.62 },
-      { "component": "citation network analysis",      "component_similarity": 0.41 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.87,
+        "evidence": "Dense retrieval over scientific corpora is the central and sole contribution; the entire paper is organised around improving retrieval precision and recall on scientific benchmarks."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.74,
+        "evidence": "The dual-encoder architecture uses SciBERT as the backbone; domain adaptation via continued pre-training on scientific text is a key ablation studied in the paper."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.85,
+        "evidence": "Documents are indexed as dense vectors in a FAISS index; producing high-quality scientific document embeddings through contrastive learning is the core technical objective."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.62,
+        "evidence": "Paper recommendation is one of five downstream evaluations; the retrieval model is applied to recommendation by treating a researcher's prior papers as the query."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.41,
+        "evidence": "Citation data is used only to sample hard negatives during contrastive training; no structural citation analysis is performed."
+      }
     ]
   },
   {
     "paper_id": "PAP-04",
     "title": "Federated Learning for Privacy-Preserving Clinical Text Classification",
-    "date": "2024-05-20",
+    "date": "2025-12-10",
+    "abstract": "We present a federated learning framework that distributes NLP model training across hospital sites without centralising patient text. ClinicalBERT is fine-tuned under federated gradient aggregation with differential privacy guarantees, evaluated on ICD-10 coding and 30-day readmission prediction across six hospital datasets.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.32 },
-      { "component": "neural language models",         "component_similarity": 0.45 },
-      { "component": "scientific document embeddings", "component_similarity": 0.28 },
-      { "component": "recommendation systems",         "component_similarity": 0.38 },
-      { "component": "citation network analysis",      "component_similarity": 0.22 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.32,
+        "evidence": "Document retrieval is not addressed; the paper is entirely focused on classification under privacy constraints rather than retrieval from a corpus."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.45,
+        "evidence": "ClinicalBERT is fine-tuned under federated gradient aggregation; NLMs are used as a tool for classification rather than being the subject of study."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.28,
+        "evidence": "No general-purpose document embeddings are produced; the model outputs task-specific logits for classification targets."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.38,
+        "evidence": "No recommendation component is present; the paper addresses classification tasks in a privacy-constrained federated setting."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.22,
+        "evidence": "Citation networks are absent from the methodology and evaluation; the paper operates entirely on clinical text corpora."
+      }
     ]
   },
   {
     "paper_id": "PAP-05",
     "title": "Collaborative Filtering with Semantic User Profiles for Research Discovery",
-    "date": "2024-11-30",
+    "date": "2026-03-05",
+    "abstract": "We propose a hybrid recommendation method that combines collaborative filtering signals with semantic embeddings of user publication histories. User profiles are constructed from abstract embeddings of a researcher's prior papers; a collaborative filtering objective then surfaces relevant unseen papers. Evaluated on 50k researcher profiles, the method improves over pure collaborative filtering and pure content-based baselines.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.58 },
-      { "component": "neural language models",         "component_similarity": 0.61 },
-      { "component": "scientific document embeddings", "component_similarity": 0.55 },
-      { "component": "recommendation systems",         "component_similarity": 0.68 },
-      { "component": "citation network analysis",      "component_similarity": 0.34 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.58,
+        "evidence": "A BM25 retrieval stage generates candidate papers before semantic re-ranking; retrieval is a pipeline component rather than the primary contribution."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.61,
+        "evidence": "User profile embeddings are computed from paper abstracts using a frozen language model; the NLM is used as a feature extractor rather than being trained end-to-end."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.55,
+        "evidence": "Paper embeddings are used for semantic re-ranking but are derived from a pre-trained general-purpose model without domain adaptation."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.68,
+        "evidence": "The core contribution is a collaborative filtering objective augmented with semantic user profile vectors, directly targeting research paper recommendation."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.34,
+        "evidence": "Citation data is not used; the model relies on co-reading signals and download logs as implicit feedback."
+      }
     ]
   },
   {
     "paper_id": "PAP-06",
     "title": "Multi-Modal Scientific Document Representation with Cross-Attention Fusion",
-    "date": "2024-09-15",
+    "date": "2026-01-28",
+    "abstract": "We introduce a multi-modal representation model that fuses text, figures, and tables from scientific documents using cross-attention layers between a Longformer text encoder and a ViT image encoder. The unified dense embedding achieves state-of-the-art results on retrieval and classification benchmarks, outperforming text-only and late-fusion baselines.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.79 },
-      { "component": "neural language models",         "component_similarity": 0.77 },
-      { "component": "scientific document embeddings", "component_similarity": 0.84 },
-      { "component": "recommendation systems",         "component_similarity": 0.65 },
-      { "component": "citation network analysis",      "component_similarity": 0.52 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.79,
+        "evidence": "The model is benchmarked primarily on retrieval tasks including SciFact and five BEIR-Science subsets; retrieval performance is the headline evaluation metric."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.77,
+        "evidence": "Longformer is used as the text encoder; cross-attention fusion between Longformer and ViT is the central architectural contribution."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.84,
+        "evidence": "The primary output is a single dense embedding of the full scientific document across text, figure, and table modalities, directly targeting multi-modal document representation."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.65,
+        "evidence": "The embeddings are evaluated on a paper recommendation task using a held-out academic dataset; recommendation is one of four downstream evaluations."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.52,
+        "evidence": "Citation relationships are used to construct train/test splits that prevent data leakage, but citation structure is not part of the model or its evaluation metrics."
+      }
     ]
   },
   {
     "paper_id": "PAP-07",
     "title": "Decentralized Research Data Repositories: Blockchain Provenance and Retrieval Primitives",
-    "date": "2024-06-12",
+    "date": "2025-12-20",
+    "abstract": "We design a blockchain-based architecture for decentralized research data provenance tracking. Data artifacts are registered on a permissioned ledger with Merkle-tree integrity proofs; retrieval primitives allow auditors to locate and verify any version of a dataset by cryptographic hash. The system is evaluated on reproducibility workflows across three scientific domains.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.63 },
-      { "component": "neural language models",         "component_similarity": 0.21 },
-      { "component": "scientific document embeddings", "component_similarity": 0.18 },
-      { "component": "recommendation systems",         "component_similarity": 0.31 },
-      { "component": "citation network analysis",      "component_similarity": 0.44 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.63,
+        "evidence": "Retrieval primitives are defined for locating data artifacts by cryptographic hash in a distributed ledger. These are infrastructure-level hash lookups rather than semantic search over document content — the paper uses the word 'retrieval' in a storage/provenance sense, not the IR sense."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.21,
+        "evidence": "No neural language models are employed; data access and integrity are governed entirely by smart contract logic and cryptographic proofs."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.18,
+        "evidence": "Documents are represented by cryptographic hashes for integrity verification; no dense embedding or semantic representation is produced."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.31,
+        "evidence": "No recommendation component is present; the paper addresses data provenance, access control, and reproducibility rather than discovery or ranking."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.44,
+        "evidence": "Citation chains are tracked as provenance edges in the blockchain DAG for reproducibility auditing; this is structural provenance tracking, not citation graph analysis for bibliometric insight."
+      }
     ]
   },
   {
     "paper_id": "PAP-08",
     "title": "Quantum Annealing Heuristics for NP-Hard Drug-Target Binding Optimization",
-    "date": "2024-03-14",
+    "date": "2025-12-08",
+    "abstract": "We apply quantum annealing to the drug-target binding optimization problem, formulated as a quadratic unconstrained binary optimization (QUBO). A neural surrogate model estimates binding energy to guide the annealer; the approach is benchmarked against simulated annealing and genetic algorithm baselines on 200 protein-ligand pairs from the PDBbind dataset.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.12 },
-      { "component": "neural language models",         "component_similarity": 0.25 },
-      { "component": "scientific document embeddings", "component_similarity": 0.19 },
-      { "component": "recommendation systems",         "component_similarity": 0.38 },
-      { "component": "citation network analysis",      "component_similarity": 0.15 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.12,
+        "evidence": "Information retrieval is not addressed; the paper is entirely within computational chemistry and combinatorial optimization."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.25,
+        "evidence": "A neural surrogate model estimates binding energy from molecular structure encodings, playing a supporting role to the quantum optimizer; no language model is used."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.19,
+        "evidence": "No document-level embeddings are produced; inputs are molecular structure descriptors (SMILES, 3D coordinates), not text."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.38,
+        "evidence": "The optimization output is a ranked list of candidate compounds, which is loosely analogous to recommendation, but the paper does not engage with recommendation system methodology."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.15,
+        "evidence": "Citation network analysis is entirely absent from the paper's scope and evaluation."
+      }
     ]
   },
   {
     "paper_id": "PAP-09",
     "title": "Adaptive Optimization for Large-Scale Scientific Natural Language Processing",
-    "date": "2024-08-05",
+    "date": "2026-02-01",
+    "abstract": "We propose an adaptive learning rate schedule and gradient accumulation strategy that improves convergence for large-scale scientific NLP pre-training. The method is demonstrated on SciBERT and PubMedBERT training runs and evaluated on six downstream scientific NLP benchmarks including retrieval, classification, and paper recommendation.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.65 },
-      { "component": "neural language models",         "component_similarity": 0.74 },
-      { "component": "scientific document embeddings", "component_similarity": 0.71 },
-      { "component": "recommendation systems",         "component_similarity": 0.58 },
-      { "component": "citation network analysis",      "component_similarity": 0.47 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.65,
+        "evidence": "The pre-trained models are evaluated on scientific retrieval benchmarks as part of the six-task downstream suite; retrieval is an evaluation target rather than the training objective."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.74,
+        "evidence": "The primary contribution is an improved training recipe for scientific transformer language models; SciBERT and PubMedBERT training dynamics are the subject of study."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.71,
+        "evidence": "Fine-tuned models are used to produce scientific document embeddings evaluated on MTEB-Science; embedding quality is one of the headline downstream metrics."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.58,
+        "evidence": "Paper recommendation is included as one of six downstream evaluation tasks; the recommendation evaluation uses standard collaborative filtering metrics."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.47,
+        "evidence": "Citation-based field-of-study classification is used as one of six downstream benchmarks; citation network structure is not part of the model."
+      }
     ]
   },
   {
     "paper_id": "PAP-10",
     "title": "Probabilistic Logic and Knowledge Graph Completion for Biomedical Ontologies",
-    "date": "2024-12-01",
+    "date": "2026-04-12",
+    "abstract": "We present a probabilistic logic programming framework that performs knowledge graph completion over biomedical ontologies including MeSH and Gene Ontology. The framework infers missing relations using a combination of logical rules and a neural link predictor (RotatE), with calibrated confidence scores evaluated on standard link prediction benchmarks.",
     "components": [
-      { "component": "information retrieval",          "component_similarity": 0.43 },
-      { "component": "neural language models",         "component_similarity": 0.52 },
-      { "component": "scientific document embeddings", "component_similarity": 0.49 },
-      { "component": "recommendation systems",         "component_similarity": 0.35 },
-      { "component": "citation network analysis",      "component_similarity": 0.45 }
+      {
+        "component": "information retrieval",
+        "component_similarity": 0.43,
+        "evidence": "Entities are retrieved from the knowledge graph by logical query resolution rather than by text similarity over a document corpus; this is structured graph lookup, not document retrieval."
+      },
+      {
+        "component": "neural language models",
+        "component_similarity": 0.52,
+        "evidence": "RotatE, a neural link predictor, scores candidate triples alongside logical inference; it operates over entity embeddings rather than text, so it is more a graph neural method than a language model."
+      },
+      {
+        "component": "scientific document embeddings",
+        "component_similarity": 0.49,
+        "evidence": "Entity embeddings in the knowledge graph are trained for link prediction; these are entity-level embeddings rather than document-level representations of scientific papers."
+      },
+      {
+        "component": "recommendation systems",
+        "component_similarity": 0.35,
+        "evidence": "The framework does not address paper or content recommendation; it targets biomedical knowledge graph completion as a distinct task."
+      },
+      {
+        "component": "citation network analysis",
+        "component_similarity": 0.45,
+        "evidence": "Citation network analysis is not used; the paper operates on biomedical knowledge graphs (MeSH, GO) rather than academic citation graphs."
+      }
     ]
   }
 ]

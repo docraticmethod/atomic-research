@@ -74,7 +74,7 @@ const output: OutputPaper[] = sequenced.map(paper => {
     relevance_rationale:    rationale.relevanceRationale,
     position_rationale:     rationale.positionRationale,
     tangential_flag:        rationale.tangentialFlag,
-    missing_information:    null,
+    missing_information:    rationale.missingInformation,
     rationale_status:       rationale.status,
   };
 });

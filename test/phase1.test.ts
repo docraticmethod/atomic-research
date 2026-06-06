@@ -93,8 +93,9 @@ describe('Phase 1 — deterministic sequencer', () => {
     const base: CandidatePaper = {
       paper_id: 'TIE-BASE',
       title: '',
-      date: '2024-01-01',
-      components: [{ component: 'x', component_similarity: 0.70 }],
+      abstract: '',
+      date: '2026-01-01',
+      components: [{ component: 'x', component_similarity: 0.70, evidence: '' }],
     };
 
     test('tie-break 1: more cleared components wins', () => {
@@ -102,19 +103,19 @@ describe('Phase 1 — deterministic sequencer', () => {
         {
           ...base,
           paper_id: 'TIE-A',
-          date: '2024-01-01',
+          date: '2026-01-01',
           components: [
-            { component: 'a', component_similarity: 0.70 },
-            { component: 'b', component_similarity: 0.50 },
+            { component: 'a', component_similarity: 0.70, evidence: '' },
+            { component: 'b', component_similarity: 0.50, evidence: '' },
           ],
         },
         {
           ...base,
           paper_id: 'TIE-B',
-          date: '2024-01-01',
+          date: '2026-01-01',
           components: [
-            { component: 'a', component_similarity: 0.70 },
-            { component: 'b', component_similarity: 0.65 },
+            { component: 'a', component_similarity: 0.70, evidence: '' },
+            { component: 'b', component_similarity: 0.65, evidence: '' },
           ],
         },
       ];
@@ -128,14 +129,14 @@ describe('Phase 1 — deterministic sequencer', () => {
         {
           ...base,
           paper_id: 'TIE-OLD',
-          date: '2024-03-01',
-          components: [{ component: 'a', component_similarity: 0.70 }],
+          date: '2025-12-15',
+          components: [{ component: 'a', component_similarity: 0.70, evidence: '' }],
         },
         {
           ...base,
           paper_id: 'TIE-NEW',
-          date: '2024-09-01',
-          components: [{ component: 'a', component_similarity: 0.70 }],
+          date: '2026-03-01',
+          components: [{ component: 'a', component_similarity: 0.70, evidence: '' }],
         },
       ];
       const result = sequence(papers);
@@ -149,8 +150,9 @@ describe('Phase 1 — deterministic sequencer', () => {
       return {
         paper_id: id,
         title: id,
-        date: '2024-01-01',
-        components: [{ component: 'x', component_similarity: sim }],
+        abstract: '',
+        date: '2026-01-01',
+        components: [{ component: 'x', component_similarity: sim, evidence: '' }],
       };
     }
 

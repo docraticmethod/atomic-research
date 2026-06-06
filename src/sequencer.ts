@@ -2,6 +2,21 @@ import type { CandidatePaper, RecommendedAction } from './schemas.js';
 
 export const THRESHOLD = 0.60;
 
+const WINDOW_START = new Date('2025-12-06');
+const WINDOW_END   = new Date('2026-06-06');
+
+export function assertRecencyWindow(papers: CandidatePaper[]): void {
+  const out = papers.filter(p => {
+    const d = new Date(p.date);
+    return d < WINDOW_START || d > WINDOW_END;
+  });
+  if (out.length > 0) {
+    throw new Error(
+      `Recency window violation — papers outside 2025-12-06→2026-06-06: ${out.map(p => `${p.paper_id}(${p.date})`).join(', ')}`,
+    );
+  }
+}
+
 export type SequencedComponent = {
   component: string;
   component_similarity: number;
@@ -26,6 +41,7 @@ function recommendedAction(maxSim: number): RecommendedAction {
 }
 
 export function sequence(papers: CandidatePaper[]): SequencedPaper[] {
+  assertRecencyWindow(papers);
   const enriched = papers.map(paper => {
     const sims = paper.components.map(c => c.component_similarity);
     const maxSim = Math.max(...sims);
