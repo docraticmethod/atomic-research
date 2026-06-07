@@ -1,155 +1,134 @@
-import { describe, test } from 'node:test';
+import { describe, test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import {
-  validateResearchers,
-  validatePublications,
-  validatePapers,
-  validateFeedItemSeeds,
-} from '../src/schemas.js';
+  mapWorkToPaper, mapWorkToPublication, emitResearcher,
+  dedupeCascade, reconstructAbstract, collectCandidateSubfields,
+  applyCandidateWindow,
+} from '../src/fetch-boundary.js';
+import { searchAuthors, type RawWork, type RawAuthor } from '../src/openalex-client.js';
+import { validateResearchers, validatePublications, validatePapers } from '../src/schemas.js';
+import { recencyWindow } from '../src/window.js';
+import { createLogger } from '../src/logger.js';
 
-describe('Phase 0 — fixtures load and validate', () => {
-  test('researchers.json validates — exactly 3 researchers', async () => {
-    const raw = await readFile('data/researchers.json', 'utf-8');
-    const data = JSON.parse(raw);
-    assert.strictEqual(data.length, 3, 'expected exactly 3 researchers');
-    const valid = validateResearchers(data);
-    assert.ok(valid, `validation errors: ${JSON.stringify(validateResearchers.errors)}`);
-  });
+function silentLogger() {
+  return { info: () => {}, warn: () => {}, error: () => {} } as ReturnType<typeof createLogger>;
+}
 
-  test('researchers.json — each researcher has description, research_interests, topics', async () => {
-    const raw = await readFile('data/researchers.json', 'utf-8');
-    const researchers = JSON.parse(raw);
-    for (const r of researchers) {
-      assert.ok(r.description && r.description.length > 0, `${r.researcher_id} missing description`);
-      assert.ok(Array.isArray(r.research_interests) && r.research_interests.length > 0, `${r.researcher_id} missing research_interests`);
-      assert.ok(Array.isArray(r.topics) && r.topics.length > 0, `${r.researcher_id} missing topics`);
+function rawWork(overrides: Partial<RawWork> = {}): RawWork {
+  return {
+    id: 'https://openalex.org/W2741809807',
+    title: 'A Study of Things',
+    publication_date: '2026-03-01',
+    doi: 'https://doi.org/10.1234/abcd',
+    primary_topic: {
+      subfield: { id: 'https://openalex.org/subfields/1702', display_name: 'Artificial Intelligence' },
+      field: { id: 'https://openalex.org/fields/17', display_name: 'Computer Science' },
+    },
+    topics: [],
+    abstract_inverted_index: { Deep: [0], learning: [1], works: [2] },
+    referenced_works: ['https://openalex.org/W111', 'https://openalex.org/W222'],
+    authorships: [{ author: { id: 'https://openalex.org/A5108093963', display_name: 'Jane Smith' } }],
+    open_access: { is_oa: true },
+    cited_by_count: 5,
+    ...overrides,
+  };
+}
+
+describe('Phase F — fetch boundary transforms', () => {
+  test('transform 1: ID normalization → every emitted id is bare (incl referenced_works)', async () => {
+    const p = await mapWorkToPaper(rawWork());
+    assert.strictEqual(p.paper_id, 'W2741809807');
+    assert.strictEqual(p.openalex_id, 'W2741809807');
+    assert.strictEqual(p.doi, '10.1234/abcd');
+    assert.deepStrictEqual(p.referenced_works, ['W111', 'W222']);
+    for (const id of [p.paper_id, p.doi, ...p.referenced_works, ...p.authors.map(a => a.openalex_id)]) {
+      assert.ok(!id.includes('openalex.org') && !id.includes('doi.org'), `id not bare: ${id}`);
     }
   });
 
-  test('papers.json validates — exactly 30 papers', async () => {
-    const raw = await readFile('data/papers.json', 'utf-8');
-    const data = JSON.parse(raw);
-    assert.strictEqual(data.length, 30, 'expected exactly 30 papers');
-    const valid = validatePapers(data);
-    assert.ok(valid, `validation errors: ${JSON.stringify(validatePapers.errors)}`);
+  test('transform 1: arXiv id normalized from a landing-page url', async () => {
+    const p = await mapWorkToPaper(rawWork({
+      locations: [{ landing_page_url: 'https://arxiv.org/abs/2401.12345v2', pdf_url: null }],
+    }));
+    assert.strictEqual(p.arxiv_id, '2401.12345');
   });
 
-  test('papers.json — all publication_dates in recency window 2025-12-06 → 2026-06-06', async () => {
-    const raw = await readFile('data/papers.json', 'utf-8');
-    const papers = JSON.parse(raw);
-    const WINDOW_START = new Date('2025-12-06');
-    const WINDOW_END = new Date('2026-06-06');
-    for (const p of papers) {
-      const d = new Date(p.publication_date);
-      assert.ok(d >= WINDOW_START && d <= WINDOW_END,
-        `${p.paper_id} date ${p.publication_date} outside window`);
-    }
+  test('transform 2: abstract reconstruction preserves word order', () => {
+    assert.strictEqual(reconstructAbstract({ Deep: [0], learning: [1], works: [2] }), 'Deep learning works');
   });
 
-  test('papers.json — all paper_ids are globally unique', async () => {
-    const raw = await readFile('data/papers.json', 'utf-8');
-    const papers = JSON.parse(raw);
-    const ids = papers.map((p: { paper_id: string }) => p.paper_id);
-    const unique = new Set(ids);
-    assert.strictEqual(unique.size, ids.length, 'duplicate paper_ids found');
+  test('transform 2: absent abstract → null (not a crash)', async () => {
+    assert.strictEqual(reconstructAbstract(null), null);
+    assert.strictEqual(reconstructAbstract(undefined), null);
+    const p = await mapWorkToPaper(rawWork({ abstract_inverted_index: null }));
+    assert.strictEqual(p.abstract, null);
   });
 
-  test('papers.json — synthetic IDs do not look like real OpenAlex IDs', async () => {
-    const raw = await readFile('data/papers.json', 'utf-8');
-    const papers = JSON.parse(raw);
-    for (const p of papers) {
-      assert.ok(
-        p.openalex_id.includes('synthetic'),
-        `${p.paper_id} openalex_id "${p.openalex_id}" should be obviously synthetic`,
-      );
-    }
+  test('transform 3: dedup cascade collapses a planted duplicate (doi precedence)', async () => {
+    const a = await mapWorkToPaper(rawWork({ id: 'https://openalex.org/W1' }));
+    const b = await mapWorkToPaper(rawWork({ id: 'https://openalex.org/W2' })); // same doi
+    const out = await dedupeCascade([a, b]);
+    assert.strictEqual(out.length, 1, 'duplicate by doi should collapse');
   });
 
-  test('publications.json validates — 45–60 records', async () => {
-    const raw = await readFile('data/publications.json', 'utf-8');
-    const data = JSON.parse(raw);
-    assert.ok(data.length >= 45 && data.length <= 60, `expected 45–60 publications, got ${data.length}`);
-    const valid = validatePublications(data);
-    assert.ok(valid, `validation errors: ${JSON.stringify(validatePublications.errors)}`);
+  test('window: drops out-of-window + the author’s own works', async () => {
+    const win = recencyWindow(new Date('2026-06-07'));
+    const inWin = await mapWorkToPaper(rawWork({ id: 'https://openalex.org/W_in', publication_date: '2026-05-01', doi: null }));
+    const future = await mapWorkToPaper(rawWork({ id: 'https://openalex.org/W_future', publication_date: '2030-01-01', doi: null }));
+    const own = await mapWorkToPaper(rawWork({ id: 'https://openalex.org/W_own', publication_date: '2026-05-01', doi: null }));
+    const kept = await applyCandidateWindow([inWin, future, own], win, new Set(['W_own']));
+    assert.deepStrictEqual(kept.map(p => p.paper_id), ['W_in']);
+  });
+});
+
+const rawAuthor: RawAuthor = {
+  id: 'https://openalex.org/A5108093963',
+  display_name: 'Jane Smith',
+  works_count: 42,
+  cited_by_count: 1000,
+  summary_stats: { h_index: 20 },
+  topics: [
+    { id: 'https://openalex.org/T10320', display_name: 'Neural Networks', subfield: { id: 'https://openalex.org/subfields/1702', display_name: 'Artificial Intelligence' } },
+    { id: 'https://openalex.org/T9999', display_name: 'Robotics', subfield: { id: 'https://openalex.org/subfields/2207', display_name: 'Control and Systems Engineering' } },
+  ],
+};
+
+describe('Phase F — shape emission validates as v3.1 shapes', () => {
+  test('emitResearcher → valid Researcher (with works/citation/h-index)', async () => {
+    const r = await emitResearcher(rawAuthor, 'I study neural networks.', ['neural networks', 'robotics']);
+    assert.strictEqual(r.researcher_id, 'A5108093963');
+    assert.strictEqual(r.h_index, 20);
+    assert.ok(validateResearchers([r]), JSON.stringify(validateResearchers.errors));
   });
 
-  test('publications.json — 15–20 records per researcher', async () => {
-    const raw = await readFile('data/publications.json', 'utf-8');
-    const pubs = JSON.parse(raw);
-    const byResearcher = new Map<string, number>();
-    for (const p of pubs) {
-      byResearcher.set(p.researcher_id, (byResearcher.get(p.researcher_id) ?? 0) + 1);
-    }
-    assert.strictEqual(byResearcher.size, 3, 'expected publications for exactly 3 researchers');
-    for (const [rid, count] of byResearcher) {
-      assert.ok(count >= 12 && count <= 20, `${rid} has ${count} publications, expected ~15–20`);
-    }
+  test('mapWorkToPublication → valid Publication; mapWorkToPaper → valid Paper', async () => {
+    const pub = await mapWorkToPublication(rawWork(), 'A5108093963');
+    assert.ok(validatePublications([pub]), JSON.stringify(validatePublications.errors));
+    const pap = await mapWorkToPaper(rawWork());
+    assert.ok(validatePapers([pap]), JSON.stringify(validatePapers.errors));
   });
 
-  test('publications.json — synthetic ids, distinct id-space from candidate papers', async () => {
-    const [pubRaw, paperRaw] = await Promise.all([
-      readFile('data/publications.json', 'utf-8'),
-      readFile('data/papers.json', 'utf-8'),
-    ]);
-    const pubs = JSON.parse(pubRaw);
-    const papers = JSON.parse(paperRaw);
-    for (const p of pubs) {
-      assert.ok(p.openalex_id.includes('synthetic'), `${p.publication_id} openalex_id should be obviously synthetic`);
-    }
-    const paperIds = new Set(papers.map((p: { paper_id: string }) => p.paper_id));
-    for (const pub of pubs) {
-      assert.ok(!paperIds.has(pub.publication_id), `publication_id "${pub.publication_id}" collides with a candidate paper_id`);
-    }
+  test('thin-coverage fallback: candidate subfields include author-profile topic subfields', async () => {
+    const candidates = await collectCandidateSubfields([], rawAuthor);
+    const ids = candidates.map(c => c.id);
+    assert.ok(ids.includes('subfields/1702'));
+    assert.ok(ids.includes('subfields/2207'));
+  });
+});
+
+describe('Phase F — client degrade-to-empty (never throws upward)', () => {
+  const realFetch = globalThis.fetch;
+  afterEach(() => { globalThis.fetch = realFetch; });
+
+  test('a thrown network error degrades searchAuthors to []', async () => {
+    globalThis.fetch = (() => { throw new Error('network down'); }) as unknown as typeof fetch;
+    const out = await searchAuthors('anyone', silentLogger());
+    assert.deepStrictEqual(out, []);
   });
 
-  test('feed_items.json validates — exactly 30 items', async () => {
-    const raw = await readFile('data/feed_items.json', 'utf-8');
-    const data = JSON.parse(raw);
-    assert.strictEqual(data.length, 30, 'expected exactly 30 feed_items');
-    const valid = validateFeedItemSeeds(data);
-    assert.ok(valid, `validation errors: ${JSON.stringify(validateFeedItemSeeds.errors)}`);
-  });
-
-  test('feed_items.json — each item has all 5 council fields', async () => {
-    const raw = await readFile('data/feed_items.json', 'utf-8');
-    const items = JSON.parse(raw);
-    for (const fi of items) {
-      assert.ok(typeof fi.relevance_decision === 'boolean', `${fi.id} missing relevance_decision`);
-      assert.ok(typeof fi.relevance_score === 'number', `${fi.id} missing relevance_score`);
-      assert.ok(typeof fi.council_confidence === 'number', `${fi.id} missing council_confidence`);
-      assert.ok(fi.relevance_reason, `${fi.id} missing relevance_reason`);
-      assert.ok(fi.council_deliberation, `${fi.id} missing council_deliberation`);
-    }
-  });
-
-  test('malformed researcher is rejected — missing description', () => {
-    const malformed = {
-      researcher_id: 'RES-999',
-      name: 'Bad',
-      full_name: 'Bad Researcher',
-      research_interests: ['x'],
-      topics: [{ id: 'T1', display_name: 'Topic', score: 0.5 }],
-    };
-    const valid = validateResearchers([malformed as never]);
-    assert.strictEqual(valid, false, 'malformed researcher should fail validation');
-  });
-
-  test('malformed paper is rejected — missing abstract', () => {
-    const malformed = {
-      paper_id: 'PAP-BAD',
-      openalex_id: 'W999synthetic',
-      arxiv_id: '2601.999synthetic',
-      title: 'Bad Paper',
-      authors: [{ name: 'A', openalex_id: 'A999synthetic' }],
-      publication_date: '2026-01-01',
-      year: 2026,
-      arxiv_categories: ['cs.LG'],
-      topics: [{ id: 'T1', display_name: 'T', score: 0.5 }],
-      citation_count: 0,
-      is_open_access: true,
-    };
-    const valid = validatePapers([malformed as never]);
-    assert.strictEqual(valid, false, 'malformed paper should fail validation');
+  test('a non-2xx response degrades to []', async () => {
+    globalThis.fetch = (async () => new Response('nope', { status: 503 })) as unknown as typeof fetch;
+    const out = await searchAuthors('anyone', silentLogger());
+    assert.deepStrictEqual(out, []);
   });
 });

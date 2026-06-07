@@ -1,20 +1,31 @@
 import type { FeedItem } from './schemas.js';
+import { recencyWindow, type RecencyWindow } from './window.js';
 
-export const WINDOW_START = new Date('2025-12-06');
-export const WINDOW_END = new Date('2026-06-06');
-
-export function assertRecencyWindow(items: { publication_date: string; paper_id: string }[]): void {
+// The recency window is derived once per run from run-time ({d} = today − N days);
+// it is NOT a hard-coded fixture span. The sequencer performs no candidate-pool
+// filtering of any kind — the window is enforced solely at the fetch boundary.
+// This assert is a belt-and-suspenders check that everything the sequencer sees
+// is already in-window by construction.
+export function assertRecencyWindow(
+  items: { publication_date: string; paper_id: string }[],
+  win: RecencyWindow = recencyWindow(),
+): void {
   const out = items.filter(item => {
     const d = new Date(item.publication_date);
-    return d < WINDOW_START || d > WINDOW_END;
+    return d < win.start || d > win.end;
   });
   if (out.length > 0) {
+    const lo = win.start.toISOString().slice(0, 10);
+    const hi = win.end.toISOString().slice(0, 10);
     throw new Error(
-      `Recency window violation — papers outside 2025-12-06→2026-06-06: ${out.map(i => `${i.paper_id}(${i.publication_date})`).join(', ')}`,
+      `Recency window violation — papers outside ${lo}→${hi}: ${out.map(i => `${i.paper_id}(${i.publication_date})`).join(', ')}`,
     );
   }
 }
 
+// Pure presentation sort over council outputs — relevance_score desc, tie-break
+// council_confidence desc, then publication_date recency. Makes no relevance
+// decision; introduces no LLM-free relevance logic.
 export function sortFeed(items: FeedItem[]): FeedItem[] {
   const sorted = [...items].sort((a, b) => {
     if (b.relevance_score !== a.relevance_score) {

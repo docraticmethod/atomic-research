@@ -1,15 +1,16 @@
-import type { Researcher, Paper, Publication, GroundedProfile, FeedItemSeed } from './schemas.js';
+import type { Researcher, Paper, Publication, GroundedProfile } from './schemas.js';
 
 export type JoinedResearcher = {
   researcher: Researcher;
   papers: Paper[];
   groundedProfile: GroundedProfile;
-  feedItems: FeedItemSeed[];
 };
 
 // Asserts the candidate `papers` id-space and the `publications` id-space are
-// disjoint. The two are never conflated — different roles, different files.
-// Called once at startup from the orchestrator.
+// disjoint. The two are never conflated — different roles, different origins
+// (own-works pull vs subfield pull) — even though in v3.2 both originate from
+// /works. The fetch boundary drops the author's own work ids from the candidate
+// pool, so this invariant holds by construction.
 export function assertNoIdSpaceConflict(papers: Paper[], publications: Publication[]): void {
   const paperIds = new Set(papers.map(p => p.paper_id));
   const pubIds = new Set(publications.map(p => p.publication_id));
@@ -25,37 +26,27 @@ export function assertNoIdSpaceConflict(papers: Paper[], publications: Publicati
   }
 }
 
-// Pure, LLM-free join for a single researcher. Resolves the researcher's feed
-// items against the candidate papers, and verifies the grounded profile's
-// source_paper_ids resolve into the publications id-space (belt-and-suspenders
-// over integrity.ts Layer 2). Never inferred — asserts no orphans.
+// Pure, LLM-free join for a single researcher over bare, normalized boundary
+// ids. Verifies the grounded profile's source_paper_ids resolve into the
+// publications id-space (belt-and-suspenders over integrity.ts Layer 2) and the
+// candidate papers carry no duplicate ids. Never inferred — asserts no orphans.
+// Feed items are council OUTPUT in v3.2, so there are no seeds to resolve here.
 export function joinResearcher(
   researcher: Researcher,
   papers: Paper[],
   groundedProfile: GroundedProfile,
-  feedItems: FeedItemSeed[],
   publicationIds: Set<string>,
 ): JoinedResearcher {
   const rid = researcher.researcher_id;
   const errors: string[] = [];
 
-  // Papers: no duplicate ids within this researcher's set
+  // Papers: no duplicate ids within this researcher's candidate set
   const paperIds = new Set<string>();
   for (const p of papers) {
     if (paperIds.has(p.paper_id)) {
       errors.push(`join: researcher ${rid} has duplicate paper_id "${p.paper_id}"`);
     }
     paperIds.add(p.paper_id);
-  }
-
-  // Feed items belong to this researcher and resolve to a candidate paper
-  for (const fi of feedItems) {
-    if (fi.researcher_id !== rid) {
-      errors.push(`join: feed item ${fi.id} has researcher_id "${fi.researcher_id}" but is filed under "${rid}" (cross-researcher contamination)`);
-    }
-    if (!paperIds.has(fi.paper_id)) {
-      errors.push(`join: researcher ${rid} feed item ${fi.id} has orphan paper_id "${fi.paper_id}"`);
-    }
   }
 
   // Grounded components/subfields: source_paper_ids resolve into publications,
@@ -82,5 +73,5 @@ export function joinResearcher(
     throw new Error(`join: orphan/contamination references found:\n${errors.join('\n')}`);
   }
 
-  return { researcher, papers, groundedProfile, feedItems };
+  return { researcher, papers, groundedProfile };
 }

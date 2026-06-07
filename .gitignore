@@ -14,3 +14,4 @@ node_modules/
 #generated runtime output
 output/
 traces/
+.gstack/

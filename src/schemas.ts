@@ -15,6 +15,9 @@ export type Researcher = {
   description: string;
   research_interests: string[];
   topics: ResearcherTopic[];
+  works_count: number;
+  cited_by_count: number;
+  h_index: number;
 };
 
 export type PublicationAuthor = {
@@ -33,7 +36,7 @@ export type Publication = {
   researcher_id: string;
   openalex_id: string;
   title: string;
-  abstract: string;
+  abstract: string | null;
   authors: PublicationAuthor[];
   year: number;
   venue: string;
@@ -57,13 +60,15 @@ export type Paper = {
   paper_id: string;
   openalex_id: string;
   arxiv_id: string;
+  doi: string;
   title: string;
-  abstract: string;
+  abstract: string | null;
   authors: PaperAuthor[];
   publication_date: string;
   year: number;
   arxiv_categories: string[];
   topics: PaperTopic[];
+  referenced_works: string[];
   citation_count: number;
   is_open_access: boolean;
 };
@@ -72,26 +77,6 @@ export type CouncilVoice = {
   role: string;
   argument: string;
   leaning: string;
-};
-
-export type CouncilDeliberationSeed = {
-  voices: CouncilVoice[];
-  substantive_vs_superficial: string;
-  resolution: string;
-};
-
-export type FeedItemSeed = {
-  id: string;
-  researcher_id: string;
-  paper_id: string;
-  relevance_score: number;
-  relevance_decision: boolean;
-  council_confidence: number;
-  relevance_reason: string;
-  council_deliberation: CouncilDeliberationSeed;
-  council_version: string;
-  status: string;
-  surfaced_at: string;
 };
 
 // ── Grounded profile types (Stage-1 output) ────────────────────────────────
@@ -192,23 +177,27 @@ const researcherTopicSchema = {
 ajv.addSchema({
   $id: 'Researcher',
   type: 'object',
-  required: ['researcher_id', 'name', 'full_name', 'description', 'research_interests', 'topics'],
+  required: ['researcher_id', 'name', 'full_name', 'description', 'research_interests', 'topics', 'works_count', 'cited_by_count', 'h_index'],
   additionalProperties: false,
   properties: {
-    researcher_id: { type: 'string' },
+    researcher_id: { type: 'string', minLength: 1 },
     name: { type: 'string' },
     full_name: { type: 'string' },
     description: { type: 'string', minLength: 1 },
     research_interests: { type: 'array', minItems: 1, items: { type: 'string' } },
-    topics: { type: 'array', minItems: 1, items: researcherTopicSchema },
+    topics: { type: 'array', items: researcherTopicSchema },
+    works_count: { type: 'integer', minimum: 0 },
+    cited_by_count: { type: 'integer', minimum: 0 },
+    h_index: { type: 'integer', minimum: 0 },
   },
 });
 
+// v3.2: one confirmed author per run (single human link decision).
 ajv.addSchema({
   $id: 'ResearchersArray',
   type: 'array',
-  minItems: 3,
-  maxItems: 3,
+  minItems: 1,
+  maxItems: 1,
   items: { $ref: 'Researcher' },
 });
 
@@ -233,22 +222,24 @@ const publicationTopicSchema = {
   },
 };
 
+// v3.2: validates TRANSFORMED network records (bare ids, reconstructed-or-null
+// abstract). Bounds relaxed off the synthetic fixture scale to live own-works.
 ajv.addSchema({
   $id: 'Publication',
   type: 'object',
   required: ['publication_id', 'researcher_id', 'openalex_id', 'title', 'abstract', 'authors', 'year', 'venue', 'arxiv_categories', 'topics', 'citation_count'],
   additionalProperties: false,
   properties: {
-    publication_id: { type: 'string' },
+    publication_id: { type: 'string', minLength: 1 },
     researcher_id: { type: 'string' },
     openalex_id: { type: 'string' },
     title: { type: 'string', minLength: 1 },
-    abstract: { type: 'string', minLength: 10 },
+    abstract: { type: ['string', 'null'] },
     authors: { type: 'array', minItems: 1, items: publicationAuthorSchema },
-    year: { type: 'integer', minimum: 2018 },
+    year: { type: 'integer', minimum: 0 },
     venue: { type: 'string' },
-    arxiv_categories: { type: 'array', minItems: 1, items: { type: 'string' } },
-    topics: { type: 'array', minItems: 1, items: publicationTopicSchema },
+    arxiv_categories: { type: 'array', items: { type: 'string' } },
+    topics: { type: 'array', items: publicationTopicSchema },
     citation_count: { type: 'integer', minimum: 0 },
   },
 });
@@ -256,8 +247,7 @@ ajv.addSchema({
 ajv.addSchema({
   $id: 'PublicationsArray',
   type: 'array',
-  minItems: 45,
-  maxItems: 60,
+  minItems: 0,
   items: { $ref: 'Publication' },
 });
 
@@ -282,22 +272,27 @@ const paperTopicSchema = {
   },
 };
 
+// v3.2: validates TRANSFORMED candidate works. Every id is bare (incl. each
+// referenced_works entry); abstract is reconstructed-or-null; arxiv_id/doi may
+// be ''. Count bounds relaxed to the live subfield pull.
 ajv.addSchema({
   $id: 'Paper',
   type: 'object',
-  required: ['paper_id', 'openalex_id', 'arxiv_id', 'title', 'abstract', 'authors', 'publication_date', 'year', 'arxiv_categories', 'topics', 'citation_count', 'is_open_access'],
+  required: ['paper_id', 'openalex_id', 'arxiv_id', 'doi', 'title', 'abstract', 'authors', 'publication_date', 'year', 'arxiv_categories', 'topics', 'referenced_works', 'citation_count', 'is_open_access'],
   additionalProperties: false,
   properties: {
-    paper_id: { type: 'string' },
+    paper_id: { type: 'string', minLength: 1 },
     openalex_id: { type: 'string' },
     arxiv_id: { type: 'string' },
+    doi: { type: 'string' },
     title: { type: 'string', minLength: 1 },
-    abstract: { type: 'string', minLength: 10 },
+    abstract: { type: ['string', 'null'] },
     authors: { type: 'array', minItems: 1, items: paperAuthorSchema },
     publication_date: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
-    year: { type: 'integer' },
-    arxiv_categories: { type: 'array', minItems: 1, items: { type: 'string' } },
-    topics: { type: 'array', minItems: 1, items: paperTopicSchema },
+    year: { type: 'integer', minimum: 0 },
+    arxiv_categories: { type: 'array', items: { type: 'string' } },
+    topics: { type: 'array', items: paperTopicSchema },
+    referenced_works: { type: 'array', items: { type: 'string' } },
     citation_count: { type: 'integer', minimum: 0 },
     is_open_access: { type: 'boolean' },
   },
@@ -306,8 +301,7 @@ ajv.addSchema({
 ajv.addSchema({
   $id: 'PapersArray',
   type: 'array',
-  minItems: 30,
-  maxItems: 30,
+  minItems: 0,
   items: { $ref: 'Paper' },
 });
 
@@ -320,44 +314,6 @@ const councilVoiceSchema = {
     leaning: { type: 'string' },
   },
 };
-
-const councilDeliberationSeedSchema = {
-  type: 'object',
-  required: ['voices', 'substantive_vs_superficial', 'resolution'],
-  properties: {
-    voices: { type: 'array', minItems: 1, items: councilVoiceSchema },
-    substantive_vs_superficial: { type: 'string' },
-    resolution: { type: 'string' },
-  },
-};
-
-ajv.addSchema({
-  $id: 'FeedItemSeed',
-  type: 'object',
-  required: ['id', 'researcher_id', 'paper_id', 'relevance_score', 'relevance_decision', 'council_confidence', 'relevance_reason', 'council_deliberation', 'council_version', 'status', 'surfaced_at'],
-  additionalProperties: false,
-  properties: {
-    id: { type: 'string' },
-    researcher_id: { type: 'string' },
-    paper_id: { type: 'string' },
-    relevance_score: { type: 'number', minimum: 0, maximum: 1 },
-    relevance_decision: { type: 'boolean' },
-    council_confidence: { type: 'integer', minimum: 0, maximum: 100 },
-    relevance_reason: { type: 'string' },
-    council_deliberation: councilDeliberationSeedSchema,
-    council_version: { type: 'string' },
-    status: { type: 'string' },
-    surfaced_at: { type: 'string' },
-  },
-});
-
-ajv.addSchema({
-  $id: 'FeedItemsArray',
-  type: 'array',
-  minItems: 30,
-  maxItems: 30,
-  items: { $ref: 'FeedItemSeed' },
-});
 
 // ── Grounded profile schemas ────────────────────────────────────────────────
 
@@ -483,11 +439,12 @@ ajv.addSchema({
   },
 });
 
+// v3.2: one confirmed author per run.
 ajv.addSchema({
   $id: 'OutputArtifact',
   type: 'array',
-  minItems: 3,
-  maxItems: 3,
+  minItems: 1,
+  maxItems: 1,
   items: { $ref: 'ResearcherFeed' },
 });
 
@@ -496,7 +453,6 @@ ajv.addSchema({
 export const validateResearchers = ajv.compile<Researcher[]>({ $ref: 'ResearchersArray' });
 export const validatePublications = ajv.compile<Publication[]>({ $ref: 'PublicationsArray' });
 export const validatePapers = ajv.compile<Paper[]>({ $ref: 'PapersArray' });
-export const validateFeedItemSeeds = ajv.compile<FeedItemSeed[]>({ $ref: 'FeedItemsArray' });
 export const validateGroundedProfile = ajv.compile<GroundedProfile>({ $ref: 'GroundedProfile' });
 export const validateFeedItem = ajv.compile<FeedItem>({ $ref: 'FeedItem' });
 export const validateFeedSummary = ajv.compile<FeedSummary>({ $ref: 'FeedSummary' });

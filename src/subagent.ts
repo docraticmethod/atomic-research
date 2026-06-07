@@ -2,6 +2,9 @@ import Anthropic from '@anthropic-ai/sdk';
 import { op } from 'weave';
 import { buildCouncilMessages } from './skills/council.js';
 import { buildExtractionMessages, buildAptnessMessages } from './skills/grounding.js';
+import { buildOnboardingMessages } from './skills/onboarding.js';
+import type { RawAuthor } from './openalex-client.js';
+import type { CandidateSubfield } from './fetch-boundary.js';
 import type {
   Researcher, Paper, Publication, GroundedProfile,
   FeedItem, FeedSummary, CouncilDeliberation, MatchedComponent,
@@ -9,6 +12,79 @@ import type {
 import type { Logger } from './logger.js';
 
 const MODEL = 'claude-sonnet-4-6';
+
+// ── Onboarding: LLM picks the candidate-pull subfields + writes the profile ──
+
+export type ProfileSynthesis = {
+  description: string;
+  research_interests: string[];
+  selected_subfields: { id: string; display_name: string; reason: string }[];
+};
+
+// Reads the author's own publications + the candidate (valid) OpenAlex subfields
+// and returns the narrative profile plus the chosen pull subfields. Selections
+// are filtered to the candidate id-set so an invented id can never reach the
+// pull. Returns null on any failure (the orchestrator falls back deterministically).
+export const runProfileSynthesis = op(async function runProfileSynthesis(
+  author: RawAuthor,
+  publications: Publication[],
+  candidates: CandidateSubfield[],
+  logger: Logger,
+): Promise<ProfileSynthesis | null> {
+  const client = new Anthropic({ maxRetries: 3 });
+  const { system, user } = await buildOnboardingMessages(author, publications, candidates);
+
+  logger.info('issuing profile-synthesis (subfield selection) call', {
+    author_id: author.id,
+    publications: publications.length,
+    candidate_subfields: candidates.length,
+    model: MODEL,
+  });
+
+  let raw: string;
+  try {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 1536,
+      system,
+      messages: [{ role: 'user', content: user }],
+    });
+    const block = response.content[0];
+    if (block.type !== 'text') return null;
+    raw = block.text;
+  } catch (err) {
+    logger.error('profile-synthesis call failed', { author_id: author.id, error: String(err) });
+    return null;
+  }
+
+  try {
+    const cleaned = raw.replace(/^```(?:json)?\s*\n?/m, '').replace(/\n?```\s*$/m, '').trim();
+    const parsed = JSON.parse(cleaned) as Record<string, unknown>;
+    const candidateIds = new Set(candidates.map(c => c.id));
+
+    const selected = ((parsed.selected_subfields as ProfileSynthesis['selected_subfields'] | undefined) ?? [])
+      .filter(s => s && typeof s.id === 'string' && candidateIds.has(s.id))
+      .map(s => ({ id: s.id, display_name: String(s.display_name ?? ''), reason: String(s.reason ?? '') }));
+
+    const description = String(parsed.description ?? '').trim();
+    const research_interests = ((parsed.research_interests as string[] | undefined) ?? [])
+      .filter(x => typeof x === 'string' && x.trim().length > 0);
+
+    if (!description || selected.length === 0) {
+      logger.warn('profile-synthesis incomplete — empty description or no valid subfield selected', {
+        author_id: author.id,
+        has_description: Boolean(description),
+        selected_count: selected.length,
+      });
+      return null;
+    }
+
+    return { description, research_interests, selected_subfields: selected };
+  } catch (err) {
+    logger.error('profile-synthesis JSON malformed', { author_id: author.id, error: String(err), preview: raw.slice(0, 300) });
+    return null;
+  }
+});
 
 // ── Stage 1: grounding calls (single calls per researcher, not batched) ─────
 

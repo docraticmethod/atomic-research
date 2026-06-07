@@ -177,7 +177,7 @@ function renderFeedList(rf, selectedPaperId, onSelect) {
   }
 }
 
-function renderDetail(fi, profile) {
+function renderDetail(fi, profile, total) {
   const container = document.getElementById('detail-content');
 
   const header = document.createElement('div');
@@ -186,7 +186,7 @@ function renderDetail(fi, profile) {
     <h2 class="detail-title">${escHtml(fi.title)}</h2>
     <div class="detail-meta-row">
       ${decisionBadge(fi.relevance_decision, fi.decision_status)}
-      <span class="detail-position">Position ${fi.position} / 10</span>
+      <span class="detail-position">Position ${fi.position} / ${total}</span>
       <span class="detail-score">Score ${fi.relevance_score.toFixed(2)}</span>
       <span class="detail-confidence">Confidence ${fi.council_confidence}</span>
       <span class="detail-date">${escHtml(fi.publication_date)}</span>
@@ -266,7 +266,7 @@ async function main() {
     });
 
     if (fi) {
-      renderDetail(fi, rf.grounded_profile);
+      renderDetail(fi, rf.grounded_profile, rf.feed.length);
     }
   }
 

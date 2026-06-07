@@ -51,7 +51,7 @@ Return ONLY valid JSON. No markdown fences. No prose outside the JSON object.`;
 
 function formatCorpus(publications: Publication[]): string {
   return publications
-    .map(p => `[${p.publication_id}] ${p.title} (${p.year}, ${p.venue})\nAbstract: ${p.abstract}`)
+    .map(p => `[${p.publication_id}] ${p.title} (${p.year}, ${p.venue})\nAbstract: ${p.abstract ?? '(no abstract available)'}`)
     .join('\n---\n');
 }
 

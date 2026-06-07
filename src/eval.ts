@@ -1,7 +1,7 @@
 import { op } from 'weave';
 import { validateOutputArtifact, validateFeedSummary, validateGroundedProfile } from './schemas.js';
 import type { ResearcherFeed, Researcher, FeedItem } from './schemas.js';
-import { WINDOW_START, WINDOW_END } from './sequencer.js';
+import { recencyWindow, type RecencyWindow } from './window.js';
 import type { Logger } from './logger.js';
 
 export type EvalResult = {
@@ -15,6 +15,7 @@ export const evaluate = op(function evaluate(
   feeds: ResearcherFeed[],
   researchers: Researcher[],
   logger: Logger,
+  win: RecencyWindow = recencyWindow(),
 ): EvalResult {
   const errors: string[] = [];
 
@@ -25,12 +26,14 @@ export const evaluate = op(function evaluate(
     }
   }
 
-  // Scale: exactly 3 researcher feeds (one per researcher, degraded or not)
-  if (feeds.length !== 3) {
-    errors.push(`sanity: expected 3 researcher feeds, got ${feeds.length}`);
+  // Scale (v3.2): one confirmed author per run.
+  if (feeds.length !== 1) {
+    errors.push(`sanity: expected 1 researcher feed (single confirmed author), got ${feeds.length}`);
   }
 
-  // Grounding contract: ok ⇒ profile present + 10 items; unavailable ⇒ null profile + 0 items
+  // Grounding contract: ok ⇒ validated profile present; unavailable ⇒ null
+  // profile + 0 items (no partial profile, council did not run). The feed length
+  // is the live candidate-pool size (variable), so no fixed-count gate.
   for (const rf of feeds) {
     const rid = rf.researcher_id;
     if (rf.grounding_status === 'ok') {
@@ -51,9 +54,6 @@ export const evaluate = op(function evaluate(
           }
         }
       }
-      if (rf.feed.length !== 10) {
-        errors.push(`sanity: researcher ${rid} (grounding ok) has ${rf.feed.length} feed items, expected 10`);
-      }
     } else {
       // grounding_status === 'unavailable'
       if (rf.grounded_profile !== null) {
@@ -65,16 +65,12 @@ export const evaluate = op(function evaluate(
     }
   }
 
-  // No cross-researcher paper reuse — all paper_ids globally unique across feeds
-  const allFeedItems = feeds.flatMap(f => f.feed);
-  const allPaperIds = allFeedItems.map(fi => fi.paper_id);
-  const seen = new Set<string>();
-  for (const pid of allPaperIds) {
-    if (seen.has(pid)) {
-      errors.push(`sanity: paper_id "${pid}" appears in more than one researcher's feed (cross-researcher reuse)`);
-    }
-    seen.add(pid);
-  }
+  // NOTE (v3.2): the v3.1 cross-researcher-reuse gate and the coverage-spread
+  // gate (checkCoverageRoles) are DROPPED — both asserted synthetic-fixture
+  // properties. Over live data a paper may legitimately match multiple
+  // researchers, and a single author's live feed may be all-accept or
+  // all-reject. Every other grounding/council/ordering gate keeps its exact
+  // v3.1 pass/fail predicate.
 
   // Per-researcher per-item checks — only for grounded (ok) researchers with a feed
   for (const rf of feeds) {
@@ -84,10 +80,9 @@ export const evaluate = op(function evaluate(
     checkCouncilFields(rf.feed, rid, errors);
     checkGroundingOnAccepted(rf.feed, rid, errors);
     checkSubfieldWeighing(rf.feed, rid, errors);
-    checkCoverageRoles(rf.feed, rid, errors);
     checkSubstantiveVsSuperficial(rf.feed, rid, errors);
     checkNoSilentDrop(rf.feed, rid, errors);
-    checkRecencyWindow(rf.feed, rid, errors);
+    checkRecencyWindow(rf.feed, rid, errors, win);
 
     // feed_summary present (or degraded state)
     if (!rf.feed_summary) {
@@ -189,28 +184,6 @@ const checkSubfieldWeighing = op(function checkSubfieldWeighing(feed: FeedItem[]
   }
 });
 
-const checkCoverageRoles = op(function checkCoverageRoles(feed: FeedItem[], rid: string, errors: string[]): void {
-  const accepted = feed.filter(fi => fi.relevance_decision && fi.decision_status === 'ok');
-  const rejected = feed.filter(fi => !fi.relevance_decision && fi.decision_status === 'ok');
-
-  if (accepted.length === 0) {
-    errors.push(`sanity: researcher ${rid} has no accepted papers — must-surface role missing`);
-  }
-  if (rejected.length === 0) {
-    errors.push(`sanity: researcher ${rid} has no rejected papers — must-dismiss role missing`);
-  }
-
-  const hasHighConfidenceAccept = accepted.some(fi => fi.council_confidence >= 80);
-  if (!hasHighConfidenceAccept && accepted.length > 0) {
-    errors.push(`sanity: researcher ${rid} has no high-confidence accept (>=80) — must-surface role may be missing`);
-  }
-
-  const hasHighConfidenceReject = rejected.some(fi => fi.council_confidence >= 80);
-  if (!hasHighConfidenceReject && rejected.length > 0) {
-    errors.push(`sanity: researcher ${rid} has no high-confidence reject (>=80) — must-dismiss role may be missing`);
-  }
-});
-
 const checkSubstantiveVsSuperficial = op(function checkSubstantiveVsSuperficial(feed: FeedItem[], rid: string, errors: string[]): void {
   for (const fi of feed) {
     if (fi.decision_status === 'ok') {
@@ -235,11 +208,13 @@ const checkNoSilentDrop = op(function checkNoSilentDrop(feed: FeedItem[], rid: s
   }
 });
 
-const checkRecencyWindow = op(function checkRecencyWindow(feed: FeedItem[], rid: string, errors: string[]): void {
+const checkRecencyWindow = op(function checkRecencyWindow(feed: FeedItem[], rid: string, errors: string[], win: RecencyWindow): void {
+  const lo = win.start.toISOString().slice(0, 10);
+  const hi = win.end.toISOString().slice(0, 10);
   for (const fi of feed) {
     const d = new Date(fi.publication_date);
-    if (d < WINDOW_START || d > WINDOW_END) {
-      errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} date ${fi.publication_date} is outside recency window 2025-12-06→2026-06-06`);
+    if (d < win.start || d > win.end) {
+      errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} date ${fi.publication_date} is outside recency window ${lo}→${hi}`);
     }
   }
 });

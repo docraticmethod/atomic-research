@@ -1,10 +1,15 @@
 services:
+  # v3.2: INPUT is the live OpenAlex client, not mounted fixtures. The container
+  # needs outbound egress to api.openalex.org (default bridge networking provides
+  # it — do NOT set network_mode: none). .env is mounted (not baked); public/ is
+  # the OUTPUT surface the pipeline writes and the dashboard serves.
   pipeline:
     build: .
     command: npm run run:pipeline
+    environment:
+      - LINKED_AUTHOR_ID=${LINKED_AUTHOR_ID:-}
     volumes:
       - ./.env:/app/.env:ro
-      - ./data:/app/data:ro
       - ./public:/app/public
 
   dashboard:
@@ -14,5 +19,4 @@ services:
       - "4000:4000"
     volumes:
       - ./.env:/app/.env:ro
-      - ./data:/app/data:ro
       - ./public:/app/public

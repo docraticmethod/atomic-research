@@ -13,7 +13,28 @@
       <span class="app-subtitle">Paper Relevance Feed</span>
     </div>
   </header>
-  <main class="app-layout">
+
+  <!-- Onboarding: the sole human decision — link one OpenAlex author ("is this you?"). -->
+  <section class="onboarding" id="onboarding-panel" hidden>
+    <div class="onboarding-card" id="onboarding-card">
+      <h2 class="onboarding-title">Find your research profile</h2>
+      <p class="onboarding-sub">Link your OpenAlex profile so we can personalise your feed from your publication history.</p>
+
+      <div id="onboarding-search-region">
+        <input type="text" id="author-search" class="author-search" placeholder="Search by name — e.g. Jane Smith" autocomplete="off" />
+        <div class="author-results" id="author-results"></div>
+      </div>
+
+      <div id="onboarding-confirm-region" hidden></div>
+      <div id="onboarding-scanning-region" hidden>
+        <p class="scanning-text">Finding papers for you…</p>
+        <p class="scanning-sub" id="scanning-sub">Running the grounding → council pipeline over the last 6 months of literature.</p>
+      </div>
+      <p class="onboarding-error" id="onboarding-error" hidden></p>
+    </div>
+  </section>
+
+  <main class="app-layout" id="app-root" hidden>
     <aside class="feed-panel" id="feed-panel">
       <div class="researcher-selector-region" id="researcher-selector-region" aria-label="Researcher selector">
         <div class="researcher-selector" id="researcher-selector" role="tablist" aria-label="Select researcher"></div>
@@ -27,6 +48,7 @@
       <div class="detail-content" id="detail-content"></div>
     </section>
   </main>
-  <script type="module" src="/dash-app-client.js"></script>
+
+  <script type="module" src="/onboarding.js"></script>
 </body>
 </html>

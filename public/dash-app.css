@@ -761,3 +761,76 @@ details.detail-section[open] > summary::after {
   color: #c8a040;
   line-height: 1.4;
 }
+
+/* ── Onboarding ─────────────────────────────────────────────────────────── */
+/* The `hidden` attribute must win over the display rules below — otherwise
+   .onboarding{display:flex} / .app-layout{display:grid} override the UA
+   [hidden]{display:none}, so both panels paint at once and the full-screen
+   onboarding card covers the feed. This line is what makes the JS toggle work. */
+[hidden] { display: none !important; }
+
+.onboarding {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8vh 1.5rem;
+  min-height: calc(100vh - 64px);
+}
+.onboarding-card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+}
+.onboarding-title { font-family: var(--serif); font-size: 1.6rem; color: var(--text); margin-bottom: .4rem; }
+.onboarding-sub { color: var(--text-muted); font-size: .92rem; margin-bottom: 1.4rem; line-height: 1.5; }
+.author-search {
+  width: 100%;
+  padding: .7rem .9rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1rem;
+}
+.author-search:focus { outline: none; border-color: var(--selected-accent); }
+.author-results { margin-top: .8rem; display: flex; flex-direction: column; gap: .4rem; }
+.author-result {
+  display: flex; flex-direction: column; gap: .15rem;
+  text-align: left;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: .65rem .8rem;
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--sans);
+}
+.author-result:hover { border-color: var(--selected-accent); background: var(--selected-bg); }
+.author-name { font-weight: 600; }
+.author-affil { color: var(--text-muted); font-size: .82rem; }
+.author-stats { color: var(--text-dim); font-size: .78rem; }
+.author-empty { color: var(--text-dim); font-size: .85rem; padding: .5rem 0; }
+
+.confirm-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 1.2rem; }
+.confirm-q { color: var(--text-muted); font-size: .85rem; margin-bottom: .4rem; }
+.confirm-name { font-family: var(--serif); font-size: 1.3rem; color: var(--text); }
+.confirm-affil { color: var(--text-muted); font-size: .85rem; margin-top: .2rem; }
+.confirm-stats { color: var(--text-dim); font-size: .8rem; margin: .2rem 0 1rem; }
+.confirm-actions { display: flex; gap: .6rem; }
+.confirm-yes {
+  background: var(--accept-bg); color: var(--accept-fg);
+  border: 1px solid var(--selected-accent); border-radius: 6px;
+  padding: .55rem 1rem; cursor: pointer; font-size: .95rem;
+}
+.confirm-back {
+  background: transparent; color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: .55rem 1rem; cursor: pointer; font-size: .95rem;
+}
+.scanning-text { font-family: var(--serif); font-size: 1.25rem; color: var(--text); margin-bottom: .5rem; }
+.scanning-sub { color: var(--text-muted); font-size: .88rem; line-height: 1.5; }
+.onboarding-error { margin-top: 1rem; color: var(--reject-fg); font-size: .85rem; }

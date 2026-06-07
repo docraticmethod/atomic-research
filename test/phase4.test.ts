@@ -15,16 +15,18 @@ function silentLogger() {
 const logger = silentLogger();
 
 const dummyPaper: Paper = {
-  paper_id: 'PAP-R1-01',
-  openalex_id: 'W1000101synthetic',
-  arxiv_id: '2602.00101synthetic',
+  paper_id: 'W1000101',
+  openalex_id: 'W1000101',
+  arxiv_id: '2602.00101',
+  doi: '10.1234/test',
   title: 'Test Paper Title',
   abstract: 'Test abstract.',
-  authors: [{ name: 'Test Author', openalex_id: 'A1synthetic' }],
+  authors: [{ name: 'Test Author', openalex_id: 'A1' }],
   publication_date: '2026-01-15',
   year: 2026,
   arxiv_categories: ['cs.LG'],
   topics: [{ id: 'T1', display_name: 'Topic', score: 0.9 }],
+  referenced_works: [],
   citation_count: 0,
   is_open_access: true,
 };

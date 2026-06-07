@@ -94,7 +94,7 @@ Topics:
 ${topicLines}
 
 Abstract:
-${paper.abstract}
+${paper.abstract ?? '(no abstract available)'}
 
 Decide whether this paper belongs in ${researcher.name}'s feed. Return only valid JSON as specified.`;
 
