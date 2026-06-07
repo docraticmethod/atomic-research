@@ -27,7 +27,13 @@ const wandbRun = await wandb.init({
   project: 'atomic-research',
   ...(WANDB_ENTITY ? { entity: WANDB_ENTITY } : {}),
   name: `pipeline-${traceId.slice(0, 8)}`,
-  config: { trace_id: traceId, model: 'claude-sonnet-4-6', threshold: 0.60, papers: 10 },
+  config: {
+    trace_id: traceId,
+    model: 'claude-sonnet-4-6',
+    researchers: 3,
+    papers_per_researcher: 10,
+    total_papers: 30,
+  },
 });
 
 logger.info('pipeline start', { traceId, weave_project: project });
@@ -38,26 +44,40 @@ try {
   await mkdir('public', { recursive: true });
   await writeFile('public/output_data.json', JSON.stringify(artifact, null, 2));
 
-  const evalErrors = 0;
-  const maxSims = artifact.papers.map(p => p.max_component_similarity);
-  const avgSim = maxSims.reduce((a, b) => a + b, 0) / maxSims.length;
-
-  wandb.log({
-    papers_ranked: artifact.papers.length,
+  // W&B: per-researcher decision/confidence distributions, accept/reject counts
+  const metrics: Record<string, number | boolean> = {
     eval_passed: true,
-    eval_error_count: evalErrors,
-    feed_summary_status: artifact.feed_summary.summary_status,
-    avg_max_component_similarity: avgSim,
-    read_now_count: artifact.papers.filter(p => p.recommended_action === 'Read now').length,
-    save_count: artifact.papers.filter(p => p.recommended_action === 'Save').length,
-    skip_count: artifact.papers.filter(p => p.recommended_action === 'Skip').length,
-    rationale_ok_count: artifact.papers.filter(p => p.rationale_status === 'ok').length,
-  });
+    total_feed_items: artifact.flatMap(r => r.feed).length,
+  };
+
+  for (const rf of artifact) {
+    const rid = rf.researcher_id.replace('-', '_').toLowerCase();
+    const accepted = rf.feed.filter(fi => fi.relevance_decision && fi.decision_status === 'ok');
+    const rejected = rf.feed.filter(fi => !fi.relevance_decision && fi.decision_status === 'ok');
+    const okItems = rf.feed.filter(fi => fi.decision_status === 'ok');
+    const avgScore = okItems.length > 0
+      ? okItems.reduce((s, fi) => s + fi.relevance_score, 0) / okItems.length
+      : 0;
+    const avgConf = okItems.length > 0
+      ? okItems.reduce((s, fi) => s + fi.council_confidence, 0) / okItems.length
+      : 0;
+
+    metrics[`${rid}_accept_count`] = accepted.length;
+    metrics[`${rid}_reject_count`] = rejected.length;
+    metrics[`${rid}_avg_relevance_score`] = Math.round(avgScore * 1000) / 1000;
+    metrics[`${rid}_avg_council_confidence`] = Math.round(avgConf * 10) / 10;
+    metrics[`${rid}_summary_ok`] = rf.feed_summary.summary_status === 'ok' ? 1 : 0;
+    metrics[`${rid}_decision_ok_count`] = okItems.length;
+    metrics[`${rid}_decision_unavailable_count`] = rf.feed.filter(fi => fi.decision_status === 'unavailable').length;
+    metrics[`${rid}_decision_malformed_count`] = rf.feed.filter(fi => fi.decision_status === 'malformed').length;
+  }
+
+  wandb.log(metrics);
 
   logger.info('pipeline complete', {
     output: 'public/output_data.json',
-    papers: artifact.papers.length,
-    feed_summary_status: artifact.feed_summary.summary_status,
+    researchers: artifact.length,
+    total_items: artifact.flatMap(r => r.feed).length,
   });
   console.log(`✓ output written → public/output_data.json  (traceId: ${traceId})`);
 } catch (err) {

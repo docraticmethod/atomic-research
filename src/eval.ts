@@ -1,7 +1,7 @@
 import { op } from 'weave';
-import { validateOutputPapers, validateOutputArtifact } from './schemas.js';
-import type { OutputPaper, OutputArtifact } from './schemas.js';
-import { THRESHOLD } from './sequencer.js';
+import { validateOutputArtifact, validateFeedSummary } from './schemas.js';
+import type { ResearcherFeed, Researcher, FeedItem } from './schemas.js';
+import { WINDOW_START, WINDOW_END } from './sequencer.js';
 import type { Logger } from './logger.js';
 
 export type EvalResult = {
@@ -9,106 +9,73 @@ export type EvalResult = {
   errors: string[];
 };
 
-const TANGENTIAL_TERMS = ['tangential', 'loose', 'peripheral', 'superficial', 'indirect'];
-const BREADTH_TERMS    = ['breadth', 'cross-component', 'multiple component', 'several component', 'broad'];
-const WINDOW_START = new Date('2025-12-06');
-const WINDOW_END   = new Date('2026-06-06');
+const SUBSTANTIVE_MIN_LENGTH = 20;
 
-export const evaluate = op(function evaluate(papers: OutputPaper[], logger: Logger): EvalResult {
+export const evaluate = op(function evaluate(
+  feeds: ResearcherFeed[],
+  researchers: Researcher[],
+  logger: Logger,
+): EvalResult {
   const errors: string[] = [];
 
-  // Schema gate — Ajv validates all 10 papers against the output contract
-  if (!validateOutputPapers(papers)) {
-    for (const err of validateOutputPapers.errors ?? []) {
+  // Schema gate — full artifact validates
+  if (!validateOutputArtifact(feeds)) {
+    for (const err of validateOutputArtifact.errors ?? []) {
       errors.push(`schema: ${err.instancePath} ${err.message}`);
     }
   }
 
-  // Sanity: ranks 1–10, no gaps, no duplicates
-  const ranks = papers.map(p => p.rank).sort((a, b) => a - b);
-  if (JSON.stringify(ranks) !== JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])) {
-    errors.push(`sanity: ranks are not 1–10 without gaps — got ${JSON.stringify(ranks)}`);
+  // Scale: exactly 3 researchers, 30 feed items total
+  if (feeds.length !== 3) {
+    errors.push(`sanity: expected 3 researcher feeds, got ${feeds.length}`);
   }
 
-  // Sanity: rank order matches deterministic rule (recompute and compare)
-  const reranked = [...papers].sort((a, b) => {
-    if (b.max_component_similarity !== a.max_component_similarity) {
-      return b.max_component_similarity - a.max_component_similarity;
-    }
-    const aC = a.components.filter(c => c.component_similarity >= THRESHOLD).length;
-    const bC = b.components.filter(c => c.component_similarity >= THRESHOLD).length;
-    if (bC !== aC) return bC - aC;
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
-  reranked.forEach((expected, i) => {
-    const actual = papers.find(p => p.paper_id === expected.paper_id);
-    if (!actual || actual.rank !== i + 1) {
-      errors.push(
-        `sanity: ${expected.paper_id} should be rank ${i + 1}, got ${actual?.rank ?? 'missing'}`,
-      );
-    }
-  });
+  const allFeedItems = feeds.flatMap(f => f.feed);
+  if (allFeedItems.length !== 30) {
+    errors.push(`sanity: expected 30 total feed items, got ${allFeedItems.length}`);
+  }
 
-  // Sanity: recommended_action mapping
-  for (const p of papers) {
-    const expected =
-      p.max_component_similarity >= 0.80 ? 'Read now' :
-      p.max_component_similarity >= THRESHOLD ? 'Save' :
-      'Skip';
-    if (p.recommended_action !== expected) {
-      errors.push(
-        `sanity: ${p.paper_id} action "${p.recommended_action}" expected "${expected}"`,
-      );
+  // Each researcher has exactly 10 feed items
+  for (const rf of feeds) {
+    if (rf.feed.length !== 10) {
+      errors.push(`sanity: researcher ${rf.researcher_id} has ${rf.feed.length} feed items, expected 10`);
     }
   }
 
-  // Sanity: components_cleared_count
-  for (const p of papers) {
-    const expected = p.components.filter(c => c.component_similarity >= THRESHOLD).length;
-    if (p.components_cleared_count !== expected) {
-      errors.push(
-        `sanity: ${p.paper_id} cleared_count ${p.components_cleared_count} expected ${expected}`,
-      );
+  // No cross-researcher paper reuse — all paper_ids globally unique
+  const allPaperIds = allFeedItems.map(fi => fi.paper_id);
+  const paperIdSet = new Set(allPaperIds);
+  if (paperIdSet.size !== allPaperIds.length) {
+    const seen = new Set<string>();
+    for (const pid of allPaperIds) {
+      if (seen.has(pid)) {
+        errors.push(`sanity: paper_id "${pid}" appears in more than one researcher's feed (cross-researcher reuse)`);
+      }
+      seen.add(pid);
     }
   }
 
-  // Sanity: PAP-07 tangential_flag and framing
-  const pap07 = papers.find(p => p.paper_id === 'PAP-07');
-  if (!pap07) {
-    errors.push('sanity: PAP-07 missing from output');
-  } else {
-    if (!pap07.tangential_flag) {
-      errors.push('sanity: PAP-07 tangential_flag must be true');
-    }
-    const combined = (pap07.relevance_rationale + ' ' + pap07.position_rationale).toLowerCase();
-    if (!TANGENTIAL_TERMS.some(t => combined.includes(t))) {
-      errors.push('sanity: PAP-07 rationale must contain tangential framing');
-    }
-  }
+  // Per-researcher checks
+  for (const rf of feeds) {
+    const rid = rf.researcher_id;
+    checkFeedOrder(rf.feed, rid, errors);
+    checkCouncilFields(rf.feed, rid, errors);
+    checkGroundingOnAccepted(rf.feed, rid, errors);
+    checkCoverageRoles(rf.feed, rid, errors);
+    checkSubstantiveVsSuperficial(rf.feed, rid, errors);
+    checkNoSilentDrop(rf.feed, rid, errors);
+    checkRecencyWindow(rf.feed, rid, errors);
 
-  // Sanity: PAP-02 breadth framing in relevance_rationale
-  const pap02 = papers.find(p => p.paper_id === 'PAP-02');
-  if (!pap02) {
-    errors.push('sanity: PAP-02 missing from output');
-  } else {
-    const rel = pap02.relevance_rationale.toLowerCase();
-    if (!BREADTH_TERMS.some(t => rel.includes(t))) {
-      errors.push('sanity: PAP-02 relevance_rationale must contain breadth framing');
-    }
-  }
-
-  // Sanity: missing_information present and non-empty on every paper
-  for (const p of papers) {
-    if (typeof p.missing_information !== 'string' || p.missing_information.trim() === '') {
-      errors.push(`sanity: ${p.paper_id} missing_information must be a non-empty string`);
-    }
-  }
-
-  // Sanity: recency window — all fixtures in 2025-12-06 → 2026-06-06
-  for (const p of papers) {
-    const d = new Date(p.date);
-    if (d < WINDOW_START || d > WINDOW_END) {
-      errors.push(`sanity: ${p.paper_id} date ${p.date} is outside recency window 2025-12-06→2026-06-06`);
+    // feed_summary present (or degraded state)
+    if (!rf.feed_summary) {
+      errors.push(`sanity: researcher ${rid} has no feed_summary`);
+    } else {
+      if (!validateFeedSummary(rf.feed_summary)) {
+        errors.push(`schema: researcher ${rid} feed_summary invalid`);
+      }
+      if (rf.feed_summary.summary_status === 'ok' && !rf.feed_summary.text.trim()) {
+        errors.push(`sanity: researcher ${rid} feed_summary status is ok but text is empty`);
+      }
     }
   }
 
@@ -121,22 +88,123 @@ export const evaluate = op(function evaluate(papers: OutputPaper[], logger: Logg
   return { passed: errors.length === 0, errors };
 });
 
-export const evaluateArtifact = op(async function evaluateArtifact(artifact: OutputArtifact, logger: Logger): Promise<EvalResult> {
-  const paperResult = await evaluate(artifact.papers, logger);
-  const errors = [...paperResult.errors];
+const checkFeedOrder = op(function checkFeedOrder(feed: FeedItem[], rid: string, errors: string[]): void {
+  const positions = feed.map(fi => fi.position).sort((a, b) => a - b);
+  const expected = Array.from({ length: feed.length }, (_, i) => i + 1);
+  if (JSON.stringify(positions) !== JSON.stringify(expected)) {
+    errors.push(`sanity: researcher ${rid} positions are not 1–${feed.length} without gaps`);
+  }
 
-  // Validate full artifact schema (papers + feed_summary)
-  if (!validateOutputArtifact(artifact)) {
-    for (const err of validateOutputArtifact.errors ?? []) {
-      errors.push(`schema(artifact): ${err.instancePath} ${err.message}`);
+  // Verify sort order matches relevance_score desc → council_confidence desc → publication_date recency
+  const reranked = [...feed].sort((a, b) => {
+    if (b.relevance_score !== a.relevance_score) return b.relevance_score - a.relevance_score;
+    if (b.council_confidence !== a.council_confidence) return b.council_confidence - a.council_confidence;
+    return new Date(b.publication_date).getTime() - new Date(a.publication_date).getTime();
+  });
+
+  reranked.forEach((expected, i) => {
+    const actual = feed.find(fi => fi.paper_id === expected.paper_id);
+    if (!actual || actual.position !== i + 1) {
+      errors.push(`sanity: researcher ${rid} paper ${expected.paper_id} should be position ${i + 1}, got ${actual?.position ?? 'missing'}`);
+    }
+  });
+});
+
+const checkCouncilFields = op(function checkCouncilFields(feed: FeedItem[], rid: string, errors: string[]): void {
+  for (const fi of feed) {
+    if (fi.decision_status === 'ok') {
+      if (typeof fi.relevance_decision !== 'boolean') {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} missing relevance_decision`);
+      }
+      if (typeof fi.relevance_score !== 'number' || fi.relevance_score < 0 || fi.relevance_score > 1) {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} relevance_score out of [0,1]`);
+      }
+      if (typeof fi.council_confidence !== 'number' || fi.council_confidence < 0 || fi.council_confidence > 100) {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} council_confidence out of [0,100]`);
+      }
+      if (!fi.relevance_reason?.trim()) {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} missing relevance_reason`);
+      }
+      if (!fi.council_deliberation?.resolution?.trim()) {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} missing council_deliberation.resolution`);
+      }
     }
   }
+});
 
-  // feed_summary must have a non-empty text when status is ok
-  const fs = artifact.feed_summary;
-  if (fs.summary_status === 'ok' && (!fs.text || fs.text.trim() === '')) {
-    errors.push('sanity: feed_summary status is ok but text is empty');
+const checkGroundingOnAccepted = op(function checkGroundingOnAccepted(feed: FeedItem[], rid: string, errors: string[]): void {
+  for (const fi of feed) {
+    if (fi.relevance_decision && fi.decision_status === 'ok') {
+      if (!fi.matched_components || fi.matched_components.length === 0) {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} accepted but matched_components is empty`);
+      } else {
+        for (const mc of fi.matched_components) {
+          if (!mc.match_explanation?.trim()) {
+            errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} matched_component "${mc.component}" has empty match_explanation`);
+          }
+          if (!mc.source_paper_ids || mc.source_paper_ids.length === 0) {
+            errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} matched_component "${mc.component}" has empty source_paper_ids`);
+          }
+        }
+      }
+      if (!fi.matched_subfields || fi.matched_subfields.length === 0) {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} accepted but matched_subfields is empty`);
+      }
+    }
+  }
+});
+
+const checkCoverageRoles = op(function checkCoverageRoles(feed: FeedItem[], rid: string, errors: string[]): void {
+  const accepted = feed.filter(fi => fi.relevance_decision && fi.decision_status === 'ok');
+  const rejected = feed.filter(fi => !fi.relevance_decision && fi.decision_status === 'ok');
+
+  if (accepted.length === 0) {
+    errors.push(`sanity: researcher ${rid} has no accepted papers — must-surface role missing`);
+  }
+  if (rejected.length === 0) {
+    errors.push(`sanity: researcher ${rid} has no rejected papers — must-dismiss role missing`);
   }
 
-  return { passed: errors.length === 0, errors };
+  const hasHighConfidenceAccept = accepted.some(fi => fi.council_confidence >= 80);
+  if (!hasHighConfidenceAccept && accepted.length > 0) {
+    errors.push(`sanity: researcher ${rid} has no high-confidence accept (>=80) — must-surface role may be missing`);
+  }
+
+  const hasHighConfidenceReject = rejected.some(fi => fi.council_confidence >= 80);
+  if (!hasHighConfidenceReject && rejected.length > 0) {
+    errors.push(`sanity: researcher ${rid} has no high-confidence reject (>=80) — must-dismiss role may be missing`);
+  }
+});
+
+const checkSubstantiveVsSuperficial = op(function checkSubstantiveVsSuperficial(feed: FeedItem[], rid: string, errors: string[]): void {
+  for (const fi of feed) {
+    if (fi.decision_status === 'ok') {
+      const svs = fi.council_deliberation?.substantive_vs_superficial ?? '';
+      if (svs.trim().length < SUBSTANTIVE_MIN_LENGTH) {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} council_deliberation.substantive_vs_superficial is too short or missing`);
+      }
+    }
+  }
+});
+
+const checkNoSilentDrop = op(function checkNoSilentDrop(feed: FeedItem[], rid: string, errors: string[]): void {
+  for (const fi of feed) {
+    if (!fi.relevance_decision) {
+      if (!fi.relevance_reason?.trim() && fi.decision_status === 'ok') {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} rejected but relevance_reason (reject reasoning) is empty`);
+      }
+    }
+    if (fi.decision_status !== 'ok' && fi.position === 0) {
+      errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} has decision_status "${fi.decision_status}" but position is 0 — should be at a conservative position`);
+    }
+  }
+});
+
+const checkRecencyWindow = op(function checkRecencyWindow(feed: FeedItem[], rid: string, errors: string[]): void {
+  for (const fi of feed) {
+    const d = new Date(fi.publication_date);
+    if (d < WINDOW_START || d > WINDOW_END) {
+      errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} date ${fi.publication_date} is outside recency window 2025-12-06→2026-06-06`);
+    }
+  }
 });

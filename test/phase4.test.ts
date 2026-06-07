@@ -1,148 +1,153 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { parseRationale } from '../src/parse-rationale.js';
-import { sequence } from '../src/sequencer.js';
-import { evaluate } from '../src/eval.js';
+import { parseCouncilResult } from '../src/subagent.js';
 import { createLogger } from '../src/logger.js';
-import type { CandidatePaper, OutputPaper } from '../src/schemas.js';
+import type { Paper } from '../src/schemas.js';
 
 function silentLogger() {
   return {
     info:  () => {},
     warn:  () => {},
     error: () => {},
-  };
+  } as ReturnType<typeof createLogger>;
 }
 
-const logger = silentLogger() as ReturnType<typeof createLogger>;
+const logger = silentLogger();
 
-describe('Phase 4 — degraded-state hardening', () => {
-  describe('parseRationale', () => {
-    test('null raw → status: unavailable, empty fields', () => {
-      const result = parseRationale(null, 'PAP-01', logger);
-      assert.strictEqual(result.status, 'unavailable');
-      assert.strictEqual(result.relevanceRationale, '');
-      assert.strictEqual(result.positionRationale, '');
-      assert.deepStrictEqual(result.matchExplanations, {});
-      assert.strictEqual(result.tangentialFlag, false);
+const dummyPaper: Paper = {
+  paper_id: 'PAP-R1-01',
+  openalex_id: 'W1000101synthetic',
+  arxiv_id: '2602.00101synthetic',
+  title: 'Test Paper Title',
+  abstract: 'Test abstract.',
+  authors: [{ name: 'Test Author', openalex_id: 'A1synthetic' }],
+  publication_date: '2026-01-15',
+  year: 2026,
+  arxiv_categories: ['cs.LG'],
+  topics: [{ id: 'T1', display_name: 'Topic', score: 0.9 }],
+  citation_count: 0,
+  is_open_access: true,
+};
+
+describe('Phase 4 — degraded-state hardening (v3)', () => {
+  describe('parseCouncilResult', () => {
+    test('null raw → decision_status: unavailable, conservative position, relevance_decision: false', () => {
+      const result = parseCouncilResult(null, 'PAP-R1-01', dummyPaper, 'FI-R1-01', 'RES-001', logger);
+      assert.strictEqual(result.decision_status, 'unavailable');
+      assert.strictEqual(result.relevance_decision, false);
+      assert.strictEqual(result.relevance_score, 0);
+      assert.strictEqual(result.council_confidence, 0);
+      assert.ok(result.position >= 1, 'conservative position should be >= 1');
+      assert.ok(result.title === dummyPaper.title, 'title preserved even on failure');
     });
 
-    test('invalid JSON → status: malformed, empty fields', () => {
-      const result = parseRationale('{ not valid json }', 'PAP-01', logger);
-      assert.strictEqual(result.status, 'malformed');
-      assert.strictEqual(result.relevanceRationale, '');
-      assert.strictEqual(result.tangentialFlag, false);
+    test('invalid JSON → decision_status: malformed, conservative position', () => {
+      const result = parseCouncilResult('{ not valid json }', 'PAP-R1-01', dummyPaper, 'FI-R1-01', 'RES-001', logger);
+      assert.strictEqual(result.decision_status, 'malformed');
+      assert.strictEqual(result.relevance_decision, false);
+      assert.ok(result.position >= 1, 'conservative position should be >= 1');
     });
 
-    test('valid JSON → status: ok, fields populated', () => {
+    test('valid JSON → decision_status: ok, fields populated', () => {
       const raw = JSON.stringify({
-        match_explanations: { 'information retrieval': 'Strong alignment.' },
-        relevance_rationale: 'Highly relevant paper.',
-        position_rationale: 'Ranked first due to highest similarity.',
+        relevance_decision: true,
+        relevance_score: 0.87,
+        council_confidence: 82,
+        relevance_reason: 'Strong match on sparse autoencoder component.',
+        matched_components: [{
+          component: 'Sparse autoencoder feature steering',
+          source_paper_ids: ['PAP-R1-01', 'PAP-R1-04'],
+          match_explanation: 'The paper advances SAE steering methodology.',
+        }],
+        matched_subfields: ['Mechanistic interpretability'],
+        council_deliberation: {
+          voices: [
+            { role: 'advocate', argument: 'Directly relevant.', leaning: 'for' },
+          ],
+          substantive_vs_superficial: 'Substantive: the paper contributes the SAE steering methodology itself.',
+          resolution: 'Accept.',
+        },
       });
-      const result = parseRationale(raw, 'PAP-03', logger);
-      assert.strictEqual(result.status, 'ok');
-      assert.strictEqual(result.relevanceRationale, 'Highly relevant paper.');
-      assert.strictEqual(result.positionRationale, 'Ranked first due to highest similarity.');
-      assert.strictEqual(result.matchExplanations['information retrieval'], 'Strong alignment.');
+      const result = parseCouncilResult(raw, 'PAP-R1-01', dummyPaper, 'FI-R1-01', 'RES-001', logger);
+      assert.strictEqual(result.decision_status, 'ok');
+      assert.strictEqual(result.relevance_decision, true);
+      assert.strictEqual(result.relevance_score, 0.87);
+      assert.strictEqual(result.council_confidence, 82);
+      assert.strictEqual(result.relevance_reason, 'Strong match on sparse autoencoder component.');
+      assert.strictEqual(result.matched_components.length, 1);
+      assert.strictEqual(result.matched_subfields[0], 'Mechanistic interpretability');
+      assert.ok(result.council_deliberation.substantive_vs_superficial.length > 0);
     });
 
-    test('PAP-07 with tangential terms → tangential_flag: true', () => {
+    test('valid JSON for rejected paper → decision_status: ok, relevance_decision: false', () => {
       const raw = JSON.stringify({
-        match_explanations: {},
-        relevance_rationale: 'This is a tangential match; the paper is primarily about blockchain.',
-        position_rationale: 'Ranked here because the match is loose.',
+        relevance_decision: false,
+        relevance_score: 0.05,
+        council_confidence: 95,
+        relevance_reason: 'Off-topic — GPU scheduling has no connection to mechanistic interpretability.',
+        matched_components: [],
+        matched_subfields: [],
+        council_deliberation: {
+          voices: [
+            { role: 'skeptic', argument: 'No connection whatsoever.', leaning: 'against' },
+          ],
+          substantive_vs_superficial: 'No overlap of any kind between GPU scheduling and mechanistic interpretability.',
+          resolution: 'Reject.',
+        },
       });
-      const result = parseRationale(raw, 'PAP-07', logger);
-      assert.strictEqual(result.status, 'ok');
-      assert.strictEqual(result.tangentialFlag, true);
+      const result = parseCouncilResult(raw, 'PAP-R1-10', dummyPaper, 'FI-R1-10', 'RES-001', logger);
+      assert.strictEqual(result.decision_status, 'ok');
+      assert.strictEqual(result.relevance_decision, false);
+      assert.strictEqual(result.relevance_score, 0.05);
+      assert.strictEqual(result.council_confidence, 95);
+      assert.strictEqual(result.matched_components.length, 0);
     });
 
-    test('PAP-07 without tangential terms → tangential_flag: false', () => {
+    test('valid JSON with markdown fence → stripped and parsed correctly', () => {
+      const raw = '```json\n' + JSON.stringify({
+        relevance_decision: true,
+        relevance_score: 0.7,
+        council_confidence: 75,
+        relevance_reason: 'Relevant.',
+        matched_components: [{
+          component: 'Circuit analysis',
+          source_paper_ids: ['PAP-R1-02'],
+          match_explanation: 'Matches circuit analysis component.',
+        }],
+        matched_subfields: ['Mechanistic interpretability'],
+        council_deliberation: {
+          voices: [{ role: 'advocate', argument: 'Yes.', leaning: 'for' }],
+          substantive_vs_superficial: 'Substantive match — the paper contributes to circuit analysis.',
+          resolution: 'Accept.',
+        },
+      }) + '\n```';
+      const result = parseCouncilResult(raw, 'PAP-R1-02', dummyPaper, 'FI-R1-02', 'RES-001', logger);
+      assert.strictEqual(result.decision_status, 'ok');
+      assert.strictEqual(result.relevance_decision, true);
+    });
+
+    test('field id and researcher_id are preserved from arguments, not parsed JSON', () => {
       const raw = JSON.stringify({
-        match_explanations: {},
-        relevance_rationale: 'Good match on information retrieval.',
-        position_rationale: 'Correct rank.',
+        relevance_decision: true,
+        relevance_score: 0.8,
+        council_confidence: 80,
+        relevance_reason: 'Relevant.',
+        matched_components: [{ component: 'X', source_paper_ids: ['P'], match_explanation: 'Y' }],
+        matched_subfields: ['S'],
+        council_deliberation: { voices: [], substantive_vs_superficial: 'Substantive.', resolution: 'Accept.' },
       });
-      const result = parseRationale(raw, 'PAP-07', logger);
-      assert.strictEqual(result.status, 'ok');
-      assert.strictEqual(result.tangentialFlag, false);
+      const result = parseCouncilResult(raw, 'PAP-R1-03', dummyPaper, 'FI-R1-CUSTOM', 'RES-001', logger);
+      assert.strictEqual(result.feed_item_id, 'FI-R1-CUSTOM');
+      assert.strictEqual(result.researcher_id, 'RES-001');
+      assert.strictEqual(result.paper_id, 'PAP-R1-03');
+      assert.strictEqual(result.title, dummyPaper.title);
+      assert.strictEqual(result.publication_date, dummyPaper.publication_date);
     });
 
-    test('non-PAP-07 with tangential terms → tangential_flag: false', () => {
-      const raw = JSON.stringify({
-        match_explanations: {},
-        relevance_rationale: 'This is a tangential match.',
-        position_rationale: 'Loose connection.',
-      });
-      const result = parseRationale(raw, 'PAP-01', logger);
-      assert.strictEqual(result.tangentialFlag, false);
-    });
-  });
-
-  describe('output contract under simulated LLM failure', () => {
-    async function buildOutputWithFailures(failingIds: string[]): Promise<OutputPaper[]> {
-      const raw = await readFile('data/candidate_papers.json', 'utf-8');
-      const papers: CandidatePaper[] = JSON.parse(raw);
-      const sequenced = sequence(papers);
-
-      return sequenced.map(p => {
-        const failed = failingIds.includes(p.paper_id);
-        const rationale = parseRationale(failed ? null : JSON.stringify({
-          match_explanations: Object.fromEntries(p.components.map(c => [c.component, 'explanation'])),
-          relevance_rationale: p.paper_id === 'PAP-07'
-            ? 'This is a tangential match — the paper is superficially related.'
-            : p.paper_id === 'PAP-02'
-            ? 'This is a breadth match — cross-component relevance across citation network analysis and scientific document embeddings.'
-            : 'Relevant paper.',
-          position_rationale: p.paper_id === 'PAP-07'
-            ? 'Ranked here; loose connection.'
-            : 'Correct rank.',
-          missing_information: 'nothing material missing',
-        }), p.paper_id, logger);
-
-        return {
-          paper_id: p.paper_id,
-          rank: p.rank,
-          title: p.title,
-          date: p.date,
-          max_component_similarity: p.max_component_similarity,
-          recommended_action: p.recommended_action,
-          components: p.components.map(c => ({
-            ...c,
-            match_explanation: rationale.matchExplanations[c.component] ?? '',
-          })),
-          components_cleared_count: p.components_cleared_count,
-          relevance_rationale: rationale.relevanceRationale,
-          position_rationale: rationale.positionRationale,
-          tangential_flag: rationale.tangentialFlag,
-          missing_information: rationale.missingInformation,
-          rationale_status: rationale.status,
-        };
-      });
-    }
-
-    test('failed rationale for non-PAP-07 paper → rationale_status unavailable, deterministic fields intact', async () => {
-      const output = await buildOutputWithFailures(['PAP-01']);
-      const pap01 = output.find(p => p.paper_id === 'PAP-01')!;
-      assert.strictEqual(pap01.rationale_status, 'unavailable');
-      assert.strictEqual(pap01.rank, 3, 'rank must be unchanged');
-      assert.strictEqual(pap01.recommended_action, 'Read now', 'action must be unchanged');
-      assert.strictEqual(pap01.max_component_similarity, 0.82, 'max_sim must be unchanged');
-    });
-
-    test('failed rationale → all 10 papers still present at correct ranks', async () => {
-      const output = await buildOutputWithFailures(['PAP-03', 'PAP-08']);
-      assert.strictEqual(output.length, 10);
-      const ranks = output.map(p => p.rank).sort((a, b) => a - b);
-      assert.deepStrictEqual(ranks, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-    });
-
-    test('eval still passes when non-PAP-07 papers have unavailable rationale', async () => {
-      const output = await buildOutputWithFailures(['PAP-01', 'PAP-06']);
-      const result = await evaluate(output, logger);
-      assert.strictEqual(result.passed, true, `eval failed: ${result.errors.join('; ')}`);
+    test('unavailable item has title and date preserved from paper', () => {
+      const result = parseCouncilResult(null, 'PAP-R1-01', dummyPaper, 'FI-R1-01', 'RES-001', logger);
+      assert.strictEqual(result.title, dummyPaper.title);
+      assert.strictEqual(result.publication_date, dummyPaper.publication_date);
     });
   });
 });

@@ -40,12 +40,19 @@ const artifact = loadArtifact();
 const app = express();
 app.use(express.static(PUBLIC_DIR));
 
-app.get('/api/papers', (_req: Request, res: Response) => {
-  res.json(artifact.papers);
+// Returns the full artifact (array of ResearcherFeed)
+app.get('/api/artifact', (_req: Request, res: Response) => {
+  res.json(artifact);
 });
 
-app.get('/api/feed-summary', (_req: Request, res: Response) => {
-  res.json(artifact.feed_summary);
+// Returns one researcher's feed by researcher_id
+app.get('/api/feed/:researcher_id', (req: Request, res: Response) => {
+  const rf = artifact.find(r => r.researcher_id === req.params.researcher_id);
+  if (!rf) {
+    res.status(404).json({ error: 'researcher not found' });
+    return;
+  }
+  res.json(rf);
 });
 
 app.get('/', (_req: Request, res: Response) => {

@@ -1,55 +1,124 @@
 import Ajv from 'ajv';
 
-export type ComponentInput = {
-  component: string;
-  component_similarity: number;
-  evidence: string;
+// ── Fixture input types ────────────────────────────────────────────────────
+
+export type ResearcherTopic = {
+  id: string;
+  display_name: string;
+  score: number;
 };
 
-export type CandidatePaper = {
+export type Researcher = {
+  researcher_id: string;
+  name: string;
+  full_name: string;
+  description: string;
+  research_interests: string[];
+  topics: ResearcherTopic[];
+};
+
+export type PaperAuthor = {
+  name: string;
+  openalex_id: string;
+};
+
+export type PaperTopic = {
+  id: string;
+  display_name: string;
+  score: number;
+};
+
+export type Paper = {
   paper_id: string;
+  openalex_id: string;
+  arxiv_id: string;
   title: string;
-  date: string;
   abstract: string;
-  components: ComponentInput[];
+  authors: PaperAuthor[];
+  publication_date: string;
+  year: number;
+  arxiv_categories: string[];
+  topics: PaperTopic[];
+  citation_count: number;
+  is_open_access: boolean;
 };
 
 export type ResearchComponent = {
-  component: string;
-  description: string;
-};
-
-export type ResearcherProfile = {
+  component_id: string;
   researcher_id: string;
   name: string;
-  research_components: ResearchComponent[];
+  description: string;
+  source_paper_ids: string[];
+  is_active: boolean;
 };
 
-export type ComponentOutput = {
+export type SubfieldPreference = {
+  id: string;
+  researcher_id: string;
+  subfield_id: string;
+  subfield_name: string;
+  field_id: string;
+  field_name: string;
+};
+
+export type CouncilVoice = {
+  role: string;
+  argument: string;
+  leaning: string;
+};
+
+export type CouncilDeliberationSeed = {
+  voices: CouncilVoice[];
+  substantive_vs_superficial: string;
+  resolution: string;
+};
+
+export type FeedItemSeed = {
+  id: string;
+  researcher_id: string;
+  paper_id: string;
+  relevance_score: number;
+  relevance_decision: boolean;
+  council_confidence: number;
+  relevance_reason: string;
+  council_deliberation: CouncilDeliberationSeed;
+  council_version: string;
+  status: string;
+  surfaced_at: string;
+};
+
+// ── Output types ────────────────────────────────────────────────────────────
+
+export type DecisionStatus = 'ok' | 'unavailable' | 'malformed';
+export type SummaryStatus = 'ok' | 'unavailable' | 'malformed';
+
+export type MatchedComponent = {
   component: string;
-  component_similarity: number;
-  cleared: boolean;
+  source_paper_ids: string[];
   match_explanation: string;
 };
 
-export type RecommendedAction = 'Read now' | 'Save' | 'Skip';
-export type RationaleStatus = 'ok' | 'unavailable' | 'malformed';
-export type SummaryStatus = 'ok' | 'unavailable' | 'malformed';
+export type CouncilDeliberation = {
+  voices: CouncilVoice[];
+  substantive_vs_superficial: string;
+  resolution: string;
+};
 
-export type OutputPaper = {
+export type FeedItem = {
+  feed_item_id: string;
+  researcher_id: string;
   paper_id: string;
-  rank: number;
+  position: number;
   title: string;
-  date: string;
-  max_component_similarity: number;
-  recommended_action: RecommendedAction;
-  components: ComponentOutput[];
-  components_cleared_count: number;
-  relevance_rationale: string;
-  position_rationale: string;
-  tangential_flag: boolean;
-  missing_information: string;
-  rationale_status: RationaleStatus;
+  publication_date: string;
+  relevance_decision: boolean;
+  relevance_score: number;
+  council_confidence: number;
+  relevance_reason: string;
+  matched_components: MatchedComponent[];
+  matched_subfields: string[];
+  council_deliberation: CouncilDeliberation;
+  decision_status: DecisionStatus;
 };
 
 export type FeedSummary = {
@@ -57,106 +126,244 @@ export type FeedSummary = {
   summary_status: SummaryStatus;
 };
 
-export type OutputArtifact = {
-  papers: OutputPaper[];
+export type ResearcherFeed = {
+  researcher_id: string;
+  researcher_name: string;
+  feed: FeedItem[];
   feed_summary: FeedSummary;
 };
 
-const ajv = new Ajv();
+export type OutputArtifact = ResearcherFeed[];
 
-ajv.addSchema({
-  $id: 'ComponentInput',
+// ── Ajv instance ────────────────────────────────────────────────────────────
+
+const ajv = new Ajv({ allErrors: true });
+
+// ── Fixture schemas ─────────────────────────────────────────────────────────
+
+const researcherTopicSchema = {
   type: 'object',
-  required: ['component', 'component_similarity', 'evidence'],
+  required: ['id', 'display_name', 'score'],
   additionalProperties: false,
   properties: {
-    component: { type: 'string' },
-    component_similarity: { type: 'number', minimum: 0, maximum: 1 },
-    evidence: { type: 'string' },
+    id: { type: 'string' },
+    display_name: { type: 'string' },
+    score: { type: 'number', minimum: 0, maximum: 1 },
   },
+};
+
+ajv.addSchema({
+  $id: 'Researcher',
+  type: 'object',
+  required: ['researcher_id', 'name', 'full_name', 'description', 'research_interests', 'topics'],
+  additionalProperties: false,
+  properties: {
+    researcher_id: { type: 'string' },
+    name: { type: 'string' },
+    full_name: { type: 'string' },
+    description: { type: 'string', minLength: 1 },
+    research_interests: { type: 'array', minItems: 1, items: { type: 'string' } },
+    topics: { type: 'array', minItems: 1, items: researcherTopicSchema },
+  },
+});
+
+ajv.addSchema({
+  $id: 'ResearchersArray',
+  type: 'array',
+  minItems: 3,
+  maxItems: 3,
+  items: { $ref: 'Researcher' },
+});
+
+const paperAuthorSchema = {
+  type: 'object',
+  required: ['name', 'openalex_id'],
+  additionalProperties: false,
+  properties: {
+    name: { type: 'string' },
+    openalex_id: { type: 'string' },
+  },
+};
+
+const paperTopicSchema = {
+  type: 'object',
+  required: ['id', 'display_name', 'score'],
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string' },
+    display_name: { type: 'string' },
+    score: { type: 'number', minimum: 0, maximum: 1 },
+  },
+};
+
+ajv.addSchema({
+  $id: 'Paper',
+  type: 'object',
+  required: ['paper_id', 'openalex_id', 'arxiv_id', 'title', 'abstract', 'authors', 'publication_date', 'year', 'arxiv_categories', 'topics', 'citation_count', 'is_open_access'],
+  additionalProperties: false,
+  properties: {
+    paper_id: { type: 'string' },
+    openalex_id: { type: 'string' },
+    arxiv_id: { type: 'string' },
+    title: { type: 'string', minLength: 1 },
+    abstract: { type: 'string', minLength: 10 },
+    authors: { type: 'array', minItems: 1, items: paperAuthorSchema },
+    publication_date: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+    year: { type: 'integer' },
+    arxiv_categories: { type: 'array', minItems: 1, items: { type: 'string' } },
+    topics: { type: 'array', minItems: 1, items: paperTopicSchema },
+    citation_count: { type: 'integer', minimum: 0 },
+    is_open_access: { type: 'boolean' },
+  },
+});
+
+ajv.addSchema({
+  $id: 'PapersArray',
+  type: 'array',
+  minItems: 30,
+  maxItems: 30,
+  items: { $ref: 'Paper' },
 });
 
 ajv.addSchema({
   $id: 'ResearchComponent',
   type: 'object',
-  required: ['component', 'description'],
+  required: ['component_id', 'researcher_id', 'name', 'description', 'source_paper_ids', 'is_active'],
   additionalProperties: false,
   properties: {
-    component: { type: 'string' },
-    description: { type: 'string' },
-  },
-});
-
-ajv.addSchema({
-  $id: 'CandidatePaper',
-  type: 'object',
-  required: ['paper_id', 'title', 'date', 'abstract', 'components'],
-  additionalProperties: false,
-  properties: {
-    paper_id: { type: 'string' },
-    title: { type: 'string' },
-    date: { type: 'string' },
-    abstract: { type: 'string' },
-    components: {
-      type: 'array',
-      minItems: 1,
-      items: { $ref: 'ComponentInput' },
-    },
-  },
-});
-
-ajv.addSchema({
-  $id: 'ResearcherProfile',
-  type: 'object',
-  required: ['researcher_id', 'name', 'research_components'],
-  additionalProperties: false,
-  properties: {
+    component_id: { type: 'string' },
     researcher_id: { type: 'string' },
-    name: { type: 'string' },
-    research_components: {
-      type: 'array',
-      minItems: 1,
-      items: { $ref: 'ResearchComponent' },
-    },
+    name: { type: 'string', minLength: 1 },
+    description: { type: 'string', minLength: 1 },
+    source_paper_ids: { type: 'array', minItems: 1, items: { type: 'string' } },
+    is_active: { type: 'boolean' },
   },
 });
 
 ajv.addSchema({
-  $id: 'ComponentOutput',
+  $id: 'ResearchComponentsArray',
+  type: 'array',
+  minItems: 1,
+  items: { $ref: 'ResearchComponent' },
+});
+
+ajv.addSchema({
+  $id: 'SubfieldPreference',
   type: 'object',
-  required: ['component', 'component_similarity', 'cleared', 'match_explanation'],
+  required: ['id', 'researcher_id', 'subfield_id', 'subfield_name', 'field_id', 'field_name'],
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string' },
+    researcher_id: { type: 'string' },
+    subfield_id: { type: 'string' },
+    subfield_name: { type: 'string' },
+    field_id: { type: 'string' },
+    field_name: { type: 'string' },
+  },
+});
+
+ajv.addSchema({
+  $id: 'SubfieldPreferencesArray',
+  type: 'array',
+  minItems: 1,
+  items: { $ref: 'SubfieldPreference' },
+});
+
+const councilVoiceSchema = {
+  type: 'object',
+  required: ['role', 'argument', 'leaning'],
+  properties: {
+    role: { type: 'string' },
+    argument: { type: 'string' },
+    leaning: { type: 'string' },
+  },
+};
+
+const councilDeliberationSeedSchema = {
+  type: 'object',
+  required: ['voices', 'substantive_vs_superficial', 'resolution'],
+  properties: {
+    voices: { type: 'array', minItems: 1, items: councilVoiceSchema },
+    substantive_vs_superficial: { type: 'string' },
+    resolution: { type: 'string' },
+  },
+};
+
+ajv.addSchema({
+  $id: 'FeedItemSeed',
+  type: 'object',
+  required: ['id', 'researcher_id', 'paper_id', 'relevance_score', 'relevance_decision', 'council_confidence', 'relevance_reason', 'council_deliberation', 'council_version', 'status', 'surfaced_at'],
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string' },
+    researcher_id: { type: 'string' },
+    paper_id: { type: 'string' },
+    relevance_score: { type: 'number', minimum: 0, maximum: 1 },
+    relevance_decision: { type: 'boolean' },
+    council_confidence: { type: 'integer', minimum: 0, maximum: 100 },
+    relevance_reason: { type: 'string' },
+    council_deliberation: councilDeliberationSeedSchema,
+    council_version: { type: 'string' },
+    status: { type: 'string' },
+    surfaced_at: { type: 'string' },
+  },
+});
+
+ajv.addSchema({
+  $id: 'FeedItemsArray',
+  type: 'array',
+  minItems: 30,
+  maxItems: 30,
+  items: { $ref: 'FeedItemSeed' },
+});
+
+// ── Output schemas ──────────────────────────────────────────────────────────
+
+const matchedComponentSchema = {
+  type: 'object',
+  required: ['component', 'source_paper_ids', 'match_explanation'],
   properties: {
     component: { type: 'string' },
-    component_similarity: { type: 'number' },
-    cleared: { type: 'boolean' },
-    match_explanation: { type: 'string' },
+    source_paper_ids: { type: 'array', minItems: 1, items: { type: 'string' } },
+    match_explanation: { type: 'string', minLength: 1 },
   },
-});
+};
+
+const councilDeliberationSchema = {
+  type: 'object',
+  required: ['voices', 'substantive_vs_superficial', 'resolution'],
+  properties: {
+    // minItems/minLength not enforced here — degraded items (malformed/unavailable)
+    // legitimately carry empty arrays/strings. Content is validated by eval.ts for ok items.
+    voices: { type: 'array', items: councilVoiceSchema },
+    substantive_vs_superficial: { type: 'string' },
+    resolution: { type: 'string' },
+  },
+};
 
 ajv.addSchema({
-  $id: 'OutputPaper',
+  $id: 'FeedItem',
   type: 'object',
   required: [
-    'paper_id', 'rank', 'title', 'date',
-    'max_component_similarity', 'recommended_action',
-    'components', 'components_cleared_count',
-    'relevance_rationale', 'position_rationale',
-    'tangential_flag', 'missing_information', 'rationale_status',
+    'feed_item_id', 'researcher_id', 'paper_id', 'position', 'title', 'publication_date',
+    'relevance_decision', 'relevance_score', 'council_confidence', 'relevance_reason',
+    'matched_components', 'matched_subfields', 'council_deliberation', 'decision_status',
   ],
   properties: {
+    feed_item_id: { type: 'string' },
+    researcher_id: { type: 'string' },
     paper_id: { type: 'string' },
-    rank: { type: 'integer', minimum: 1, maximum: 10 },
+    position: { type: 'integer', minimum: 1 },
     title: { type: 'string' },
-    date: { type: 'string' },
-    max_component_similarity: { type: 'number' },
-    recommended_action: { type: 'string', enum: ['Read now', 'Save', 'Skip'] },
-    components: { type: 'array', items: { $ref: 'ComponentOutput' } },
-    components_cleared_count: { type: 'integer', minimum: 0 },
-    relevance_rationale: { type: 'string' },
-    position_rationale: { type: 'string' },
-    tangential_flag: { type: 'boolean' },
-    missing_information: { type: 'string' },
-    rationale_status: { type: 'string', enum: ['ok', 'unavailable', 'malformed'] },
+    publication_date: { type: 'string' },
+    relevance_decision: { type: 'boolean' },
+    relevance_score: { type: 'number', minimum: 0, maximum: 1 },
+    council_confidence: { type: 'integer', minimum: 0, maximum: 100 },
+    relevance_reason: { type: 'string' },
+    matched_components: { type: 'array', items: matchedComponentSchema },
+    matched_subfields: { type: 'array', items: { type: 'string' } },
+    council_deliberation: councilDeliberationSchema,
+    decision_status: { type: 'string', enum: ['ok', 'unavailable', 'malformed'] },
   },
 });
 
@@ -164,6 +371,7 @@ ajv.addSchema({
   $id: 'FeedSummary',
   type: 'object',
   required: ['text', 'summary_status'],
+  additionalProperties: false,
   properties: {
     text: { type: 'string' },
     summary_status: { type: 'string', enum: ['ok', 'unavailable', 'malformed'] },
@@ -171,34 +379,39 @@ ajv.addSchema({
 });
 
 ajv.addSchema({
-  $id: 'OutputArtifact',
+  $id: 'ResearcherFeed',
   type: 'object',
-  required: ['papers', 'feed_summary'],
+  required: ['researcher_id', 'researcher_name', 'feed', 'feed_summary'],
   additionalProperties: false,
   properties: {
-    papers: {
+    researcher_id: { type: 'string' },
+    researcher_name: { type: 'string' },
+    feed: {
       type: 'array',
       minItems: 10,
       maxItems: 10,
-      items: { $ref: 'OutputPaper' },
+      items: { $ref: 'FeedItem' },
     },
     feed_summary: { $ref: 'FeedSummary' },
   },
 });
 
-export const validateCandidatePaper = ajv.compile<CandidatePaper>({ $ref: 'CandidatePaper' });
-export const validateCandidatePapers = ajv.compile<CandidatePaper[]>({
+ajv.addSchema({
+  $id: 'OutputArtifact',
   type: 'array',
-  minItems: 10,
-  maxItems: 10,
-  items: { $ref: 'CandidatePaper' },
+  minItems: 3,
+  maxItems: 3,
+  items: { $ref: 'ResearcherFeed' },
 });
-export const validateResearcherProfile = ajv.compile<ResearcherProfile>({ $ref: 'ResearcherProfile' });
-export const validateOutputPaper = ajv.compile<OutputPaper>({ $ref: 'OutputPaper' });
-export const validateOutputPapers = ajv.compile<OutputPaper[]>({
-  type: 'array',
-  minItems: 10,
-  maxItems: 10,
-  items: { $ref: 'OutputPaper' },
-});
+
+// ── Compiled validators ─────────────────────────────────────────────────────
+
+export const validateResearchers = ajv.compile<Researcher[]>({ $ref: 'ResearchersArray' });
+export const validatePapers = ajv.compile<Paper[]>({ $ref: 'PapersArray' });
+export const validateResearchComponents = ajv.compile<ResearchComponent[]>({ $ref: 'ResearchComponentsArray' });
+export const validateSubfieldPreferences = ajv.compile<SubfieldPreference[]>({ $ref: 'SubfieldPreferencesArray' });
+export const validateFeedItemSeeds = ajv.compile<FeedItemSeed[]>({ $ref: 'FeedItemsArray' });
+export const validateFeedItem = ajv.compile<FeedItem>({ $ref: 'FeedItem' });
+export const validateFeedSummary = ajv.compile<FeedSummary>({ $ref: 'FeedSummary' });
+export const validateResearcherFeed = ajv.compile<ResearcherFeed>({ $ref: 'ResearcherFeed' });
 export const validateOutputArtifact = ajv.compile<OutputArtifact>({ $ref: 'OutputArtifact' });
