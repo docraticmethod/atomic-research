@@ -2,9 +2,12 @@
 
 > An AI agent research team that decides what is worth a researcher's attention — and defends every decision out loud.
 
+Most tools answer *"what is new?"* Atomic Research answers *"what is worth your attention, and here is the argument for it."
+
+* In a world optimizing for more and faster, we optimized for **right**.
+
 ## Project Description
 
-Atomic Research builds an AI agent research team that decides what is worth a researcher's attention, and defends every decision out loud.
 
 Everyone else is racing to do research faster. We think that is the wrong race. More is published each day than any researcher can read, and discovery tools made it worse. They optimize for recall — embeddings, cosine similarity, *"here are 200 papers that matched your keywords."* That is a faster firehose, and a researcher buried in relevant-ish results is still buried.
 
@@ -18,11 +21,7 @@ Atomic Research runs a **council**. Specialized agents each read a paper against
 
 A council that decides what matters to you is only as good as its picture of you, so we refused to let it guess. Before it runs, Atomic Research reads your actual body of work and grounds its understanding of you in real papers. Every claim about your research threads has to cite the specific publications that prove it. Then a separate validation agent runs a gauntlet: it checks each claim against your real corpus and rejects any fabricated lineage before it can reach a recommendation.
 
-**One agent makes the case, another agent proves it is real.**
 
----
-
-Most tools answer *"what is new?"* Atomic Research answers *"what is worth your attention, and here is the argument for it."* In a world optimizing for more and faster, we optimized for **right**.
 
 ## Demo Video
 
