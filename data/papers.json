@@ -1,0 +1,515 @@
+[
+  {
+    "paper_id": "PAP-R1-01",
+    "openalex_id": "W1000101synthetic",
+    "arxiv_id": "2602.00101synthetic",
+    "title": "Steering Language Model Behaviour via Sparse Autoencoder Feature Interventions",
+    "abstract": "We demonstrate that sparse autoencoder (SAE) features trained on residual stream activations of a large language model can be used to precisely steer model outputs at inference time. By identifying features corresponding to target concepts — including factual associations, syntactic roles, and sentiment — and linearly adding them to the residual stream at selected layers, we produce reliable, targeted behavioural changes with minimal disruption to unrelated capabilities. We ablate the effect of SAE dictionary size, layer depth, and feature magnitude on steering fidelity across six benchmark tasks. Our results show that SAE-based steering outperforms activation addition baselines in precision and side-effect containment, and that features learned with broader dictionaries generalise better across prompts. We release the feature library and steering scripts.",
+    "authors": [{ "name": "Lin Zhao", "openalex_id": "A1000101synthetic" }, { "name": "Tom Everett", "openalex_id": "A1000102synthetic" }],
+    "publication_date": "2026-01-15",
+    "year": 2026,
+    "arxiv_categories": ["cs.LG", "cs.CL"],
+    "topics": [
+      { "id": "T10001synthetic", "display_name": "Mechanistic interpretability", "score": 0.94 },
+      { "id": "T10002synthetic", "display_name": "Sparse autoencoders", "score": 0.96 },
+      { "id": "T10004synthetic", "display_name": "Feature steering", "score": 0.97 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-02",
+    "openalex_id": "W1000102synthetic",
+    "arxiv_id": "2603.00102synthetic",
+    "title": "Identifying and Ablating Induction-Like Circuits in Decoder-Only Transformers",
+    "abstract": "We extend circuit-level analysis to decoder-only transformers, identifying the attention heads and MLP layers that implement induction-like in-context copying. Using activation patching and attention head knockout experiments, we localise the minimal circuit sufficient to replicate induction behaviour on controlled token sequences. We show that this circuit is highly conserved across model scales from 70M to 7B parameters, and that ablating a small set of early-layer attention heads degrades in-context learning performance substantially while leaving other capabilities intact. Our methodology provides a template for causal circuit identification in autoregressive models.",
+    "authors": [{ "name": "Priya Singh", "openalex_id": "A1000103synthetic" }, { "name": "Jakob Müller", "openalex_id": "A1000104synthetic" }],
+    "publication_date": "2026-03-10",
+    "year": 2026,
+    "arxiv_categories": ["cs.LG", "cs.CL"],
+    "topics": [
+      { "id": "T10001synthetic", "display_name": "Mechanistic interpretability", "score": 0.93 },
+      { "id": "T10003synthetic", "display_name": "Circuit analysis in neural networks", "score": 0.95 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-03",
+    "openalex_id": "W1000103synthetic",
+    "arxiv_id": "2601.00103synthetic",
+    "title": "Revisiting the Superposition Hypothesis: Feature Geometry in Overcomplete Representations",
+    "abstract": "The superposition hypothesis posits that neural networks represent more features than they have dimensions by storing them as near-orthogonal directions in a lower-dimensional space. We provide a systematic empirical test of this hypothesis across a range of transformer widths and training regimes, measuring the angular separation of recovered features, their interference under superposition, and the conditions under which models transition from monosemantic to polysemantic neurons. We find that superposition density increases with model capacity utilisation and that sparse training objectives reduce interference at the cost of representational diversity. Our analysis reveals a geometric phase transition in feature organisation as model size scales.",
+    "authors": [{ "name": "Claire Dupont", "openalex_id": "A1000105synthetic" }],
+    "publication_date": "2025-12-20",
+    "year": 2025,
+    "arxiv_categories": ["cs.LG"],
+    "topics": [
+      { "id": "T10001synthetic", "display_name": "Mechanistic interpretability", "score": 0.91 },
+      { "id": "T10005synthetic", "display_name": "Superposition hypothesis", "score": 0.97 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-04",
+    "openalex_id": "W1000104synthetic",
+    "arxiv_id": "2604.00104synthetic",
+    "title": "Sparse Autoencoder Features Transfer Across Modalities in Vision-Language Models",
+    "abstract": "We train sparse autoencoders on the joint residual streams of a vision-language model and find that features learned on text inputs transfer meaningfully to vision inputs, and vice versa. Cross-modal feature transfer enables targeted steering: activating a 'roundness' feature derived from image activations produces consistent descriptions of roundness in generated text. We evaluate transfer quality using feature activation cosine similarity and downstream steering effectiveness across twelve cross-modal concept pairs. Our findings suggest that SAE-based interpretability methods developed for language models extend naturally to multimodal settings.",
+    "authors": [{ "name": "Wei Chen", "openalex_id": "A1000106synthetic" }, { "name": "Sara Okonkwo", "openalex_id": "A1000107synthetic" }],
+    "publication_date": "2026-02-08",
+    "year": 2026,
+    "arxiv_categories": ["cs.CV", "cs.LG", "cs.CL"],
+    "topics": [
+      { "id": "T10002synthetic", "display_name": "Sparse autoencoders", "score": 0.92 },
+      { "id": "T10004synthetic", "display_name": "Feature steering", "score": 0.89 },
+      { "id": "T10001synthetic", "display_name": "Mechanistic interpretability", "score": 0.85 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-05",
+    "openalex_id": "W1000105synthetic",
+    "arxiv_id": "2512.00105synthetic",
+    "title": "Causal Tracing at Scale: Activation Patching Across Model Families",
+    "abstract": "Activation patching (causal tracing) has been used to identify where factual associations are stored in specific transformer checkpoints. We extend this methodology to eleven model families, ranging from 1B to 70B parameters, using a unified benchmark of 8,000 factual recall prompts. We find consistent localisation of factual associations to mid-layer MLP modules across all families, with notable variance in the breadth of responsible layers. We also characterise the conditions under which patching results are robust versus sensitive to prompt phrasing, and propose a patching stability score to quantify this. All code, prompts, and results are released.",
+    "authors": [{ "name": "Daniel Reeves", "openalex_id": "A1000108synthetic" }, { "name": "Mei Lin", "openalex_id": "A1000109synthetic" }],
+    "publication_date": "2025-12-14",
+    "year": 2025,
+    "arxiv_categories": ["cs.LG", "cs.CL"],
+    "topics": [
+      { "id": "T10001synthetic", "display_name": "Mechanistic interpretability", "score": 0.88 },
+      { "id": "T10003synthetic", "display_name": "Circuit analysis in neural networks", "score": 0.84 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-06",
+    "openalex_id": "W1000106synthetic",
+    "arxiv_id": "2604.00106synthetic",
+    "title": "Probing Multilingual Representations for Typological Feature Encoding",
+    "abstract": "We use linear probing to test whether multilingual transformers encode typological features — word order, morphological type, and head-directionality — in their intermediate representations. Training lightweight probes on the hidden states of mBERT and XLM-R across 42 typologically diverse languages, we find that typological features are consistently decodable from mid-to-late layers, with probe accuracy well above chance. The probing signal is stronger in languages with more training data but remains meaningful for low-resource languages. Our results contribute to understanding cross-lingual transfer by identifying which structural properties are shared in the multilingual representation space.",
+    "authors": [{ "name": "Fatima Al-Rashid", "openalex_id": "A1000110synthetic" }, { "name": "Ben Kovacs", "openalex_id": "A1000111synthetic" }],
+    "publication_date": "2026-04-05",
+    "year": 2026,
+    "arxiv_categories": ["cs.CL"],
+    "topics": [
+      { "id": "T10001synthetic", "display_name": "Mechanistic interpretability", "score": 0.52 },
+      { "id": "T10006synthetic", "display_name": "Multilingual NLP", "score": 0.88 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-07",
+    "openalex_id": "W1000107synthetic",
+    "arxiv_id": "2602.00107synthetic",
+    "title": "Attention Head Taxonomy: A Functional Classification of Heads in GPT-Style Models",
+    "abstract": "We systematically classify attention heads in a suite of GPT-style models by the algorithmic functions they implement: induction, copying, attending to delimiters, positional boosting, and suppression. Using a combination of attention pattern visualisation, activation patching, and output weight analysis, we build a functional taxonomy of 1,400 heads across five model scales. We find that functional head types arise consistently across scales and that the ratio of induction to copying heads shifts with model depth. The taxonomy provides a structured vocabulary for circuit analysis and a baseline for evaluating interpretability methods that aim to identify head roles automatically.",
+    "authors": [{ "name": "Alex Torres", "openalex_id": "A1000112synthetic" }, { "name": "Ingrid Nkosi", "openalex_id": "A1000113synthetic" }],
+    "publication_date": "2026-02-22",
+    "year": 2026,
+    "arxiv_categories": ["cs.LG", "cs.CL"],
+    "topics": [
+      { "id": "T10003synthetic", "display_name": "Circuit analysis in neural networks", "score": 0.94 },
+      { "id": "T10001synthetic", "display_name": "Mechanistic interpretability", "score": 0.90 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-08",
+    "openalex_id": "W1000108synthetic",
+    "arxiv_id": "2603.00108synthetic",
+    "title": "Benchmarking Post-Hoc Explainability Methods for NLP: SHAP, LIME, and Integrated Gradients",
+    "abstract": "We present a systematic benchmark of three post-hoc explainability methods — SHAP, LIME, and integrated gradients — applied to text classification and question answering models. Evaluating faithfulness (via sufficiency and comprehensiveness), stability under paraphrase, and human agreement, we find that integrated gradients consistently outperforms the others on faithfulness while SHAP yields the most stable explanations across paraphrases. Human agreement is low for all three methods, suggesting that token-level attribution explanations are misaligned with human reasoning. Our benchmark provides standardised evaluation code and a suite of adversarial test cases for future explainability research.",
+    "authors": [{ "name": "Yuki Tanaka", "openalex_id": "A1000114synthetic" }, { "name": "Carlos Ruiz", "openalex_id": "A1000115synthetic" }],
+    "publication_date": "2026-03-28",
+    "year": 2026,
+    "arxiv_categories": ["cs.CL", "cs.AI"],
+    "topics": [
+      { "id": "T10007synthetic", "display_name": "Explainability and interpretability methods", "score": 0.90 },
+      { "id": "T10008synthetic", "display_name": "Feature attribution", "score": 0.85 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-09",
+    "openalex_id": "W1000109synthetic",
+    "arxiv_id": "2605.00109synthetic",
+    "title": "Knowledge Graph Embeddings for Open-Domain Question Answering Fact Retrieval",
+    "abstract": "We explore whether knowledge graph embeddings — TransE, RotatE, and ComplEx — can serve as an effective retrieval mechanism for factual question answering in open-domain settings. By indexing Wikidata triples with dense embeddings and retrieving candidate facts via approximate nearest-neighbour search, we build a retrieval-augmented QA system that answers single-hop and two-hop factual questions. Evaluated on TriviaQA and WebQuestions, the KG-embedding retrieval approach scores below standard dense passage retrieval but outperforms sparse retrieval for relation-typed queries. We analyse failure modes and find that incomplete KGs are the dominant bottleneck.",
+    "authors": [{ "name": "Lena Brandt", "openalex_id": "A1000116synthetic" }],
+    "publication_date": "2026-05-02",
+    "year": 2026,
+    "arxiv_categories": ["cs.CL", "cs.IR"],
+    "topics": [
+      { "id": "T10009synthetic", "display_name": "Knowledge graph embeddings", "score": 0.92 },
+      { "id": "T10010synthetic", "display_name": "Open-domain question answering", "score": 0.88 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R1-10",
+    "openalex_id": "W1000110synthetic",
+    "arxiv_id": "2604.00110synthetic",
+    "title": "Heterogeneous GPU Cluster Scheduling for Large-Scale Distributed Training",
+    "abstract": "We present HeteroSched, a cluster scheduler designed for distributed deep learning training workloads across heterogeneous GPU fleets comprising A100, H100, and older V100 nodes. HeteroSched models per-layer communication overhead and memory pressure to produce gang-scheduling assignments that minimise idle GPU time and stragglers. Evaluated on a 512-GPU simulation with 24 concurrent training jobs, HeteroSched reduces average job completion time by 31% compared to state-of-the-art homogeneous-assumption schedulers and improves cluster utilisation by 18%. We also demonstrate online re-scheduling to handle node failures without full job restart.",
+    "authors": [{ "name": "Sam Okoro", "openalex_id": "A1000117synthetic" }, { "name": "Petra Novak", "openalex_id": "A1000118synthetic" }],
+    "publication_date": "2026-04-22",
+    "year": 2026,
+    "arxiv_categories": ["cs.DC", "cs.LG"],
+    "topics": [
+      { "id": "T10011synthetic", "display_name": "Distributed systems", "score": 0.94 },
+      { "id": "T10012synthetic", "display_name": "Cluster scheduling", "score": 0.92 }
+    ],
+    "citation_count": 0,
+    "is_open_access": false
+  },
+  {
+    "paper_id": "PAP-R2-01",
+    "openalex_id": "W2000201synthetic",
+    "arxiv_id": "2601.00201synthetic",
+    "title": "High-Threshold Surface Code Architecture with Correlated Pauli Noise",
+    "abstract": "We introduce a surface code architecture optimised for correlated Pauli noise, a dominant error model in superconducting qubit arrays where crosstalk produces spatially correlated errors. By redesigning the syndrome extraction schedule and pairing it with a matching decoder that accounts for spatial correlations in the error model, we raise the effective threshold from 0.72% to 1.14% under a physically motivated correlated noise model. We validate the threshold improvement using Monte Carlo simulations at code distances d = 5 through d = 21 and project logical error rates achievable at hardware error rates of 0.3%. Our architecture requires no additional physical qubits beyond standard surface code overhead.",
+    "authors": [{ "name": "Hana Yoshida", "openalex_id": "A2000201synthetic" }, { "name": "Roberto Ferri", "openalex_id": "A2000202synthetic" }],
+    "publication_date": "2026-01-08",
+    "year": 2026,
+    "arxiv_categories": ["quant-ph"],
+    "topics": [
+      { "id": "T20001synthetic", "display_name": "Quantum error correction", "score": 0.97 },
+      { "id": "T20002synthetic", "display_name": "Surface codes", "score": 0.96 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-02",
+    "openalex_id": "W2000202synthetic",
+    "arxiv_id": "2602.00202synthetic",
+    "title": "Reducing Magic State Distillation Overhead via Concatenated Reed-Muller Codes",
+    "abstract": "Magic state distillation is the dominant resource cost in fault-tolerant quantum computation with stabiliser codes, requiring thousands of physical qubits per logical T gate. We present a distillation protocol using concatenated Reed-Muller codes that achieves the target fidelity for a logical T gate with 40% fewer physical qubits than the leading 15-to-1 protocol at equivalent output error rates. We derive the resource overhead analytically and verify with circuit-level noise simulations at error rates between 10^-3 and 10^-4. The protocol is compatible with standard surface code architectures and does not require hardware modifications.",
+    "authors": [{ "name": "Yasmin Al-Nasser", "openalex_id": "A2000203synthetic" }, { "name": "David Park", "openalex_id": "A2000204synthetic" }],
+    "publication_date": "2026-02-17",
+    "year": 2026,
+    "arxiv_categories": ["quant-ph"],
+    "topics": [
+      { "id": "T20004synthetic", "display_name": "Magic state distillation", "score": 0.97 },
+      { "id": "T20003synthetic", "display_name": "Fault-tolerant quantum computation", "score": 0.93 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-03",
+    "openalex_id": "W2000203synthetic",
+    "arxiv_id": "2603.00203synthetic",
+    "title": "Neural Minimum-Weight Perfect Matching for Surface Code Decoding",
+    "abstract": "Minimum-weight perfect matching (MWPM) is the standard decoder for surface codes, but its runtime scales super-linearly with code distance, creating a latency bottleneck for real-time decoding. We train a graph neural network (GNN) to approximate MWPM on syndrome graphs, achieving decoding latency independent of code distance at distances tested up to d = 25. The GNN decoder matches MWPM logical error rates to within 3% at all tested physical error rates, while running 8× faster at d = 15. We characterise the decoder's robustness to distribution shift between training and deployment noise models.",
+    "authors": [{ "name": "Olena Koval", "openalex_id": "A2000205synthetic" }, { "name": "James Lin", "openalex_id": "A2000206synthetic" }],
+    "publication_date": "2026-03-05",
+    "year": 2026,
+    "arxiv_categories": ["quant-ph", "cs.LG"],
+    "topics": [
+      { "id": "T20001synthetic", "display_name": "Quantum error correction", "score": 0.93 },
+      { "id": "T20005synthetic", "display_name": "Quantum decoding", "score": 0.96 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-04",
+    "openalex_id": "W2000204synthetic",
+    "arxiv_id": "2601.00204synthetic",
+    "title": "Bridged Magic State Distillation: Interpolating Between 15-to-1 and 20-to-4 Protocols",
+    "abstract": "We introduce bridged magic state distillation, a family of protocols that interpolates continuously between the standard 15-to-1 and 20-to-4 distillation protocols by sharing ancilla resources across rounds. For a target output error of 10^-10, the bridged protocol reduces the total qubit-time cost by 25% relative to the best fixed protocol, at the cost of a 12% increase in circuit depth. We provide a resource-counting framework that allows practitioners to choose the optimal bridging parameter for their hardware constraints and target error rate. The protocols are fully described in Clifford + T gate sets compatible with planar connectivity.",
+    "authors": [{ "name": "Amir Goldstein", "openalex_id": "A2000207synthetic" }],
+    "publication_date": "2026-01-22",
+    "year": 2026,
+    "arxiv_categories": ["quant-ph"],
+    "topics": [
+      { "id": "T20004synthetic", "display_name": "Magic state distillation", "score": 0.97 },
+      { "id": "T20003synthetic", "display_name": "Fault-tolerant quantum computation", "score": 0.88 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-05",
+    "openalex_id": "W2000205synthetic",
+    "arxiv_id": "2512.00205synthetic",
+    "title": "Transversal CNOT Implementation in 3D Color Codes with Planar Projections",
+    "abstract": "3D color codes support transversal CNOT gates, enabling fault-tolerant two-qubit operations without magic state distillation overhead. However, 3D structures are difficult to map to planar hardware. We present a construction that implements the logical CNOT transversally within a planar projection of a 3D color code, using a sequence of local operations that preserves the transversality guarantee. We characterise the resource overhead — physical qubit count and gate depth — relative to surface code implementations using magic state distillation, and show that our approach is advantageous at code distances d ≥ 9 for hardware error rates below 0.5%.",
+    "authors": [{ "name": "Sophie Laurent", "openalex_id": "A2000208synthetic" }, { "name": "Haruto Nakamura", "openalex_id": "A2000209synthetic" }],
+    "publication_date": "2025-12-14",
+    "year": 2025,
+    "arxiv_categories": ["quant-ph"],
+    "topics": [
+      { "id": "T20003synthetic", "display_name": "Fault-tolerant quantum computation", "score": 0.92 },
+      { "id": "T20001synthetic", "display_name": "Quantum error correction", "score": 0.85 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-06",
+    "openalex_id": "W2000206synthetic",
+    "arxiv_id": "2604.00206synthetic",
+    "title": "Threshold Theorem Generalisation for Biased Pauli Noise in Planar Codes",
+    "abstract": "The standard threshold theorem for quantum error correction assumes depolarising noise. We derive a generalised threshold theorem for biased Pauli noise — noise dominated by Z errors — in a class of planar codes that includes surface codes and XZZX codes. Our analysis shows that the effective threshold under biased noise can be substantially higher than under depolarising noise when the code is oriented to exploit the bias. We compute thresholds numerically for bias ratios from 1 to 1000 and show that XZZX surface codes achieve thresholds above 3% at bias ratio 100. These results provide rigorous theoretical backing for recent experimental results on biased-noise superconducting platforms.",
+    "authors": [{ "name": "Nadia Cheng", "openalex_id": "A2000210synthetic" }, { "name": "Victor Sousa", "openalex_id": "A2000211synthetic" }],
+    "publication_date": "2026-04-12",
+    "year": 2026,
+    "arxiv_categories": ["quant-ph"],
+    "topics": [
+      { "id": "T20001synthetic", "display_name": "Quantum error correction", "score": 0.91 },
+      { "id": "T20002synthetic", "display_name": "Surface codes", "score": 0.88 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-07",
+    "openalex_id": "W2000207synthetic",
+    "arxiv_id": "2602.00207synthetic",
+    "title": "Zero-Noise Extrapolation for Quantum Error Mitigation on NISQ Circuits",
+    "abstract": "Zero-noise extrapolation (ZNE) mitigates the effect of hardware noise on NISQ circuits by intentionally scaling noise levels and extrapolating to the zero-noise limit. We present an adaptive ZNE framework that selects noise scaling factors and extrapolation models (polynomial, exponential, Richardson) based on the circuit structure and target observable. On 27-qubit circuits from the quantum chemistry and combinatorial optimisation benchmarks, adaptive ZNE reduces bias in expectation value estimates by 40–65% compared to fixed-order Richardson extrapolation, at comparable circuit overhead. We also characterise the conditions under which ZNE fails, particularly for deeply entangled circuits where the noise-scaling assumption breaks down.",
+    "authors": [{ "name": "Kenji Watanabe", "openalex_id": "A2000212synthetic" }, { "name": "Eva Lindqvist", "openalex_id": "A2000213synthetic" }],
+    "publication_date": "2026-02-28",
+    "year": 2026,
+    "arxiv_categories": ["quant-ph"],
+    "topics": [
+      { "id": "T20006synthetic", "display_name": "Quantum error mitigation", "score": 0.95 },
+      { "id": "T20007synthetic", "display_name": "NISQ computing", "score": 0.88 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-08",
+    "openalex_id": "W2000208synthetic",
+    "arxiv_id": "2603.00208synthetic",
+    "title": "Variational Quantum Eigensolver for Ground State Energies of Small Molecules on NISQ Hardware",
+    "abstract": "We implement the variational quantum eigensolver (VQE) for computing ground state energies of H2, LiH, and BeH2 on 5-to-12-qubit NISQ processors. We compare hardware-efficient and chemically motivated ansatz families, finding that the unitary coupled cluster ansatz achieves chemical accuracy (< 1 kcal/mol error) on H2 and LiH with fewer variational parameters than hardware-efficient alternatives, but is impractical for BeH2 without error mitigation. We apply ZNE to the hardware-efficient ansatz for BeH2, recovering near-chemical-accuracy results. Our results quantify the current gap between VQE fidelity and that required for industrially relevant molecules.",
+    "authors": [{ "name": "Maria Hoffmann", "openalex_id": "A2000214synthetic" }, { "name": "Raj Patel", "openalex_id": "A2000215synthetic" }],
+    "publication_date": "2026-03-20",
+    "year": 2026,
+    "arxiv_categories": ["quant-ph", "physics.chem-ph"],
+    "topics": [
+      { "id": "T20007synthetic", "display_name": "NISQ computing", "score": 0.90 },
+      { "id": "T20008synthetic", "display_name": "Quantum chemistry", "score": 0.88 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-09",
+    "openalex_id": "W2000209synthetic",
+    "arxiv_id": "2605.00209synthetic",
+    "title": "Quantum Kernel Methods for Classification on Near-Term Hardware",
+    "abstract": "Quantum kernel methods use quantum circuits to compute kernel functions between data points, with the potential to access feature spaces intractable classically. We evaluate quantum kernel support vector machines (QK-SVM) on four standard binary classification datasets using circuits of 8–16 qubits on real superconducting hardware. We find that quantum kernels underperform classical RBF kernels on all datasets at current hardware noise levels, and that the trainable quantum kernel (data re-uploading) approach narrows the gap at the cost of additional circuit depth. We analyse the conditions under which quantum kernels are expected to provide advantage and find that none of our test datasets satisfy them.",
+    "authors": [{ "name": "Thomas Grey", "openalex_id": "A2000216synthetic" }, { "name": "Amara Diallo", "openalex_id": "A2000217synthetic" }],
+    "publication_date": "2026-05-10",
+    "year": 2026,
+    "arxiv_categories": ["quant-ph", "cs.LG"],
+    "topics": [
+      { "id": "T20007synthetic", "display_name": "NISQ computing", "score": 0.82 },
+      { "id": "T20009synthetic", "display_name": "Quantum machine learning", "score": 0.90 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R2-10",
+    "openalex_id": "W2000210synthetic",
+    "arxiv_id": "2604.00210synthetic",
+    "title": "Federated Learning with Differential Privacy for Cross-Silo Healthcare Data",
+    "abstract": "We present a federated learning system for training clinical prediction models across hospital silos without sharing patient data. The system combines secure aggregation with DP-SGD (differentially private stochastic gradient descent) to provide formal privacy guarantees with a privacy budget of ε = 2. Evaluated on mortality prediction from EHR data across five simulated hospital silos, the federated model achieves AUROC within 2% of a centralised baseline while satisfying the privacy budget, and outperforms local models trained on individual silo data alone. We also study the effect of non-IID data distributions across silos on convergence and find that federated averaging is robust for the degree of heterogeneity typical in healthcare settings.",
+    "authors": [{ "name": "Isabel Costa", "openalex_id": "A2000218synthetic" }, { "name": "Finn Johansson", "openalex_id": "A2000219synthetic" }],
+    "publication_date": "2026-04-30",
+    "year": 2026,
+    "arxiv_categories": ["cs.LG", "cs.CR"],
+    "topics": [
+      { "id": "T20010synthetic", "display_name": "Federated learning", "score": 0.94 },
+      { "id": "T20011synthetic", "display_name": "Differential privacy", "score": 0.90 }
+    ],
+    "citation_count": 0,
+    "is_open_access": false
+  },
+  {
+    "paper_id": "PAP-R3-01",
+    "openalex_id": "W3000301synthetic",
+    "arxiv_id": "2601.00301synthetic",
+    "title": "Contrastive Dimensionality Reduction for Single-Cell RNA-Seq Preserves Rare Cell Type Structure",
+    "abstract": "Standard dimensionality reduction methods for single-cell RNA sequencing data (PCA, UMAP, t-SNE) often compress rare cell types into unresolved clusters. We present contrastive scDR, a dimensionality reduction method that explicitly contrasts background (abundant cell type) variation against foreground (rare cell type) signal to produce lower-dimensional embeddings that preserve rare population structure. Evaluated on five published scRNA-seq datasets with independently validated rare populations, contrastive scDR recovers rare cell types at a 23% higher silhouette coefficient than UMAP and enables downstream marker gene identification with fewer false negatives. The method is implemented as a Scanpy-compatible module.",
+    "authors": [{ "name": "Luisa Santos", "openalex_id": "A3000301synthetic" }, { "name": "Peng Zhang", "openalex_id": "A3000302synthetic" }],
+    "publication_date": "2026-01-12",
+    "year": 2026,
+    "arxiv_categories": ["q-bio.GN", "cs.LG"],
+    "topics": [
+      { "id": "T30001synthetic", "display_name": "Single-cell RNA sequencing", "score": 0.96 },
+      { "id": "T30006synthetic", "display_name": "Dimensionality reduction for genomics", "score": 0.93 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-02",
+    "openalex_id": "W3000302synthetic",
+    "arxiv_id": "2602.00302synthetic",
+    "title": "Scalable Gene Regulatory Network Inference from Single-Cell Data via Sparse Graphical Lasso",
+    "abstract": "Gene regulatory network (GRN) inference from scRNA-seq data is confounded by dropout, cell-cycle effects, and the high-dimensional nature of the data. We present scGRNlasso, a sparse graphical Lasso approach that jointly models gene expression covariance and known transcription factor binding motifs as regularisation constraints. On four GRN benchmarks derived from CRISPR perturbation data, scGRNlasso recovers 30–45% more true regulatory edges than GENIE3 and SCENIC at equivalent false positive rates, while scaling to 50,000 cells with feasible runtime. We also demonstrate application to reconstructing the regulatory network governing T-cell activation from a paired scRNA-seq and scATAC-seq dataset.",
+    "authors": [{ "name": "Kwame Asante", "openalex_id": "A3000303synthetic" }, { "name": "Julia Richter", "openalex_id": "A3000304synthetic" }],
+    "publication_date": "2026-02-25",
+    "year": 2026,
+    "arxiv_categories": ["q-bio.GN", "stat.ML"],
+    "topics": [
+      { "id": "T30002synthetic", "display_name": "Gene regulatory network inference", "score": 0.97 },
+      { "id": "T30001synthetic", "display_name": "Single-cell RNA sequencing", "score": 0.88 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-03",
+    "openalex_id": "W3000303synthetic",
+    "arxiv_id": "2603.00303synthetic",
+    "title": "Foundation Model Fine-Tuning for Robust Single-Cell Type Annotation Across Tissues",
+    "abstract": "Single-cell type annotation is typically done by manual marker gene inspection or by training cell-type classifiers per dataset. We fine-tune a pre-trained single-cell foundation model (scBERT architecture) on a curated multi-tissue reference atlas of 2.1M cells from 48 tissue types, producing a universal cell-type annotator. Evaluated on 12 held-out datasets spanning 6 tissue compartments, the fine-tuned model achieves 91% macro-F1 on known cell types and 74% on rare subtypes not seen during fine-tuning, outperforming per-dataset trained classifiers by 11–18 percentage points. The model handles batch effects without explicit correction.",
+    "authors": [{ "name": "Nina Bosworth", "openalex_id": "A3000305synthetic" }, { "name": "Yao Liu", "openalex_id": "A3000306synthetic" }],
+    "publication_date": "2026-03-15",
+    "year": 2026,
+    "arxiv_categories": ["q-bio.GN", "cs.LG"],
+    "topics": [
+      { "id": "T30001synthetic", "display_name": "Single-cell RNA sequencing", "score": 0.90 },
+      { "id": "T30007synthetic", "display_name": "Cell type annotation", "score": 0.95 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-04",
+    "openalex_id": "W3000304synthetic",
+    "arxiv_id": "2601.00304synthetic",
+    "title": "Peak Calling and Differential Accessibility Analysis for Single-Cell ATAC-Seq",
+    "abstract": "Single-cell ATAC-seq (scATAC-seq) measures chromatin accessibility at single-cell resolution, but peak calling — identifying open chromatin regions — is challenging due to sparsity and cell-to-cell variability. We present scPeak, a hierarchical peak caller that aggregates per-cell fragment coverage in a cell-type-aware manner, improving sensitivity for low-abundance cell populations by 35% compared to fixed-pseudobulk approaches. We also introduce a differential accessibility test calibrated for single-cell sparsity, yielding better-controlled false discovery rates than applying bulk ATAC-seq methods to pseudobulk profiles. We validate both components on matched scRNA-seq/scATAC-seq multiome datasets where ground truth regulatory regions are known.",
+    "authors": [{ "name": "Diego Morales", "openalex_id": "A3000307synthetic" }, { "name": "Suki Watanabe", "openalex_id": "A3000308synthetic" }],
+    "publication_date": "2026-01-30",
+    "year": 2026,
+    "arxiv_categories": ["q-bio.GN"],
+    "topics": [
+      { "id": "T30004synthetic", "display_name": "Chromatin accessibility", "score": 0.96 },
+      { "id": "T30001synthetic", "display_name": "Single-cell RNA sequencing", "score": 0.72 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-05",
+    "openalex_id": "W3000305synthetic",
+    "arxiv_id": "2512.00305synthetic",
+    "title": "Optimal Transport Pseudotime for Recovering Branching Differentiation Trajectories",
+    "abstract": "Pseudotime trajectory inference assigns a developmental ordering to single cells, but standard graph-based methods struggle with branching trajectories and discontinuous manifolds. We present OTPseudotime, which frames trajectory inference as an optimal transport problem between a root cell distribution and observed cell distributions across time points. On benchmarks with known ground truth trajectories from three model organisms, OTPseudotime recovers branching points with 28% lower Kendall tau error than Monocle3 and handles discontinuous differentiation jumps that graph-diffusion methods miss entirely. The method requires only a small number of root cells as input and is robust to batch effects without explicit correction.",
+    "authors": [{ "name": "Antoine Renard", "openalex_id": "A3000309synthetic" }, { "name": "Mara Hoffman", "openalex_id": "A3000310synthetic" }],
+    "publication_date": "2025-12-22",
+    "year": 2025,
+    "arxiv_categories": ["q-bio.GN", "stat.ML"],
+    "topics": [
+      { "id": "T30003synthetic", "display_name": "Cell trajectory inference", "score": 0.97 },
+      { "id": "T30001synthetic", "display_name": "Single-cell RNA sequencing", "score": 0.85 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-06",
+    "openalex_id": "W3000306synthetic",
+    "arxiv_id": "2604.00306synthetic",
+    "title": "Multimodal Single-Cell Integration via Cross-Modal Variational Autoencoders",
+    "abstract": "Joint analysis of scRNA-seq and scATAC-seq profiles from the same cells enables correlation of gene expression with chromatin accessibility, but paired data is expensive and unpaired integration methods often introduce alignment artifacts. We present scMVAE, a cross-modal variational autoencoder that learns a shared latent space from both paired and unpaired single-cell multiome data. On benchmarks using paired 10x Multiome datasets from immune and stem cell contexts, scMVAE recovers cell type co-embeddings with 15% higher adjusted Rand index than WNN-based approaches and enables accurate cross-modal imputation (predicting RNA profiles from ATAC-seq inputs). The model learns biologically interpretable dimensions corresponding to known regulatory axes.",
+    "authors": [{ "name": "Elena Fedorov", "openalex_id": "A3000311synthetic" }, { "name": "Kofi Mensah", "openalex_id": "A3000312synthetic" }],
+    "publication_date": "2026-04-18",
+    "year": 2026,
+    "arxiv_categories": ["q-bio.GN", "cs.LG"],
+    "topics": [
+      { "id": "T30004synthetic", "display_name": "Chromatin accessibility", "score": 0.88 },
+      { "id": "T30001synthetic", "display_name": "Single-cell RNA sequencing", "score": 0.90 },
+      { "id": "T30003synthetic", "display_name": "Cell trajectory inference", "score": 0.78 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-07",
+    "openalex_id": "W3000307synthetic",
+    "arxiv_id": "2602.00307synthetic",
+    "title": "Graph-Based Spatial Transcriptomics Deconvolution for Tissue Organisation Mapping",
+    "abstract": "Spatial transcriptomics measures gene expression at spatially resolved locations in tissue sections, but current protocols capture mixtures of cell types per spot. We present SpatialDeconv-GNN, a graph neural network deconvolution method that uses the spatial neighbourhood structure of a tissue section to regularise cell type proportion estimates. Evaluated on synthetic mixtures with known ground truth and on a Visium breast cancer dataset with matched single-cell references, SpatialDeconv-GNN reduces mean absolute error by 22% versus RCTD and reveals tissue organisation patterns invisible to non-spatial deconvolution. The method is robust to reference atlas size and handles novel cell types via an unknown-fraction parameter.",
+    "authors": [{ "name": "Camille Bernard", "openalex_id": "A3000313synthetic" }, { "name": "Takuya Endo", "openalex_id": "A3000314synthetic" }],
+    "publication_date": "2026-02-10",
+    "year": 2026,
+    "arxiv_categories": ["q-bio.GN", "cs.LG"],
+    "topics": [
+      { "id": "T30008synthetic", "display_name": "Spatial transcriptomics", "score": 0.95 },
+      { "id": "T30001synthetic", "display_name": "Single-cell RNA sequencing", "score": 0.75 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-08",
+    "openalex_id": "W3000308synthetic",
+    "arxiv_id": "2603.00308synthetic",
+    "title": "Genome-Wide CRISPR Screens for Cell Fate Regulators in Embryonic Stem Cell Differentiation",
+    "abstract": "We conduct two complementary genome-wide CRISPR screens — a positive selection screen for pluripotency maintenance and a negative selection screen for differentiation regulators — in human embryonic stem cells undergoing directed neural differentiation. From 18,000 gene knockouts, we identify 47 high-confidence regulators of cell fate, including 12 not previously implicated in neural differentiation. We validate the top 15 hits by individual knockout and RNA-seq profiling, confirming cell-fate phenotypes for 13. The hits are enriched for chromatin remodelling factors and RNA-binding proteins rather than canonical transcription factors, suggesting a post-transcriptional regulatory layer in fate commitment.",
+    "authors": [{ "name": "Beatrice Osei", "openalex_id": "A3000315synthetic" }, { "name": "Lars Bergstrom", "openalex_id": "A3000316synthetic" }],
+    "publication_date": "2026-03-25",
+    "year": 2026,
+    "arxiv_categories": ["q-bio.GN", "q-bio.MN"],
+    "topics": [
+      { "id": "T30009synthetic", "display_name": "CRISPR screens", "score": 0.94 },
+      { "id": "T30010synthetic", "display_name": "Cell fate determination", "score": 0.91 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-09",
+    "openalex_id": "W3000309synthetic",
+    "arxiv_id": "2605.00309synthetic",
+    "title": "AlphaFold3 Predictions for Intrinsically Disordered Protein Interaction Sites",
+    "abstract": "Intrinsically disordered regions (IDRs) mediate many protein-protein interactions critical to cellular signalling, but their structural flexibility confounds conventional structure prediction. We evaluate AlphaFold3's predictions for 340 IDR-mediated interactions from the DisProt database, comparing predicted contact maps with available NMR ensembles and co-evolutionary signal. AlphaFold3 achieves 61% precision on residue-level contacts for IDR-partner interfaces, a 28% improvement over AlphaFold2 at the same threshold, but systematically underestimates conformational entropy. We propose a metric — predicted local disorder score — that correlates with experimental flexibility and provides a practical filter for downstream docking simulations.",
+    "authors": [{ "name": "Fatou Diallo", "openalex_id": "A3000317synthetic" }, { "name": "Christoph Meier", "openalex_id": "A3000318synthetic" }],
+    "publication_date": "2026-05-08",
+    "year": 2026,
+    "arxiv_categories": ["q-bio.BM"],
+    "topics": [
+      { "id": "T30011synthetic", "display_name": "Protein structure prediction", "score": 0.94 },
+      { "id": "T30012synthetic", "display_name": "Intrinsically disordered proteins", "score": 0.91 }
+    ],
+    "citation_count": 0,
+    "is_open_access": true
+  },
+  {
+    "paper_id": "PAP-R3-10",
+    "openalex_id": "W3000310synthetic",
+    "arxiv_id": "2604.00310synthetic",
+    "title": "Large Language Models as Molecular Property Predictors for Drug Discovery",
+    "abstract": "Large language models pre-trained on SMILES strings and biomedical literature have shown promise as molecular property predictors. We benchmark five LLM-based approaches — including fine-tuned ChemBERTa, GPT-4 with few-shot SMILES prompting, and a hybrid retrieval-augmented generation approach — on ADMET property prediction tasks from the Therapeutics Data Commons benchmark suite. The retrieval-augmented approach achieves the highest average performance, within 3% of specialised ADMET predictors on lipophilicity and solubility, while underperforming by 12–20% on clearance and toxicity endpoints. We analyse failure modes and find that LLMs struggle with properties requiring 3D conformer information not representable in SMILES.",
+    "authors": [{ "name": "Zara Ahmed", "openalex_id": "A3000319synthetic" }, { "name": "Bruno Nascimento", "openalex_id": "A3000320synthetic" }],
+    "publication_date": "2026-04-26",
+    "year": 2026,
+    "arxiv_categories": ["cs.LG", "q-bio.QM"],
+    "topics": [
+      { "id": "T30013synthetic", "display_name": "Drug discovery", "score": 0.92 },
+      { "id": "T30014synthetic", "display_name": "Molecular property prediction", "score": 0.90 }
+    ],
+    "citation_count": 0,
+    "is_open_access": false
+  }
+]

@@ -1,468 +1,1531 @@
-{
-  "papers": [
-    {
-      "paper_id": "PAP-03",
-      "rank": 1,
-      "title": "Dense Retrieval for Scientific Literature: A Contrastive Learning Approach",
-      "date": "2026-02-14",
-      "max_component_similarity": 0.87,
-      "recommended_action": "Read now",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.87,
-          "cleared": true,
-          "match_explanation": "This is a near-perfect match: the paper's central and sole contribution is a dense retrieval system for scientific corpora, benchmarked across five scientific retrieval datasets against BM25, ColBERT, and DPR baselines. Efficient retrieval from large scientific corpora is not a peripheral concern but the entire paper."
+[
+  {
+    "researcher_id": "RES-001",
+    "researcher_name": "Dr. Sarah Chen",
+    "feed": [
+      {
+        "feed_item_id": "FI-R1-01",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-01",
+        "position": 1,
+        "title": "Steering Language Model Behaviour via Sparse Autoencoder Feature Interventions",
+        "publication_date": "2026-01-15",
+        "relevance_decision": true,
+        "relevance_score": 0.98,
+        "council_confidence": 99,
+        "relevance_reason": "This paper is a direct instantiation of Dr. Chen's 'Sparse autoencoder feature steering' component (RC-R1-01), demonstrating SAE feature decomposition and residual stream interventions for targeted behavioural steering — the exact methodology described in that component. It also maps precisely to her stated research interests in sparse autoencoders and feature steering, and falls squarely within her selected subfields of mechanistic interpretability and neural network feature analysis.",
+        "matched_components": [
+          {
+            "component": "Sparse autoencoder feature steering",
+            "source_paper_ids": [
+              "PAP-R1-01",
+              "PAP-R1-04"
+            ],
+            "match_explanation": "The paper trains SAEs on residual stream activations to decompose representations into interpretable features and then uses those features to steer model behaviour via linear additions to the residual stream — this is precisely the research thread described in RC-R1-01. It further ablates dictionary size, layer depth, and feature magnitude, directly advancing the empirical understanding of SAE-based steering that defines this component."
+          }
+        ],
+        "matched_subfields": [
+          "Mechanistic interpretability (Computer Science)",
+          "Neural network feature analysis (Computer Science)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is the canonical source paper for RC-R1-01 itself (PAP-R1-01), meaning it is not merely related but is one of the defining works of that research component. It covers SAE training, residual stream interventions, feature steering, and dictionary size ablations — every element Dr. Chen's component description calls out. This is as strong a match as possible.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The paper is listed as a source paper for the component, so there is technically no independent evaluation needed — the match is definitional. The only concern would be circular reasoning, but that is a pipeline artefact, not a relevance issue. No substantive grounds for rejection.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls under cs.LG and cs.CL, aligns with mechanistic interpretability and neural network feature analysis subfields, and the topic scores are all above 0.94. Subfield match is unambiguous.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Chen's description explicitly names sparse autoencoders and feature steering as current focus areas. This paper addresses both directly with empirical results and ablations. No scope concerns whatsoever.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match here is entirely substantive, not superficial. The paper does not merely use SAE or steering terminology — it implements the full pipeline of training SAEs on residual stream activations, identifying concept-aligned features, and performing targeted linear interventions, then rigorously ablates the variables (dictionary size, layer depth, feature magnitude) that determine steering fidelity. This directly advances the research thread in RC-R1-01, which is defined by exactly these methodological steps. There is no surface-level keyword overlap issue; the paper's core technical contribution is the research component.",
+          "resolution": "All four voices agreed unanimously. The paper is a source paper for RC-R1-01 and substantively advances every dimension of Dr. Chen's stated research focus. No dissent. Decision: accept with maximum confidence."
         },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.74,
-          "cleared": true,
-          "match_explanation": "Strong match. The dual-encoder architecture uses SciBERT (a transformer-based model) as its backbone, and domain-adapted continued pre-training on scientific text is explicitly studied as a key ablation, directly aligning with Dr. Chen's interest in transformer-based models for scientific text understanding."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-03",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-03",
+        "position": 2,
+        "title": "Revisiting the Superposition Hypothesis: Feature Geometry in Overcomplete Representations",
+        "publication_date": "2025-12-20",
+        "relevance_decision": true,
+        "relevance_score": 0.97,
+        "council_confidence": 99,
+        "relevance_reason": "This paper directly advances RC-R1-03 ('Superposition and polysemanticity in neural representations') — it is in fact the source paper PAP-R1-03 that defines that component. The paper systematically investigates the superposition hypothesis, feature geometry, polysemanticity vs. monosemanticity transitions, and interference under superposition, which are precisely the topics Dr. Chen studies.",
+        "matched_components": [
+          {
+            "component": "Superposition and polysemanticity in neural representations",
+            "source_paper_ids": [
+              "PAP-R1-03"
+            ],
+            "match_explanation": "This paper is the defining source paper for this component. It empirically tests the superposition hypothesis across transformer widths, measures angular separation of recovered features, characterises conditions driving polysemanticity versus monosemanticity, and identifies a geometric phase transition in feature organisation — all core topics of RC-R1-03."
+          }
+        ],
+        "matched_subfields": [
+          "Mechanistic interpretability (Computer Science)",
+          "Representation learning (Computer Science)",
+          "Neural network feature analysis (Computer Science)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is PAP-R1-03, the exact source paper that constitutes RC-R1-03. It directly investigates superposition, polysemanticity, feature geometry, and the monosemantic-to-polysemantic transition — all central to Dr. Chen's research. It also connects to her SAE work (RC-R1-01) via sparse training objectives. This is a textbook accept.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "There is nothing to be skeptical about here — this is literally the source paper that defined one of the researcher's components. The match is as strong as it could possibly be.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls squarely within all three of the researcher's selected subfields: mechanistic interpretability, representation learning, and neural network feature analysis. Topic scores of 0.91 and 0.97 confirm alignment.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "This paper is PAP-R1-03, a provenance source paper for RC-R1-03. Including it in the feed is correct and necessary for completeness of the researcher's thematic thread.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is entirely substantive, not superficial. The paper directly investigates the superposition hypothesis — measuring feature angular separation, characterising polysemantic vs. monosemantic neuron conditions, and identifying geometric phase transitions in feature organisation. These are the precise research questions that define RC-R1-03, not surface keyword overlaps. Furthermore, this paper is the listed source paper (PAP-R1-03) for that component, meaning it is definitionally the work that shaped that research thread.",
+          "resolution": "All four voices agreed unanimously to accept. The paper is the source paper for RC-R1-03 and is directly, substantively relevant to Dr. Chen's research. No dissent."
         },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.85,
-          "cleared": true,
-          "match_explanation": "Very strong match. The core technical objective is producing high-quality dense vector representations of scientific documents via contrastive learning with hard-negative mining, stored in a FAISS index. This directly corresponds to the 'dense vector representations of papers and abstracts' component."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-02",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-02",
+        "position": 3,
+        "title": "Identifying and Ablating Induction-Like Circuits in Decoder-Only Transformers",
+        "publication_date": "2026-03-10",
+        "relevance_decision": true,
+        "relevance_score": 0.95,
+        "council_confidence": 97,
+        "relevance_reason": "This paper directly advances RC-R1-02 ('Circuit analysis and attention head identification') by identifying minimal attention head circuits implementing induction behaviour in decoder-only transformers using activation patching and ablation experiments — precisely the methodology and goals of that component. It also aligns with RC-R1-04 via its use of activation patching for causal localisation, and falls squarely within the researcher's selected subfields of mechanistic interpretability and neural network feature analysis.",
+        "matched_components": [
+          {
+            "component": "Circuit analysis and attention head identification",
+            "source_paper_ids": [
+              "PAP-R1-02",
+              "PAP-R1-07"
+            ],
+            "match_explanation": "The paper identifies the minimal set of attention heads and MLP layers implementing induction-like in-context copying across model scales, using activation patching and knockout experiments — directly extending the thread on causal circuit identification for specific algorithmic functions (induction, copying) that defines this component."
+          },
+          {
+            "component": "Activation patching and causal tracing",
+            "source_paper_ids": [
+              "PAP-R1-05"
+            ],
+            "match_explanation": "The paper employs activation patching as its core methodology for localising where induction behaviour is computed across transformer layers and heads, advancing the causal tracing thread for localising specific computations in transformer architectures."
+          }
+        ],
+        "matched_subfields": [
+          "Mechanistic interpretability (Computer Science)",
+          "Neural network feature analysis (Computer Science)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is a textbook fit for RC-R1-02. It explicitly targets induction circuits — one of the named algorithmic functions in the component description — uses activation patching and attention head knockout, and provides cross-scale conservation analysis. The methodology and object of study match the component's source papers almost exactly.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "Note that PAP-R1-02 is listed as a source paper for RC-R1-02 itself, meaning this candidate paper IS PAP-R1-02. This is not a new paper to be evaluated — it is already in the researcher's corpus. However, since the task is to evaluate the candidate for the feed, and the paper clearly belongs given its content, there is no genuine objection on substantive grounds.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper's arXiv categories (cs.LG, cs.CL) and topic scores (mechanistic interpretability 0.93, circuit analysis 0.95) perfectly align with the researcher's selected subfields of mechanistic interpretability and neural network feature analysis.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Chen's research interests explicitly include circuit analysis, activation patching, and attention head identification. The paper's focus on decoder-only transformers at multiple scales and its causal circuit methodology are precisely within scope. No out-of-scope concerns.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match here is unambiguously substantive, not superficial. The paper does not merely mention 'circuits' or 'attention heads' in passing — it constructs a full causal circuit identification methodology for induction behaviour, ablates specific heads to demonstrate functional necessity, and validates conservation across scales. This directly advances the core goals of RC-R1-02, which is about identifying minimal circuits for specific algorithmic functions using activation patching and output weight analysis. The induction function is explicitly named in the component description, and activation patching is the primary tool used in both the component and this paper.",
+          "resolution": "All four voices agree the paper belongs in the feed. The skeptic's only observation was a meta-note about provenance (the candidate already being a source paper), not a substantive objection. The council unanimously accepts with high confidence."
         },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.62,
-          "cleared": true,
-          "match_explanation": "Marginal but cleared match. Paper recommendation appears as one of five downstream evaluations, where prior papers serve as queries. This is a secondary application rather than a primary focus, so the match is real but limited in depth — the paper does not develop recommendation algorithms per se."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-07",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-07",
+        "position": 4,
+        "title": "Attention Head Taxonomy: A Functional Classification of Heads in GPT-Style Models",
+        "publication_date": "2026-02-22",
+        "relevance_decision": true,
+        "relevance_score": 0.95,
+        "council_confidence": 97,
+        "relevance_reason": "This paper directly advances Dr. Chen's 'Circuit analysis and attention head identification' component by systematically classifying attention heads by algorithmic function (induction, copying, suppression, etc.) using the exact methods described in that component — activation patching and output weight analysis. The paper is also listed as a source paper (PAP-R1-07) for that component, confirming its central relevance.",
+        "matched_components": [
+          {
+            "component": "Circuit analysis and attention head identification",
+            "source_paper_ids": [
+              "PAP-R1-02",
+              "PAP-R1-07"
+            ],
+            "match_explanation": "This paper directly implements the core research thread: it identifies functional roles of attention heads (induction, copying, delimiter attention, positional boosting, suppression) using activation patching and output weight analysis across GPT-style models at multiple scales, and explicitly frames the taxonomy as a tool for circuit analysis — exactly the methodology and goals described in this component."
+          }
+        ],
+        "matched_subfields": [
+          "Mechanistic interpretability (Computer Science)",
+          "Neural network feature analysis (Computer Science)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is a source paper for RC-R1-02 (PAP-R1-07 is listed there). It directly addresses the identification of attention head functions — induction heads, copying heads — using activation patching and output weight analysis, which are the exact methods named in the component description. It could not be more squarely in Dr. Chen's research scope.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "One might argue this paper is purely taxonomic and does not advance new methodology — it classifies rather than discovers new circuits. However, the component description explicitly mentions identifying minimal sets of attention heads implementing specific functions, and a cross-scale functional taxonomy directly supports that goal.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls squarely within Mechanistic Interpretability and Neural Network Feature Analysis as selected subfields. The arXiv categories cs.LG and cs.CL are appropriate, and the topic scores (0.94 circuit analysis, 0.90 mechanistic interpretability) are among the highest possible.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Chen's description specifically mentions circuit analysis and attention heads as core interests. This paper studies exactly those elements at scale and provides a structured vocabulary for circuit analysis — directly aligned with her stated research interests.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match here is unambiguously substantive. The paper does not merely use shared terminology like 'attention' or 'transformer'; it employs the specific methodological toolkit of the RC-R1-02 component (activation patching, output weight analysis, attention pattern visualisation) to classify the precise functional head types (induction, copying) that are named in the component description. The paper is even listed as a source paper (PAP-R1-07) for that component, confirming it is a defining work rather than a peripheral citation. There is no possibility of superficial overlap here.",
+          "resolution": "All four voices agreed strongly for inclusion. The skeptic's minor concern about the paper being taxonomic rather than methodologically novel was resolved by noting that the component description explicitly encompasses head identification work, and the paper's functional taxonomy is a direct, substantive contribution to the circuit analysis research thread. No dissent."
         },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.41,
-          "cleared": false,
-          "match_explanation": "Tangential and below threshold. Citation data is used instrumentally only to sample hard negatives during contrastive training; the paper performs no structural analysis of citation graphs, co-authorship patterns, or network topology. This is a loose, incidental connection rather than a substantive match."
-        }
-      ],
-      "components_cleared_count": 4,
-      "relevance_rationale": "This paper is a strong breadth match for Dr. Chen, clearing four of five components with meaningful scores rather than peaking on a single dimension. The dominant depth match is on 'information retrieval' (0.87) and 'scientific document embeddings' (0.85), but the additional cleared scores on 'neural language models' (0.74) and 'recommendation systems' (0.62) mean the paper touches the majority of her research interests, making it broadly relevant rather than narrowly specialized.",
-      "position_rationale": "Rank 1 is well justified: this paper achieves the highest max component similarity in the set (0.87) while also clearing four of five components, indicating both exceptional depth on Dr. Chen's core interests and unusually broad coverage across her research agenda.",
-      "tangential_flag": false,
-      "missing_information": "Details on the five scientific retrieval datasets used for benchmarking — particularly whether they span the specific subdomains of Dr. Chen's corpus — would clarify how directly transferable the results are to her work.",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-06",
-      "rank": 2,
-      "title": "Multi-Modal Scientific Document Representation with Cross-Attention Fusion",
-      "date": "2026-01-28",
-      "max_component_similarity": 0.84,
-      "recommended_action": "Read now",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.79,
-          "cleared": true,
-          "match_explanation": "Strong match: the paper's headline evaluation is retrieval performance, benchmarked on SciFact and five BEIR-Science subsets. The abstract explicitly frames the unified dense embedding as achieving state-of-the-art on retrieval benchmarks, making IR a primary rather than incidental concern."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-05",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-05",
+        "position": 5,
+        "title": "Causal Tracing at Scale: Activation Patching Across Model Families",
+        "publication_date": "2025-12-14",
+        "relevance_decision": true,
+        "relevance_score": 0.92,
+        "council_confidence": 95,
+        "relevance_reason": "This paper directly extends Dr. Chen's 'Activation patching and causal tracing' component (RC-R1-04) by scaling causal tracing methodology across eleven model families and 70B parameter scales, introducing a patching stability score, and characterising robustness conditions — all substantive advances beyond the single-checkpoint analyses in the source papers. It falls squarely within her mechanistic interpretability and circuit analysis subfields.",
+        "matched_components": [
+          {
+            "component": "Activation patching and causal tracing",
+            "source_paper_ids": [
+              "PAP-R1-05"
+            ],
+            "match_explanation": "The paper directly advances this component by extending activation patching / causal tracing from specific transformer checkpoints to eleven model families (1B–70B parameters), replicating and generalising factual-association localisation findings, and introducing a novel patching stability score to quantify robustness to prompt phrasing — a methodological contribution that deepens the causal tracing toolkit described in this component."
+          }
+        ],
+        "matched_subfields": [
+          "Mechanistic interpretability (Computer Science)",
+          "Neural network feature analysis (Computer Science)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This is a near-perfect match for RC-R1-04. The abstract explicitly uses 'activation patching (causal tracing)' terminology and focuses on localising factual associations in transformer MLP layers — the exact subject matter of the component. Scaling to 11 model families and introducing a stability score are genuine methodological contributions that extend rather than merely echo the existing thread.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The candidate paper ID is PAP-R1-05, which is also listed as the sole source paper for RC-R1-04 — this could mean it is the defining paper of that component rather than a new paper extending it. If so, adding it to the feed is redundant rather than novel. However, given the 2025 publication date and the scaling framing across 11 families, it reads as a follow-on or expanded version, not the original, so it still belongs.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Mechanistic interpretability and neural network feature analysis are both selected subfields and both strongly represented in the paper's topic scores (0.88 and 0.84). The paper also touches on circuit analysis. Subfield alignment is unambiguous.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Chen's stated research interests explicitly include 'activation patching, causal tracing' and the paper's entire contribution is about extending this methodology. There is no scope mismatch. The paper does not stray into unrelated areas like training dynamics or downstream NLP tasks.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is substantive, not superficial. The paper does not merely use the words 'activation patching' or 'causal tracing' in passing; its entire methodology and contribution are built around these techniques. RC-R1-04 is specifically about using activation patching to localise stored information across model families and scales — and this paper delivers exactly that, extending to 11 families at up to 70B parameters with a new stability quantification metric. This is a direct advancement of the research thread, not keyword co-occurrence. A superficial match would be, e.g., a paper on factual QA that mentions patching as one of several baselines; this paper is centrally about patching methodology and its generalisability.",
+          "resolution": "All four voices converged on acceptance. The skeptic raised a valid concern about ID overlap with the source paper but conceded the 2025 date and scaling framing make it a genuine extension. No dissent on the final decision."
         },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.77,
-          "cleared": true,
-          "match_explanation": "Strong match: the Longformer (a transformer-based long-document encoder) is one of the two core architectural components, and the cross-attention fusion between Longformer and ViT is described in the abstract as the central architectural contribution. This directly engages transformer-based models for scientific text understanding."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-04",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-04",
+        "position": 6,
+        "title": "Sparse Autoencoder Features Transfer Across Modalities in Vision-Language Models",
+        "publication_date": "2026-02-08",
+        "relevance_decision": true,
+        "relevance_score": 0.85,
+        "council_confidence": 82,
+        "relevance_reason": "This paper directly advances the 'Sparse autoencoder feature steering' component (RC-R1-01) by training SAEs on vision-language model residual streams and demonstrating cross-modal feature steering — extending the core SAE decomposition and residual stream intervention methodology Dr. Chen studies into multimodal settings. It falls squarely within the Mechanistic interpretability and Neural network feature analysis subfields.",
+        "matched_components": [
+          {
+            "component": "Sparse autoencoder feature steering",
+            "source_paper_ids": [
+              "PAP-R1-01",
+              "PAP-R1-04"
+            ],
+            "match_explanation": "The paper trains sparse autoencoders on residual streams of a vision-language model and uses learned features for targeted steering interventions (activating a 'roundness' feature to steer text generation) — directly extending the SAE decomposition and residual stream steering methodology central to this component into a multimodal context."
+          }
+        ],
+        "matched_subfields": [
+          "Mechanistic interpretability (Computer Science)",
+          "Neural network feature analysis (Computer Science)",
+          "Representation learning (Computer Science)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is a substantive extension of RC-R1-01. It trains SAEs on residual streams, identifies interpretable features, and uses them for steering — exactly the pipeline Dr. Chen studies. The multimodal setting is a natural extension, not a distraction. Cross-modal feature transfer and steering effectiveness evaluation are novel contributions that directly enrich the research thread.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "Dr. Chen's stated focus is transformer language models specifically. The candidate paper shifts to vision-language models (cs.CV primary category), and the core novelty is cross-modal transfer, not SAE methodology per se. One could argue the SAE component is instrumental here rather than the primary research advance, meaning it may be tangential to her core interests.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper's arXiv categories include cs.CL and cs.LG, and its topics score highly on sparse autoencoders (0.92), feature steering (0.89), and mechanistic interpretability (0.85). All three of Dr. Chen's selected subfields are meaningfully hit. The multimodal framing doesn't disqualify it from mechanistic interpretability.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "The paper explicitly frames its contribution as showing 'SAE-based interpretability methods developed for language models extend naturally to multimodal settings' — it is directly building on the LM SAE literature that Dr. Chen works in. The residual stream intervention technique and steering evaluation methodology are substantively the same as in RC-R1-01's source papers. This is not surface keyword overlap.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is substantive. The paper does not merely mention SAEs or feature steering in passing — it implements the full SAE training on residual streams, decomposes features, and performs targeted inference-time steering via feature activation, which is precisely the pipeline described in RC-R1-01. The skeptic's concern about modality shift is valid but insufficient to reject: the paper's stated framing is as an extension of LM SAE methods, and the core technical contribution (SAE decomposition + residual stream steering) is the same methodology Dr. Chen studies, applied to a new domain. This is a genuine advancement of the research thread rather than superficial keyword overlap.",
+          "resolution": "Three of four voices leaned 'for'. The skeptic raised a legitimate concern about the vision-language modality shift, but the council resolved that the paper's substantive use of SAE decomposition and residual stream steering — identical in methodology to RC-R1-01 source papers — constitutes a genuine thread extension. The paper is accepted with a moderate-high score of 0.85, reflecting the slight scope broadening into multimodal settings."
         },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.84,
-          "cleared": true,
-          "match_explanation": "Highest-scoring component and the paper's core contribution: the output is explicitly a single unified dense embedding of a full scientific document spanning text, figures, and tables. This is a direct, primary match to Dr. Chen's interest in dense vector representations of scientific documents."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-08",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-08",
+        "position": 7,
+        "title": "Benchmarking Post-Hoc Explainability Methods for NLP: SHAP, LIME, and Integrated Gradients",
+        "publication_date": "2026-03-28",
+        "relevance_decision": false,
+        "relevance_score": 0.15,
+        "council_confidence": 92,
+        "relevance_reason": "This paper benchmarks post-hoc explainability methods (SHAP, LIME, integrated gradients) for NLP text classification, which is a fundamentally different paradigm from Dr. Chen's mechanistic interpretability work. Her research focuses on internal transformer representations, sparse autoencoders, circuit analysis, and activation patching — none of which are addressed by token-level attribution methods applied to model outputs.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper sits within interpretability and explainability broadly, which is Dr. Chen's stated interest area. Feature attribution (score 0.85) could loosely connect to her interest in how models represent information, and integrated gradients has occasionally been used alongside mechanistic interpretability tools.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "SHAP, LIME, and integrated gradients are input-attribution methods that explain model predictions by scoring input tokens — they do not investigate internal representations, circuits, attention heads, superposition, or sparse autoencoders. These are categorically different from mechanistic interpretability. The paper does not touch any of Dr. Chen's four research components.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Chen's selected subfields include mechanistic interpretability, representation learning, and neural network feature analysis. Post-hoc token attribution benchmarking does not belong to mechanistic interpretability as a subfield — it is a different tradition of XAI research focused on input salience rather than internal model mechanisms.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "None of Dr. Chen's source papers (PAP-R1-01 through PAP-R1-07) concern post-hoc attribution methods. The research threads are all about internal model structure — circuits, features, residual stream interventions, causal tracing. This paper's adversarial benchmarking of SHAP/LIME/IG for text classification is entirely outside her scope.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "The apparent match is entirely superficial: both this paper and Dr. Chen's work use the word 'interpretability,' but they operate in fundamentally different paradigms. Dr. Chen's work is mechanistic — she opens the model and studies its internal circuits, features, and representations. This paper treats models as black boxes and evaluates input-output attribution scores for end-users. Integrated gradients, SHAP, and LIME are input-salience methods that say nothing about superposition, polysemanticity, attention head circuits, or sparse autoencoder features. The paper would not extend any of her four research components in any meaningful way.",
+          "resolution": "All four voices independently converged against inclusion. The advocate voice, upon examining the abstract more carefully, acknowledged the match was only terminological. The paper is a clear reject with high council confidence."
         },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.65,
-          "cleared": true,
-          "match_explanation": "Moderate but genuine match: paper recommendation is included as one of four downstream evaluations on a held-out academic dataset. However, it is not the paper's focus—no recommendation algorithm is proposed, and the embeddings are merely applied to a recommendation task, making this a functional but peripheral connection."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-06",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-06",
+        "position": 8,
+        "title": "Probing Multilingual Representations for Typological Feature Encoding",
+        "publication_date": "2026-04-05",
+        "relevance_decision": false,
+        "relevance_score": 0.15,
+        "council_confidence": 91,
+        "relevance_reason": "This paper uses linear probing to study multilingual typological feature encoding in mBERT and XLM-R, which is primarily a cross-lingual transfer and multilingual NLP study. It does not advance Dr. Chen's research threads on sparse autoencoders, circuit analysis, superposition, or causal tracing — the mechanistic interpretability topic score (0.52) reflects superficial terminological overlap rather than substantive alignment with her work.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper does probe internal representations of transformer models and asks which structural features are encoded in intermediate layers — this touches on representation learning and could be seen as adjacent to mechanistic interpretability since it investigates what information is stored where in a transformer.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "Linear probing for typological features in multilingual models is fundamentally a cross-lingual NLP study. It has no connection to sparse autoencoders, circuit analysis, attention head identification, superposition, or causal tracing. The mechanistic interpretability score of 0.52 is almost certainly a false positive from shared vocabulary around 'representations' and 'intermediate layers'.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Chen's selected subfields include mechanistic interpretability and neural network feature analysis, but this paper's primary subfield is multilingual NLP — not one of her selected subfields. The probing methodology used here is a surface-level classifier approach, not the deep mechanistic decomposition (SAEs, activation patching, path patching) that defines her work.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "None of Dr. Chen's four research components — SAE feature steering, circuit analysis, superposition/polysemanticity, or activation patching — are substantively advanced by this paper. It does not address polysemanticity, feature geometry, circuit discovery, or causal localisation of computations. The paper belongs in a multilingual NLP feed, not a mechanistic interpretability feed.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "The apparent match rests entirely on surface-level shared vocabulary: both this paper and Dr. Chen's work talk about transformer 'representations' and what information is encoded in intermediate layers. However, the paper's actual contribution — using linear probes to decode typological properties (word order, morphology) across 42 languages in multilingual models — is a cross-lingual transfer study with no engagement whatsoever with the methods or questions central to Dr. Chen's research. Dr. Chen's work requires mechanistic tools like sparse autoencoders, activation patching, path patching, and circuit-level analysis; linear probing for typological features is a fundamentally different methodology addressing a fundamentally different question about multilingual generalisation, not internal algorithmic structure.",
+          "resolution": "All four voices agreed this is a clear reject. The advocate conceded after examining the abstract more carefully that the overlap is purely terminological. No dissent — the paper is solidly in multilingual NLP and does not advance any of Dr. Chen's research components."
         },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.52,
-          "cleared": false,
-          "match_explanation": "Weak, tangential match: citation relationships appear only as a methodological tool to construct train/test splits to prevent data leakage. Citation structure is neither modeled nor analyzed; this is an incidental use of citation metadata rather than any engagement with graph-based citation analysis."
-        }
-      ],
-      "components_cleared_count": 4,
-      "relevance_rationale": "This is a breadth match: the paper clears four of five components at meaningful similarity levels (0.65–0.84), touching scientific document embeddings, information retrieval, neural language models, and recommendation systems—all central to Dr. Chen's research agenda. No single component dominates to the exclusion of others; rather, the paper's multi-modal embedding framework is directly relevant across the majority of her research threads, which is why breadth rather than depth best characterizes its value.",
-      "position_rationale": "Rank 2 is well-justified by the combination of the highest max component similarity (0.84 on the most central component, scientific document embeddings) and the breadth of coverage across four cleared components. Only a paper with stronger alignment across all five components, or deeper methodological overlap on the remaining citation network analysis thread, would warrant rank 1.",
-      "tangential_flag": false,
-      "missing_information": "Details on the academic recommendation dataset used for evaluation (size, domain coverage, and whether it overlaps with Dr. Chen's target corpora) would clarify how directly applicable the recommendation results are to her specific use cases.",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-01",
-      "rank": 3,
-      "title": "Transformer-Based Scientific Paper Recommendation via Contextual Neural Embeddings",
-      "date": "2026-01-15",
-      "max_component_similarity": 0.82,
-      "recommended_action": "Read now",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.71,
-          "cleared": true,
-          "match_explanation": "The paper directly implements efficient retrieval of scientific documents at scale: a bi-encoder architecture encodes queries and candidates into dense vectors, which are indexed with FAISS approximate nearest-neighbour search to retrieve candidate papers from a large corpus. This is a substantive, core-pipeline match to Dr. Chen's interest in efficient retrieval from large scientific corpora, not merely a tangential reference."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-09",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-09",
+        "position": 9,
+        "title": "Knowledge Graph Embeddings for Open-Domain Question Answering Fact Retrieval",
+        "publication_date": "2026-05-02",
+        "relevance_decision": false,
+        "relevance_score": 0.05,
+        "council_confidence": 98,
+        "relevance_reason": "This paper is about knowledge graph embeddings and retrieval-augmented QA systems, which has no substantive connection to Dr. Chen's research on mechanistic interpretability, sparse autoencoders, circuit analysis, or feature geometry in transformers. The paper does not examine how transformer models internally represent or compute knowledge, but rather how external KG embeddings can be used as a retrieval index for QA.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper touches on factual retrieval and knowledge representation in the context of language models. Dr. Chen's work on activation patching and causal tracing (RC-R1-04) involves localising where factual associations are stored in transformers. One could argue there is a loose thematic connection around 'facts in models'.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The paper studies external knowledge graph embeddings (TransE, RotatE, ComplEx) as retrieval indices and approximate nearest-neighbour search pipelines. It is fundamentally an IR/QA paper, not a mechanistic interpretability paper. It does not examine transformer internals, circuits, attention heads, SAEs, superposition, or any of the core constructs in Dr. Chen's research.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Chen's selected subfields are mechanistic interpretability, representation learning, and neural network feature analysis — all scoped to understanding transformer internals. This paper belongs to information retrieval and NLP QA, not any of these subfields. There is no subfield match.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Even the weakest connection — 'factual associations' — does not hold up. RC-R1-04 is about causal tracing inside transformer weights to find where facts are encoded neurally. This paper uses KG embeddings as an external retrieval mechanism and never examines transformer internals. The thematic overlap is purely surface-level shared vocabulary around 'facts'.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "The only apparent overlap is the word 'factual' — both this paper and Dr. Chen's causal tracing work deal with factual knowledge. However, the substance is entirely different: Dr. Chen's RC-R1-04 investigates how factual associations are encoded and computed within transformer layers via activation patching, whereas this paper builds an external retrieval pipeline using KG embedding methods (TransE, RotatE, ComplEx) to answer questions by looking up Wikidata triples. There is no investigation of transformer internals, no mechanistic analysis, no SAEs, no circuits, and no feature geometry. The match is entirely superficial keyword overlap on 'factual' and 'knowledge'.",
+          "resolution": "All four council voices agreed this paper does not belong in Dr. Chen's feed. The advocate could not identify any genuine connection beyond superficial shared vocabulary. The paper is an IR/QA systems paper with no mechanistic interpretability content. Decision is unanimous rejection with very high confidence."
         },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.82,
-          "cleared": true,
-          "match_explanation": "This is the strongest single-component match. The paper's central contribution is fine-tuning SciBERT end-to-end using a contrastive InfoNCE loss over (query, relevant, hard negative) triples — meaning the transformer architecture, training recipe, and domain adaptation are the primary intellectual contribution, directly aligning with Dr. Chen's focus on transformer-based models for scientific text understanding."
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R1-10",
+        "researcher_id": "RES-001",
+        "paper_id": "PAP-R1-10",
+        "position": 10,
+        "title": "Heterogeneous GPU Cluster Scheduling for Large-Scale Distributed Training",
+        "publication_date": "2026-04-22",
+        "relevance_decision": false,
+        "relevance_score": 0.02,
+        "council_confidence": 99,
+        "relevance_reason": "This paper is about GPU cluster scheduling for distributed training workloads, which has no connection to Dr. Chen's research on mechanistic interpretability, sparse autoencoders, circuit analysis, or feature steering. It falls entirely outside her subfields and research components.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper involves deep learning infrastructure, which is tangentially related to large language model training. One could argue that understanding training dynamics might inform interpretability research.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "HeteroSched is a systems paper about GPU scheduling and cluster utilisation. It has zero overlap with mechanistic interpretability, sparse autoencoders, superposition, attention heads, or causal tracing. The cs.LG category is purely incidental — the paper's content is distributed systems engineering.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Chen's selected subfields are mechanistic interpretability, representation learning, and neural network feature analysis. This paper belongs to distributed systems and cluster scheduling — none of her subfields are matched even superficially.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "None of Dr. Chen's four research components — SAE feature steering, circuit analysis, superposition/polysemanticity, or activation patching — are touched by this paper. There is no plausible research thread connection.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "The only conceivable link is that both this paper and Dr. Chen's work involve neural networks at some level. However, this is purely superficial keyword proximity — 'deep learning training' appears in both domains but refers to entirely different concerns. Dr. Chen studies how trained models represent knowledge internally; this paper studies how to schedule GPU resources efficiently during training. These are orthogonal problems with no shared methodology, findings, or research questions.",
+          "resolution": "All voices agree this is a clear reject. Even the advocate voice could not mount a genuine argument for inclusion. The paper is a distributed systems engineering contribution with no relevance to mechanistic interpretability or any of Dr. Chen's research components."
         },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.78,
-          "cleared": true,
-          "match_explanation": "The paper produces 768-dimensional dense embeddings of paper titles and abstracts as its primary retrieval artifact, stored in a FAISS index. This is a direct and substantive match: the embeddings represent scientific documents and are the mechanism by which retrieval and recommendation operate, aligning closely with Dr. Chen's interest in dense vector representations of scientific content."
-        },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.76,
-          "cleared": true,
-          "match_explanation": "The system explicitly functions as a personalized paper recommendation engine, ranking candidates by cosine similarity to an embedding of a user's reading history and combining retrieval scores with a learning-to-rank layer. This directly addresses personalized research paper recommendation, making it a strong match to this component."
-        },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.65,
-          "cleared": true,
-          "match_explanation": "The match here is real but limited in depth. Citation co-occurrence pairs are used as a weak positive supervision signal during contrastive pre-training, but the citation graph is not structurally analysed — no graph-based methods, community detection, or co-authorship analysis are performed. This is a functional but shallow use of citation data, making it the weakest component match, though it does clear the threshold."
-        }
-      ],
-      "components_cleared_count": 5,
-      "relevance_rationale": "This paper is a clear breadth match: it clears all five of Dr. Chen's research components with substantive evidence, not merely superficial references. Four components (information retrieval, neural language models, scientific document embeddings, recommendation systems) are deeply addressed as core pipeline elements, while citation network analysis is a cleared but shallower match. This cross-component alignment means the paper is not just useful for one thread of Dr. Chen's research but serves as an integrative reference across her entire research agenda.",
-      "position_rationale": "Rank 3 is appropriate given that the paper achieves the relatively rare distinction of clearing all five components, with four of them at high similarity (0.71–0.82), making it highly actionable across Dr. Chen's full research portfolio. Papers ranked above it likely achieve higher max similarity scores or deeper matches on the most critical individual components, while this paper's slight weakness on citation network analysis and its applied (rather than foundational) framing likely prevent a top-2 placement.",
-      "tangential_flag": false,
-      "missing_information": "The evidence does not specify the scale of the corpus used in benchmarks (number of papers indexed), which would be material to assessing whether the retrieval efficiency results are relevant to Dr. Chen's specific use cases involving large scientific corpora.",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-09",
-      "rank": 4,
-      "title": "Adaptive Optimization for Large-Scale Scientific Natural Language Processing",
-      "date": "2026-02-01",
-      "max_component_similarity": 0.74,
-      "recommended_action": "Save",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.65,
-          "cleared": true,
-          "match_explanation": "The paper evaluates its pre-trained models on scientific retrieval benchmarks as part of a six-task downstream suite, so IR is a validation target rather than a core contribution. This is a meaningful but indirect match — the paper could improve retrieval model training, but retrieval is not the primary research focus."
-        },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.74,
-          "cleared": true,
-          "match_explanation": "This is the strongest and most direct match. The paper's central contribution is an adaptive learning rate schedule and gradient accumulation strategy specifically designed to improve convergence during large-scale scientific NLP pre-training, with SciBERT and PubMedBERT as the primary subjects. This directly addresses Dr. Chen's interest in transformer-based models for scientific text."
-        },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.71,
-          "cleared": true,
-          "match_explanation": "Fine-tuned versions of the pre-trained models are evaluated on MTEB-Science for embedding quality, making scientific document embeddings a headline downstream metric. While the paper's contribution is about training optimization rather than embedding architecture, better-trained base models directly yield better embeddings, making this a substantive if secondary match."
-        },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.58,
-          "cleared": false,
-          "match_explanation": "Paper recommendation appears as one of six downstream evaluation tasks, evaluated using standard collaborative filtering metrics. This is a peripheral match — recommendation is neither the model's objective nor its primary evaluation focus, and the paper does not contribute novel recommendation methodology."
-        },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.47,
-          "cleared": false,
-          "match_explanation": "Citation-based field-of-study classification is used as one of six benchmarks, but citation network structure plays no role in the model architecture, training, or core methodology. This is a tangential match at best, and the below-threshold score accurately reflects its marginal relevance."
-        }
-      ],
-      "components_cleared_count": 3,
-      "relevance_rationale": "This is primarily a depth match: the strongest alignment is concentrated on the 'neural language models' component (0.74), where the paper directly addresses training optimization for scientific transformer models. Secondary cleared matches on 'information retrieval' (0.65) and 'scientific document embeddings' (0.71) add breadth, but these are downstream evaluation artifacts rather than primary contributions, so the cross-component relevance is moderate rather than deep across multiple threads.",
-      "position_rationale": "Rank 4 is appropriate for a paper that directly advances scientific NLP pre-training — a foundational concern for Dr. Chen's work — while falling short of top-tier placement because its contributions are methodological (training recipes) rather than architectural or algorithmic innovations in retrieval, embeddings, or recommendation themselves.",
-      "tangential_flag": false,
-      "missing_information": "The abstract does not specify which retrieval and recommendation benchmarks are used or how performance on those tasks compares to prior baselines, which would clarify how much practical uplift the method delivers in the areas most relevant to Dr. Chen.",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-02",
-      "rank": 5,
-      "title": "Graph Neural Networks for Citation Network Representation Learning",
-      "date": "2026-02-20",
-      "max_component_similarity": 0.71,
-      "recommended_action": "Save",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.45,
-          "cleared": false,
-          "match_explanation": "The paper does not address retrieval of documents from a corpus as a primary concern. The evidence confirms that citation recommendation is framed as link prediction on a static graph, which is architecturally distinct from the corpus-scale document retrieval systems central to Dr. Chen's research. The match is tangential at best."
-        },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.55,
-          "cleared": false,
-          "match_explanation": "A frozen text encoder is used to initialize node features from paper titles, but this is purely a preprocessing step and not a methodological contribution. The paper makes no claims about transformer-based scientific text understanding or generation, so the connection to Dr. Chen's neural language models component is loose and incidental."
-        },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.63,
-          "cleared": true,
-          "match_explanation": "This component is cleared with a similarity of 0.63. The GNN produces node embeddings over citation graphs that serve as document representations, and these are evaluated on downstream classification tasks. While the mechanism (graph propagation rather than text encoding) differs from typical dense embedding approaches, the output — dense vector representations of scientific documents — aligns meaningfully with Dr. Chen's interest."
-        },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.48,
-          "cleared": false,
-          "match_explanation": "The paper briefly suggests that its learned embeddings could power a recommendation pipeline, but no recommendation system is implemented or evaluated. The match is aspirational rather than substantive, falling well below threshold at 0.48. This is a loose, forward-looking reference rather than a genuine contribution to recommendation algorithms."
-        },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.71,
-          "cleared": true,
-          "match_explanation": "This is the paper's strongest match at 0.71, clearing the threshold. The core contribution explicitly models directed citation edges and undirected co-authorship links using a GNN, and includes structural analysis of degree distributions across four citation corpora — directly aligned with Dr. Chen's graph-based analysis of citation and co-authorship patterns."
-        }
-      ],
-      "components_cleared_count": 2,
-      "relevance_rationale": "This is a depth match rather than a breadth match: only two of five components are cleared, with citation network analysis (0.71) being the dominant signal and scientific document embeddings (0.63) providing a secondary connection. The paper's core contribution — GNN-based representation learning over citation graphs — maps closely onto Dr. Chen's citation network analysis interest but contributes little to her work on information retrieval, neural language models, or recommendation systems as substantive research topics.",
-      "position_rationale": "Rank 5 is appropriate for a paper that clears only 2 of 5 components and is primarily a depth match on citation network analysis. It offers genuine value for one of Dr. Chen's core research threads but lacks the cross-component relevance that would justify a higher ranking.",
-      "tangential_flag": false,
-      "missing_information": "Details on whether the node embeddings are evaluated in retrieval or semantic similarity tasks (e.g., nearest-neighbour paper search) would clarify whether the scientific document embeddings connection is stronger than the evidence currently suggests.",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-05",
-      "rank": 6,
-      "title": "Collaborative Filtering with Semantic User Profiles for Research Discovery",
-      "date": "2026-03-05",
-      "max_component_similarity": 0.68,
-      "recommended_action": "Save",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.58,
-          "cleared": false,
-          "match_explanation": "The paper does employ a BM25 retrieval stage as a candidate generation step in the pipeline, which is loosely relevant to Dr. Chen's interest in efficient document retrieval. However, this is a tangential use of IR as scaffolding; the paper's primary contribution is the collaborative filtering objective, not advances in retrieval methodology itself. The similarity score of 0.58 appropriately reflects this pipeline-component role."
-        },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.61,
-          "cleared": true,
-          "match_explanation": "The paper uses a frozen language model to compute abstract embeddings for user profile construction, which touches Dr. Chen's interest in transformer-based models for scientific text understanding. However, the NLM is used purely as a static feature extractor with no end-to-end training or fine-tuning, making this a peripheral rather than central use of neural language modeling. The cleared score of 0.61 reflects a genuine but limited connection."
-        },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.55,
-          "cleared": false,
-          "match_explanation": "Paper embeddings are used for semantic re-ranking of candidates, which is relevant to Dr. Chen's focus on dense vector representations of scientific documents. However, the embeddings come from a general-purpose pre-trained model with no domain adaptation to scientific text, which is a notable gap relative to her research emphasis on scientifically grounded representations. The below-threshold score of 0.55 correctly captures this shallow alignment."
-        },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.68,
-          "cleared": true,
-          "match_explanation": "This is the paper's strongest and most direct match to Dr. Chen's research interests. The core contribution—a hybrid collaborative filtering system augmented with semantic user profile vectors derived from publication histories—is squarely within the research paper recommendation domain and directly addresses personalized research discovery. The 0.68 score reflects the primary contribution of the work."
-        },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.34,
-          "cleared": false,
-          "match_explanation": "The paper explicitly does not use citation data, instead relying on co-reading signals and download logs as implicit feedback. This is a direct mismatch with Dr. Chen's interest in graph-based analysis of citation and co-authorship networks. The very low score of 0.34 accurately reflects this absence."
-        }
-      ],
-      "components_cleared_count": 2,
-      "relevance_rationale": "This is a depth match, not a breadth match: the paper clears only 2 of 5 components, with a strong primary alignment on recommendation systems (0.68) and a marginal secondary alignment on neural language models (0.61). The remaining three components—information retrieval, scientific document embeddings, and citation network analysis—are either tangential pipeline elements or explicitly absent, meaning the paper's value to Dr. Chen is concentrated narrowly in its hybrid recommendation methodology rather than spanning her broader research agenda.",
-      "position_rationale": "Rank 6 is appropriate given that the paper's core contribution (research paper recommendation) is directly relevant to one of Dr. Chen's components, but its shallow or absent engagement with scientific document embeddings, citation networks, and IR as primary contributions limits it relative to papers that may offer broader or deeper cross-component alignment. The 'Save' action reflects its genuine but narrow utility.",
-      "tangential_flag": false,
-      "missing_information": "Details about which specific language model was used for abstract embeddings and whether any scientific-domain pre-training was involved would clarify the actual depth of alignment with Dr. Chen's scientific document embeddings research component.",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-07",
-      "rank": 7,
-      "title": "Decentralized Research Data Repositories: Blockchain Provenance and Retrieval Primitives",
-      "date": "2025-12-20",
-      "max_component_similarity": 0.63,
-      "recommended_action": "Save",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.63,
-          "cleared": true,
-          "match_explanation": "The paper uses the term 'retrieval primitives' but, as the evidence explicitly notes, these are infrastructure-level hash lookups against a distributed ledger for cryptographic verification — not semantic search over document content. Dr. Chen's IR research concerns efficient retrieval of relevant documents from large scientific corpora, which is fundamentally different from locating a specific dataset artifact by its exact cryptographic hash. This is a terminological overlap rather than a conceptual match."
-        },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.21,
-          "cleared": false,
-          "match_explanation": "The abstract and evidence confirm no neural language models are employed anywhere in this system. The architecture relies entirely on smart contracts, Merkle-tree integrity proofs, and cryptographic primitives. There is zero overlap with transformer-based models for scientific text understanding or generation."
-        },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.18,
-          "cleared": false,
-          "match_explanation": "Documents in this system are represented solely by cryptographic hashes for integrity verification purposes, which is the antithesis of dense semantic embeddings. No vector representations, embedding spaces, or semantic similarity measures are produced or used. The similarity score of 0.18 reflects essentially no meaningful overlap."
-        },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.31,
-          "cleared": false,
-          "match_explanation": "The paper addresses data provenance, version tracking, and reproducibility auditing in a permissioned blockchain environment. There is no discovery, ranking, or personalization component of any kind. The 0.31 score likely reflects superficial domain overlap (scientific data) rather than any algorithmic or methodological connection to recommendation systems."
-        },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.44,
-          "cleared": false,
-          "match_explanation": "While the blockchain DAG does track provenance edges that could superficially resemble citation links, the evidence clarifies this is structural reproducibility auditing rather than bibliometric or graph-theoretic analysis of citation patterns. The system is not designed to yield insight into academic influence, co-authorship, or knowledge diffusion — the concerns central to Dr. Chen's citation network analysis component."
-        }
-      ],
-      "components_cleared_count": 1,
-      "relevance_rationale": "This paper is a tangential match to Dr. Chen's research profile: it clears only one component (information retrieval at 0.63) and that match is explicitly a loose terminological overlap — the paper uses 'retrieval' in a storage/provenance sense entirely disconnected from semantic IR over scientific corpora. This is a depth-adjacent case where even the single cleared component does not represent a genuine conceptual alignment, making the paper weakly relevant at best and potentially misleading as a research reference.",
-      "position_rationale": "Rank 7 is appropriate given that the paper clears only one of five components and even that clearance is based on a superficial keyword match rather than substantive methodological alignment. Papers ranked higher likely share genuine conceptual overlap across multiple components, whereas this paper's blockchain/provenance focus is largely orthogonal to Dr. Chen's NLP and IR research agenda.",
-      "tangential_flag": true,
-      "missing_information": "It would be useful to know whether the paper includes any integration with or comparison to semantic search or metadata-driven discovery systems, which could strengthen or further clarify the degree of overlap with Dr. Chen's IR component.",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-10",
-      "rank": 8,
-      "title": "Probabilistic Logic and Knowledge Graph Completion for Biomedical Ontologies",
-      "date": "2026-04-12",
-      "max_component_similarity": 0.52,
-      "recommended_action": "Skip",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.43,
-          "cleared": false,
-          "match_explanation": "The paper's retrieval mechanism is structured graph lookup via logical query resolution over biomedical ontologies, not text-similarity-based retrieval from a document corpus. This is a fundamental mismatch with Dr. Chen's focus on efficient retrieval of relevant scientific documents from large corpora."
-        },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.52,
-          "cleared": false,
-          "match_explanation": "RotatE is used as a neural link predictor that scores candidate triples in a knowledge graph, operating over entity embeddings rather than text sequences. This is a graph neural method, not a transformer-based language model for scientific text understanding or generation, making the match loose and superficial despite being the highest-scoring component."
-        },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.49,
-          "cleared": false,
-          "match_explanation": "The framework produces entity-level embeddings trained specifically for link prediction in biomedical knowledge graphs (MeSH, Gene Ontology). These are not document-level dense vector representations of papers or abstracts, which is the core of Dr. Chen's interest in scientific document embeddings."
-        },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.35,
-          "cleared": false,
-          "match_explanation": "The paper has no connection to paper or content recommendation algorithms. Its goal is biomedical knowledge graph completion — inferring missing relations in ontologies — which is an entirely distinct task from personalized research recommendation."
-        },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.45,
-          "cleared": false,
-          "match_explanation": "The paper works exclusively on biomedical knowledge graphs (MeSH, GO) and makes no use of academic citation or co-authorship networks. The graph structures involved are ontological relation graphs, not citation networks, representing a clear mismatch with this research component."
-        }
-      ],
-      "components_cleared_count": 0,
-      "relevance_rationale": "This paper clears no components above the 0.60 threshold and achieves only a weak maximum similarity of 0.52 on neural language models, which itself is a loose match since RotatE is a graph embedding method rather than a language model. This is neither a depth match (the best single-component score is still below threshold) nor a breadth match (no component is genuinely aligned); the paper's focus on probabilistic logic and biomedical ontology completion is fundamentally orthogonal to Dr. Chen's research agenda.",
-      "position_rationale": "Ranked 8th out of 10, this paper sits near the bottom of the candidate set, reflecting that it clears no research components and its highest component score (0.52) represents only a tangential connection. Its placement above the final two papers likely reflects that at least some surface-level embedding and neural method concepts are present, even if fundamentally misaligned.",
-      "tangential_flag": false,
-      "missing_information": "nothing material missing",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-04",
-      "rank": 9,
-      "title": "Federated Learning for Privacy-Preserving Clinical Text Classification",
-      "date": "2025-12-10",
-      "max_component_similarity": 0.45,
-      "recommended_action": "Skip",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.32,
-          "cleared": false,
-          "match_explanation": "The paper makes no mention of document retrieval from corpora; its entire focus is on distributed NLP classification (ICD-10 coding, readmission prediction) under federated privacy constraints. The evidence confirms retrieval is wholly absent, making this a clear mismatch with Dr. Chen's IR research."
-        },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.45,
-          "cleared": false,
-          "match_explanation": "ClinicalBERT—a transformer-based NLM—is employed, which produces the highest component score (0.45). However, this is a shallow match: ClinicalBERT is used purely as an instrumental tool for clinical classification tasks within a federated setting, not studied or advanced as a model architecture for scientific text understanding or generation. The NLM aspect is incidental rather than central."
-        },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.28,
-          "cleared": false,
-          "match_explanation": "The framework generates task-specific logits (ICD-10 codes, readmission probabilities) rather than general-purpose dense vector representations of documents or scientific concepts. No embedding methodology is proposed or evaluated, making this component essentially irrelevant to the paper's contributions."
-        },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.38,
-          "cleared": false,
-          "match_explanation": "There is no recommendation component anywhere in the paper. The federated learning framework is applied exclusively to clinical classification tasks in a privacy-preserving context, with no connection to personalized content or paper recommendation algorithms."
-        },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.22,
-          "cleared": false,
-          "match_explanation": "Citation networks, co-authorship graphs, and academic network analysis are entirely absent from both the methodology and evaluation. The paper operates solely on clinical text datasets across hospital sites, with no academic graph structure involved."
-        }
-      ],
-      "components_cleared_count": 0,
-      "relevance_rationale": "This paper is neither a depth match nor a breadth match for Dr. Chen's research profile. The highest component score (0.45 on neural language models) reflects only that a transformer-based model is used instrumentally, not that the paper advances or studies NLMs in the context of scientific text—and no other component clears or even approaches the 0.60 threshold. The paper's core contributions—federated learning, differential privacy, and clinical text classification—are orthogonal to all five of Dr. Chen's research components.",
-      "position_rationale": "Ranked 9th out of 10, this paper sits near the bottom because it clears zero components and its maximum similarity (0.45) is low, with the marginal NLM connection representing only incidental tool use rather than substantive alignment. Only a paper with even weaker topical overlap would rank lower.",
-      "tangential_flag": false,
-      "missing_information": "nothing material missing",
-      "rationale_status": "ok"
-    },
-    {
-      "paper_id": "PAP-08",
-      "rank": 10,
-      "title": "Quantum Annealing Heuristics for NP-Hard Drug-Target Binding Optimization",
-      "date": "2025-12-08",
-      "max_component_similarity": 0.38,
-      "recommended_action": "Skip",
-      "components": [
-        {
-          "component": "information retrieval",
-          "component_similarity": 0.12,
-          "cleared": false,
-          "match_explanation": "The paper has no connection to information retrieval. It is entirely focused on quantum annealing applied to drug-target binding optimization using QUBO formulation, with no document retrieval, indexing, or search components whatsoever."
-        },
-        {
-          "component": "neural language models",
-          "component_similarity": 0.25,
-          "cleared": false,
-          "match_explanation": "While a neural surrogate model is used, it serves to estimate molecular binding energy from structural descriptors (SMILES, 3D coordinates), not as a language model for text understanding or generation. This is a loose connection at best — the neural component is domain-specific to computational chemistry, not NLP or transformer-based architectures."
-        },
-        {
-          "component": "scientific document embeddings",
-          "component_similarity": 0.19,
-          "cleared": false,
-          "match_explanation": "No document embeddings are produced or used. The paper's inputs are molecular structure representations (SMILES strings, 3D coordinates), which are chemical descriptors, not text-based document embeddings. The similarity to this component is entirely superficial."
-        },
-        {
-          "component": "recommendation systems",
-          "component_similarity": 0.38,
-          "cleared": false,
-          "match_explanation": "The highest-scoring component at 0.38, but the match is tangential. The optimization outputs a ranked list of candidate drug compounds, which is structurally analogous to a recommendation list, but the paper employs quantum annealing and combinatorial optimization methods with no engagement with recommendation system methodology, collaborative filtering, personalization, or related techniques."
-        },
-        {
-          "component": "citation network analysis",
-          "component_similarity": 0.15,
-          "cleared": false,
-          "match_explanation": "Citation network analysis is completely absent from this paper. The paper operates in computational chemistry and combinatorial optimization, with no graph-based analysis of academic literature, co-authorship patterns, or citation structures."
-        }
-      ],
-      "components_cleared_count": 0,
-      "relevance_rationale": "This paper is neither a depth nor a breadth match for Dr. Chen's research profile. Even the highest-scoring component (recommendation systems at 0.38) is a tangential analogy — a ranked output list — rather than a substantive methodological connection. The paper is fundamentally about quantum annealing for drug discovery and has no meaningful intersection with scientific information retrieval, language models for text, document embeddings, recommendation algorithms, or citation network analysis.",
-      "position_rationale": "This paper ranks last (10/10) because it clears zero of five components and has the lowest max component similarity (0.38) of any paper in the set, with no substantive connection to any aspect of Dr. Chen's research agenda in scientific text mining and document understanding. The recommended action of Skip is fully warranted.",
-      "tangential_flag": false,
-      "missing_information": "nothing material missing",
-      "rationale_status": "ok"
+        "decision_status": "ok"
+      }
+    ],
+    "feed_summary": {
+      "text": "The top three papers this week form a tightly connected cluster that speaks directly to mechanistic interpretability research: the SAE feature intervention study, the superposition hypothesis revisitation, and the induction circuit ablation work collectively advance the field's understanding of how sparse, geometry-respecting internal representations can be both identified and causally manipulated in transformer models. Together, they bridge the gap between theory and intervention — the superposition paper grounds the geometric assumptions that SAE methods rely on, while the induction circuit work demonstrates what becomes possible when those representations are precisely targeted for ablation. For Dr. Chen, this combination is particularly significant because it suggests a maturing toolkit where feature-level interpretability is no longer just descriptive but increasingly actionable for steering and auditing model behavior.",
+      "summary_status": "ok"
     }
-  ],
-  "feed_summary": {
-    "text": "The top three papers form a particularly cohesive cluster for this researcher: \"Dense Retrieval for Scientific Literature\" and \"Transformer-Based Scientific Paper Recommendation\" together establish a strong methodological foundation in neural embedding and contrastive learning approaches for scientific information retrieval, while \"Multi-Modal Scientific Document Representation with Cross-Attention Fusion\" extends this core by introducing cross-modal fusion, suggesting the researcher is working at the intersection of retrieval and rich document representation. Taken together, these papers collectively point toward a research agenda concerned with building more expressive, context-aware systems for discovering and representing scientific knowledge — likely informing either a recommendation pipeline, a semantic search system, or both — where advances in one paper's embedding strategy directly complement and can be integrated with the architectural choices explored in the others.",
-    "summary_status": "ok"
+  },
+  {
+    "researcher_id": "RES-002",
+    "researcher_name": "Dr. Marcus Webb",
+    "feed": [
+      {
+        "feed_item_id": "FI-R2-03",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-03",
+        "position": 1,
+        "title": "Neural Minimum-Weight Perfect Matching for Surface Code Decoding",
+        "publication_date": "2026-03-05",
+        "relevance_decision": true,
+        "relevance_score": 0.97,
+        "council_confidence": 99,
+        "relevance_reason": "This paper directly advances RC-R2-04 ('Neural and algorithmic decoding for quantum error correction') by developing a graph neural network decoder that approximates MWPM for surface codes, achieving significant latency improvements. It is the source paper PAP-R2-03 itself, which defined this research component, and falls squarely within the researcher's selected subfields of Quantum error correction and Quantum decoding algorithms.",
+        "matched_components": [
+          {
+            "component": "Neural and algorithmic decoding for quantum error correction",
+            "source_paper_ids": [
+              "PAP-R2-03"
+            ],
+            "match_explanation": "This paper IS the source paper (PAP-R2-03) that defined this component. It trains a GNN to approximate MWPM on syndrome graphs for surface code decoding, directly instantiating the thread's focus on fast, accurate learned neural decoders that process syndrome measurement outcomes for surface codes in real time."
+          }
+        ],
+        "matched_subfields": [
+          "Quantum error correction (Physics)",
+          "Quantum decoding algorithms (Physics)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is PAP-R2-03, the exact source paper that defines RC-R2-04. It develops a GNN-based neural decoder for surface codes approximating MWPM, which is precisely the neural and algorithmic decoding thread. It matches all three criteria: component, subfield, and researcher focus.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "As the source paper itself rather than a new candidate extending the thread, one might question whether it should appear in a 'feed' context. However, since the task is simply relevance assessment, and this paper is unambiguously central to the researcher's work, there is no meaningful argument against inclusion.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls within Quantum error correction and Quantum decoding algorithms, both explicitly selected subfields. The arXiv categories quant-ph and cs.LG are appropriate for a neural decoding paper.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Webb's stated research interests include quantum decoding algorithms and surface codes specifically. This paper addresses real-time decoding latency for surface codes using neural methods, which is substantively central, not peripheral.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is entirely substantive, not superficial. The paper does not merely share terminology with the decoding component — it is the defining source paper of RC-R2-04, directly advancing neural decoding for surface codes by replacing classical MWPM with a GNN approximation that achieves distance-independent latency. The abstract details syndrome graph processing, logical error rate parity with MWPM, and robustness to distribution shift, all of which are core concerns of the research thread. There is no keyword-only overlap here.",
+          "resolution": "All four voices agreed unanimously. The paper is PAP-R2-03, the source paper of RC-R2-04, making it definitionally relevant. No dissent."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-02",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-02",
+        "position": 2,
+        "title": "Reducing Magic State Distillation Overhead via Concatenated Reed-Muller Codes",
+        "publication_date": "2026-02-17",
+        "relevance_decision": true,
+        "relevance_score": 0.97,
+        "council_confidence": 99,
+        "relevance_reason": "This paper directly advances RC-R2-03 (Magic state distillation protocols) by presenting a new distillation protocol using concatenated Reed-Muller codes that achieves 40% fewer physical qubits than the leading 15-to-1 protocol — precisely the kind of overhead reduction Dr. Webb's research targets. It also touches RC-R2-02 (Fault-tolerant gate synthesis) through its focus on logical T gates and is explicitly compatible with surface code architectures (RC-R2-01).",
+        "matched_components": [
+          {
+            "component": "Magic state distillation protocols",
+            "source_paper_ids": [
+              "PAP-R2-04"
+            ],
+            "match_explanation": "The paper presents a concrete distillation protocol using concatenated Reed-Muller codes achieving 40% qubit overhead reduction versus the standard 15-to-1 protocol, directly addressing the core goal of RC-R2-03: reducing qubit-time overhead while purifying noisy magic states to high fidelity for fault-tolerant T gates."
+          },
+          {
+            "component": "Fault-tolerant gate synthesis",
+            "source_paper_ids": [
+              "PAP-R2-02",
+              "PAP-R2-05"
+            ],
+            "match_explanation": "The protocol targets logical T gate synthesis with full fault-tolerance guarantees, compatible with standard surface code architectures, which aligns with RC-R2-02's focus on synthesising universal logical gate sets using magic state distillation."
+          },
+          {
+            "component": "Surface code architecture and threshold analysis",
+            "source_paper_ids": [
+              "PAP-R2-01",
+              "PAP-R2-06"
+            ],
+            "match_explanation": "The protocol is explicitly validated under circuit-level noise simulations at realistic error rates and confirmed compatible with standard surface code architectures, making it relevant to RC-R2-01's focus on realistic hardware noise models."
+          }
+        ],
+        "matched_subfields": [
+          "Quantum error correction (Physics)",
+          "Fault-tolerant quantum computation (Physics)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is a textbook match for Dr. Webb's core research agenda. RC-R2-03 explicitly focuses on 'developing and optimising distillation protocols that purify noisy magic states to high fidelity with focus on reducing qubit-time overhead.' The paper delivers exactly this: a new protocol with analytically derived and simulation-verified 40% qubit reduction. It hits the primary source paper thread (PAP-R2-04) squarely.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "No meaningful counter-argument exists here. The paper's content, method, and goals are in near-perfect alignment with the researcher's profile. The only check is whether this is the source paper itself (PAP-R2-02) being evaluated — but source papers by definition belong in the feed, and the content independently warrants inclusion.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls squarely within 'Fault-tolerant quantum computation (Physics)' and implicitly within 'Quantum error correction (Physics)' given its stabiliser code context and circuit-level noise analysis. Both are selected subfields.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "The paper is not a peripheral or keyword-overlapping work. It addresses the specific bottleneck (physical qubit overhead of magic state distillation) that Dr. Webb's research is designed to solve, and does so with a novel code-based construction. No scope concerns.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match here is unambiguously substantive. The paper does not merely mention magic state distillation as background context — it constructs a full distillation protocol, derives resource overhead analytically, validates under circuit-level noise, and benchmarks against the canonical 15-to-1 protocol. This is precisely the kind of direct protocol development and overhead analysis that RC-R2-03 is built around. Surface-keyword overlap is not a concern: the paper's entire contribution lives within the research thread.",
+          "resolution": "All four voices agreed strongly in favour. There is no dissent. The paper is a direct, substantive contribution to Dr. Webb's primary research component (RC-R2-03) and a clear match to two of his three selected subfields."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-04",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-04",
+        "position": 3,
+        "title": "Bridged Magic State Distillation: Interpolating Between 15-to-1 and 20-to-4 Protocols",
+        "publication_date": "2026-01-22",
+        "relevance_decision": true,
+        "relevance_score": 0.97,
+        "council_confidence": 99,
+        "relevance_reason": "This paper directly advances RC-R2-03 (Magic state distillation protocols) by introducing a new family of distillation protocols that interpolate between the 15-to-1 and 20-to-4 protocols, achieving a 25% reduction in qubit-time cost — precisely the kind of overhead reduction Dr. Webb focuses on. It also falls squarely within the Fault-tolerant quantum computation and Quantum error correction subfields.",
+        "matched_components": [
+          {
+            "component": "Magic state distillation protocols",
+            "source_paper_ids": [
+              "PAP-R2-04"
+            ],
+            "match_explanation": "The paper introduces 'bridged magic state distillation,' a novel protocol family that interpolates between the standard 15-to-1 and 20-to-4 distillation protocols by sharing ancilla resources across rounds. It directly addresses the core concern of RC-R2-03 — reducing qubit-time overhead in magic state distillation — achieving a 25% cost reduction at a target output error of 10^-10, and provides a resource-counting framework for optimising the bridging parameter under hardware constraints."
+          },
+          {
+            "component": "Fault-tolerant gate synthesis",
+            "source_paper_ids": [
+              "PAP-R2-02",
+              "PAP-R2-05"
+            ],
+            "match_explanation": "The protocols are described in Clifford + T gate sets compatible with planar connectivity, directly supporting fault-tolerant T gate synthesis and connecting to code-compatible gate constructions that RC-R2-02 concerns itself with."
+          }
+        ],
+        "matched_subfields": [
+          "Fault-tolerant quantum computation (Physics)",
+          "Quantum error correction (Physics)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper is essentially a core contribution to magic state distillation — the exact topic of RC-R2-03. It proposes a new protocol family, quantifies qubit-time overhead reductions (25%), and provides a resource framework for practitioners. This is textbook advancement of the research thread, not surface overlap.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The candidate paper ID is PAP-R2-04, which is also listed as the sole source paper for RC-R2-03. Could this be a self-referential match? However, the abstract describes genuinely new content (bridged protocols, interpolation between 15-to-1 and 20-to-4, the 25% overhead reduction) that extends beyond what the source paper ID alone implies. This is the paper that defines the component, so it trivially matches.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls directly in 'Fault-tolerant quantum computation' and touches 'Quantum error correction' through stabiliser codes and planar connectivity constraints. Both are selected subfields. No ambiguity here.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Webb's stated focus includes 'reducing the resource overhead of universal fault-tolerant gates' and 'magic state distillation protocols that bring large-scale logical qubit systems within reach.' The 25% qubit-time reduction and the resource-counting framework are precisely in scope. No concerns about out-of-scope topics.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is unambiguously substantive. The paper does not merely mention magic state distillation as background — it introduces a new protocol family ('bridged distillation') that directly extends the 15-to-1 and 20-to-4 protocols that are canonical in the field RC-R2-03 tracks. The abstract specifies concrete improvements: 25% qubit-time reduction at 10^-10 target error, a resource-counting framework, and Clifford+T compatibility with planar connectivity. Each of these directly advances the research thread's stated goals of developing and optimising distillation protocols with reduced overhead. This is the defining paper for RC-R2-03 itself, making the match maximal.",
+          "resolution": "All four voices agreed unanimously. The paper is a core, direct contribution to RC-R2-03 (Magic state distillation protocols) and secondarily to RC-R2-02 (Fault-tolerant gate synthesis). The skeptic's concern about self-referential matching was resolved by noting the abstract describes substantively new content. Decision: strong accept with relevance score 0.97."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-01",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-01",
+        "position": 4,
+        "title": "High-Threshold Surface Code Architecture with Correlated Pauli Noise",
+        "publication_date": "2026-01-08",
+        "relevance_decision": true,
+        "relevance_score": 0.97,
+        "council_confidence": 99,
+        "relevance_reason": "This paper directly advances RC-R2-01 ('Surface code architecture and threshold analysis') by designing a surface code architecture optimised for correlated Pauli noise in superconducting qubits, deriving improved error thresholds (0.72% to 1.14%), and validating via Monte Carlo simulations across multiple code distances — precisely the activities described in that component. It also falls squarely within Dr. Webb's selected subfields of quantum error correction and fault-tolerant quantum computation.",
+        "matched_components": [
+          {
+            "component": "Surface code architecture and threshold analysis",
+            "source_paper_ids": [
+              "PAP-R2-01",
+              "PAP-R2-06"
+            ],
+            "match_explanation": "The paper introduces a redesigned syndrome extraction schedule and matching decoder tailored to correlated Pauli noise, raising the effective error threshold from 0.72% to 1.14% under a physically motivated noise model. This is a direct substantive contribution to surface code architecture optimisation and threshold computation under realistic hardware noise — the exact research thread of RC-R2-01."
+          }
+        ],
+        "matched_subfields": [
+          "Quantum error correction (Physics)",
+          "Fault-tolerant quantum computation (Physics)",
+          "Quantum decoding algorithms (Physics)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper is essentially a textbook example of what RC-R2-01 is about: a surface code architecture designed for realistic hardware noise (correlated Pauli noise in superconducting arrays), with threshold derivation and Monte Carlo validation. The threshold improvement and noise-model-aware decoder design match Dr. Webb's stated interests precisely. This is not a surface keyword match — the abstract describes exactly the science in the component description.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "I have no substantive objection. One could note the decoder aspect slightly overlaps with RC-R2-04 (neural/algorithmic decoding), but the decoder here is a matching decoder accounting for spatial correlations, which is incidental to the primary contribution of threshold improvement and architecture design. The fit to RC-R2-01 is unambiguous.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "All three of Dr. Webb's selected subfields are touched: quantum error correction (core topic), fault-tolerant quantum computation (architectural framing), and quantum decoding algorithms (the correlation-aware matching decoder). The paper sits at the intersection of all three.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "The paper also appears to be one of the source papers for RC-R2-01 (PAP-R2-01 listed in source_paper_ids), confirming it is definitionally within scope. No scope concerns.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is entirely substantive. The paper's core contributions — redesigning syndrome extraction for correlated noise, raising the threshold by ~58%, and validating across code distances d=5 to d=21 — are precisely the activities described in RC-R2-01 (designing architectures optimised for realistic hardware noise, deriving and computing error thresholds). This is not a case of shared terminology; the paper advances the exact scientific questions the component was built around. The correlated noise model targeting superconducting qubit crosstalk makes it directly applicable to Dr. Webb's hardware-oriented research focus.",
+          "resolution": "All four council voices agreed without dissent. The paper is a canonical match to RC-R2-01 and all three selected subfields. Accepted with high confidence."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-06",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-06",
+        "position": 5,
+        "title": "Threshold Theorem Generalisation for Biased Pauli Noise in Planar Codes",
+        "publication_date": "2026-04-12",
+        "relevance_decision": true,
+        "relevance_score": 0.95,
+        "council_confidence": 97,
+        "relevance_reason": "This paper directly advances RC-R2-01 ('Surface code architecture and threshold analysis') by deriving generalised threshold theorems for biased Pauli noise in planar codes, including surface codes and XZZX codes, and computing numerical thresholds — precisely the kind of threshold analysis the component describes. It is strongly aligned with Dr. Webb's stated interests in surface codes, quantum error correction, and noise threshold theorems, and falls squarely within the selected subfields of Quantum error correction and Fault-tolerant quantum computation.",
+        "matched_components": [
+          {
+            "component": "Surface code architecture and threshold analysis",
+            "source_paper_ids": [
+              "PAP-R2-01",
+              "PAP-R2-06"
+            ],
+            "match_explanation": "The paper derives a generalised threshold theorem for biased Pauli noise in planar codes (including surface codes and XZZX codes), computes numerical thresholds across a range of bias ratios, and shows that XZZX surface codes achieve thresholds above 3% at high bias — directly extending the threshold analysis thread that considers realistic hardware noise models and error threshold computation."
+          }
+        ],
+        "matched_subfields": [
+          "Quantum error correction (Physics)",
+          "Fault-tolerant quantum computation (Physics)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper is a textbook fit for RC-R2-01. It generalises the standard threshold theorem to biased Pauli noise in planar codes — surface codes and XZZX codes — and provides numerical threshold computations across bias ratios up to 1000. This is exactly the kind of threshold analysis the component was built around, and the paper even appears as a source paper (PAP-R2-06) in that component's provenance. Dr. Webb's stated interest in 'noise threshold theorems' is directly addressed.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "Technically PAP-R2-06 is listed as a source paper for RC-R2-01 in the component provenance itself. We should confirm this is not a trivial circular match — i.e., we are not simply accepting a paper because it is already listed. However, reading the abstract independently, the paper genuinely substantiates the component: it provides rigorous theoretical backing for biased-noise thresholds in planar codes, a topic central to Dr. Webb's work. There is no superficiality concern here.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls clearly within 'Quantum error correction (Physics)' with a topic score of 0.91 and 'Surface codes' at 0.88. These are two of Dr. Webb's selected subfields, and the abstract's focus on threshold theorems and planar code architectures is fully consistent with the subfield scope.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Webb's description explicitly names 'noise threshold theorems' as a research interest. The paper derives and computes generalised threshold theorems for a realistic noise model (biased Pauli) on hardware-relevant platforms (superconducting), even connecting to experimental results. This is not peripheral — it is central to the described research programme.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is unambiguously substantive, not superficial. The paper does not merely use the words 'surface code' or 'threshold' in passing — it derives a new theoretical result (generalised threshold theorem for biased Pauli noise), applies it to the specific code families Dr. Webb works on (surface codes and XZZX codes), and provides numerical threshold computations across a realistic range of bias parameters. This is precisely the kind of rigorous threshold analysis that defines RC-R2-01. Furthermore, the paper is listed as a source paper (PAP-R2-06) for that component, confirming it was identified by the researcher themselves as foundational to this thread. The abstract's content independently confirms this is a core contribution, not a keyword-sharing peripheral paper.",
+          "resolution": "All four voices agreed that this paper is a strong, substantive match. The skeptic raised the question of circular matching (source paper already listed in the component) but concluded after examining the abstract independently that the match is genuine. The council unanimously accepts the paper with high confidence."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-05",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-05",
+        "position": 6,
+        "title": "Transversal CNOT Implementation in 3D Color Codes with Planar Projections",
+        "publication_date": "2025-12-14",
+        "relevance_decision": true,
+        "relevance_score": 0.88,
+        "council_confidence": 90,
+        "relevance_reason": "This paper directly advances RC-R2-02 (Fault-tolerant gate synthesis) by presenting a transversal CNOT construction in a planar projection of a 3D color code, which is precisely the domain of fault-tolerant logical gate synthesis. It also benchmarks against surface code implementations using magic state distillation, touching RC-R2-03, and falls squarely within Dr. Webb's selected subfields of fault-tolerant quantum computation and quantum error correction.",
+        "matched_components": [
+          {
+            "component": "Fault-tolerant gate synthesis",
+            "source_paper_ids": [
+              "PAP-R2-02",
+              "PAP-R2-05"
+            ],
+            "match_explanation": "The paper presents a transversal CNOT gate construction with full fault-tolerance guarantees in a planar projection of a 3D color code, directly extending the research thread on synthesising universal logical gate sets — specifically CNOT gates — using transversal gate constructions rather than magic state distillation overhead."
+          },
+          {
+            "component": "Magic state distillation protocols",
+            "source_paper_ids": [
+              "PAP-R2-04"
+            ],
+            "match_explanation": "The paper explicitly compares its transversal CNOT approach against surface code implementations that use magic state distillation, quantifying the resource overhead trade-offs. This provides substantive context for understanding when distillation-free transversal approaches are advantageous, directly informing the magic state distillation research thread."
+          }
+        ],
+        "matched_subfields": [
+          "Fault-tolerant quantum computation (Physics)",
+          "Quantum error correction (Physics)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is a textbook fit for RC-R2-02. Dr. Webb's component explicitly covers 'transversal gate constructions' as one of the mechanisms for fault-tolerant gate synthesis alongside magic state distillation and code switching. The paper delivers exactly that — a transversal CNOT in a color code — and even benchmarks it against magic state distillation, which is central to RC-R2-03. The topics score 0.92 for fault-tolerant quantum computation. This is a strong accept.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The paper is about 3D color codes, not surface codes specifically. Dr. Webb's profile is surface-code-centric. However, RC-R2-02's description does not restrict to surface codes — it says 'code switching, or transversal gate constructions' broadly. The comparison with surface code distillation approaches also makes it directly relevant to Dr. Webb's interests. The color code context is not a disqualifier.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Both selected subfields — fault-tolerant quantum computation and quantum error correction — are directly engaged. The paper is in quant-ph. No concerns on subfield alignment.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "While Dr. Webb's primary focus is surface codes, his broader research interest is reducing resource overhead of universal fault-tolerant gates. This paper specifically addresses that by showing a transversal approach beats magic state distillation at d≥9. It is substantively relevant, not merely sharing keywords.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is substantive, not superficial. RC-R2-02 explicitly lists transversal gate constructions as a core mechanism alongside magic state distillation and code switching. This paper delivers a novel transversal CNOT construction with fault-tolerance guarantees and quantifies overhead relative to magic state distillation — which is the exact substance of Dr. Webb's research component. The paper does not merely mention 'fault-tolerant gates' in passing; it is specifically engineered to solve the problem of fault-tolerant CNOT synthesis in a hardware-mappable way, which is the core problem of RC-R2-02. The surface code specificity of Dr. Webb's profile is not violated because the paper's explicit comparison baseline is surface codes with magic state distillation.",
+          "resolution": "All four voices agreed this is a substantive match to RC-R2-02 and secondarily RC-R2-03. The only minor concern — color codes vs. surface codes — was resolved by noting RC-R2-02 is not restricted to surface codes and the paper directly benchmarks against surface code distillation approaches. Decision: accept with high confidence."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-09",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-09",
+        "position": 7,
+        "title": "Quantum Kernel Methods for Classification on Near-Term Hardware",
+        "publication_date": "2026-05-10",
+        "relevance_decision": false,
+        "relevance_score": 0.05,
+        "council_confidence": 98,
+        "relevance_reason": "This paper addresses quantum kernel methods and quantum machine learning on NISQ hardware, which is entirely outside Dr. Webb's research focus on fault-tolerant quantum computation, surface codes, and decoding algorithms. It shares the quantum computing domain superficially but does not advance any of his research components or selected subfields.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper uses superconducting quantum hardware and discusses noise levels, which are relevant to quantum error correction concerns. One could argue it touches on hardware noise characterisation.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The paper is squarely about quantum machine learning — specifically quantum kernel SVMs for classification tasks. It has no content on error correction, surface codes, fault-tolerant gates, magic state distillation, or decoding algorithms. The mention of hardware noise is incidental to the ML benchmarking goal, not a study of noise thresholds or error correction.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Webb's selected subfields are quantum error correction, fault-tolerant quantum computation, and quantum decoding algorithms. This paper belongs to quantum machine learning and NISQ computing — neither of which appears in his subfield list. There is zero subfield overlap.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "None of Dr. Webb's four research components — surface code architecture, fault-tolerant gate synthesis, magic state distillation, or neural/algorithmic decoding — are addressed by this paper. The topics listed (NISQ computing, quantum machine learning) are orthogonal to his research programme.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "The only connection this paper could claim to Dr. Webb's work is that both involve quantum hardware. However, this is purely superficial: the paper investigates whether quantum kernel functions can classify data better than classical kernels on NISQ devices, a fundamentally different research agenda from fault-tolerant computation. Dr. Webb's components require advances in error correction codes, distillation protocols, or decoding algorithms — none of which appear anywhere in this abstract. The paper explicitly targets near-term, noisy hardware without error correction, which is the opposite of Dr. Webb's fault-tolerant focus.",
+          "resolution": "All four voices agree this paper is irrelevant. The advocate could not find a substantive connection beyond shared hardware context. The paper is a clear reject with very high council confidence."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-07",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-07",
+        "position": 8,
+        "title": "Zero-Noise Extrapolation for Quantum Error Mitigation on NISQ Circuits",
+        "publication_date": "2026-02-28",
+        "relevance_decision": false,
+        "relevance_score": 0.05,
+        "council_confidence": 97,
+        "relevance_reason": "This paper addresses quantum error mitigation (ZNE) for NISQ circuits, which is fundamentally distinct from quantum error correction and fault-tolerant computation. Dr. Webb's research focuses on surface codes, decoding algorithms, magic state distillation, and fault-tolerant gate synthesis — none of which are engaged by ZNE techniques designed for near-term noisy devices without error correction.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper deals with quantum noise and is published in quant-ph, which superficially overlaps with Dr. Webb's interest in noise threshold theorems and error suppression. Both ZNE and QEC aim to reduce the impact of hardware noise on computation.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "ZNE is an error mitigation technique for NISQ devices — it does not correct errors, it statistically suppresses their effect in expectation values without encoding logical qubits or using stabiliser codes. This is categorically different from fault-tolerant QEC. Dr. Webb's components (surface code architectures, decoding algorithms, magic state distillation, fault-tolerant gate synthesis) are all predicated on the fault-tolerant paradigm, not NISQ mitigation.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Webb's selected subfields are quantum error correction, fault-tolerant quantum computation, and quantum decoding algorithms. ZNE belongs to the distinct subfield of quantum error mitigation, which is explicitly a NISQ-era alternative to error correction, not a component of it. None of the researcher's subfields are matched.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "The paper's own framing — 27-qubit NISQ circuits, chemistry and combinatorial optimisation benchmarks, expectation value bias reduction — places it firmly outside the scope of logical qubit systems, fault-tolerant thresholds, or syndrome-based decoding. There is no surface code, no logical qubit, and no decoder involved.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "The apparent overlap is entirely superficial: both ZNE and QEC deal with 'noise,' but they operate in completely different paradigms. QEC encodes information into logical qubits and actively corrects errors through syndrome measurement and decoding; ZNE instead runs noisy circuits at amplified noise levels and post-processes classical results to extrapolate toward a noise-free estimate. ZNE explicitly targets NISQ devices that lack the qubit overhead for error correction. None of Dr. Webb's research components — surface code design, fault-tolerant gate synthesis, magic state distillation, or neural decoding — are advanced by a paper on adaptive extrapolation schemes for 27-qubit unencoded circuits. The match is keyword-level ('noise', 'quantum') only.",
+          "resolution": "All four council voices leaned against inclusion. The advocate conceded that the superficial overlap on 'noise reduction' does not constitute substantive alignment. The paper is unanimously rejected as irrelevant to Dr. Webb's fault-tolerant QEC research programme."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-08",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-08",
+        "position": 9,
+        "title": "Variational Quantum Eigensolver for Ground State Energies of Small Molecules on NISQ Hardware",
+        "publication_date": "2026-03-20",
+        "relevance_decision": false,
+        "relevance_score": 0.04,
+        "council_confidence": 98,
+        "relevance_reason": "This paper is about variational quantum eigensolvers applied to quantum chemistry on NISQ hardware, which is entirely outside Dr. Webb's research focus on fault-tolerant quantum computation, surface codes, and decoding algorithms. It does not address any of his research components and falls in the NISQ paradigm that is explicitly distinct from the fault-tolerant paradigm he studies.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper is in the quant-ph category, which broadly overlaps with Dr. Webb's domain. One could argue error mitigation (ZNE) is tangentially related to error correction concepts.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "VQE on NISQ hardware is philosophically opposed to Dr. Webb's work — NISQ computing explicitly forgoes error correction and fault tolerance, working instead with noisy qubits and heuristic error mitigation. ZNE is not quantum error correction. There is no surface code, no decoding, no magic state distillation, and no fault-tolerant gate synthesis here.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "None of Dr. Webb's selected subfields (Quantum error correction, Fault-tolerant quantum computation, Quantum decoding algorithms) are present in this paper. The paper falls under quantum chemistry simulation and NISQ computing, which are not in his subfield list.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "The paper's topics are NISQ computing and quantum chemistry — both entirely outside Dr. Webb's stated research interests. His profile explicitly mentions reducing overhead for large-scale logical qubit systems, which is the antithesis of the 5-to-12 noisy physical qubit regime discussed here.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "Any apparent connection between this paper and Dr. Webb's work is entirely superficial — both involve quantum hardware, but that is where the overlap ends. The paper addresses variational algorithms, ansatz design, and zero-noise extrapolation for molecular energy calculations on NISQ devices. Dr. Webb's components require surface code thresholds, fault-tolerant gate synthesis, magic state distillation, or QEC decoders — none of which appear in this paper's abstract or scope. The NISQ paradigm explicitly operates without error correction, making this paper not just irrelevant but conceptually orthogonal to Dr. Webb's research program.",
+          "resolution": "All four voices agreed against inclusion. The advocate's attempt to link ZNE to error correction was dismissed by the skeptic and subfield reviewer as a superficial keyword overlap with no substantive connection. The decision to reject is unanimous with high confidence."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R2-10",
+        "researcher_id": "RES-002",
+        "paper_id": "PAP-R2-10",
+        "position": 10,
+        "title": "Federated Learning with Differential Privacy for Cross-Silo Healthcare Data",
+        "publication_date": "2026-04-30",
+        "relevance_decision": false,
+        "relevance_score": 0.02,
+        "council_confidence": 99,
+        "relevance_reason": "This paper is about federated learning and differential privacy for healthcare data, with no connection to quantum error correction, surface codes, fault-tolerant quantum computation, or any of Dr. Webb's research components. It falls entirely outside his selected subfields and research interests.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "There is no plausible angle from which this paper connects to Dr. Webb's work. It deals with machine learning privacy in healthcare — not quantum computing in any form.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "One might superficially note that 'decoding' algorithms appear in both quantum error correction and machine learning contexts, but the paper makes zero reference to quantum systems, stabiliser codes, syndrome measurements, or any related concept. The keyword overlap is nonexistent.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Webb's selected subfields are quantum error correction, fault-tolerant quantum computation, and quantum decoding algorithms. This paper's arXiv categories are cs.LG and cs.CR — machine learning and cryptography — with no quantum content whatsoever.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "None of Dr. Webb's four research components (surface code architecture, fault-tolerant gate synthesis, magic state distillation, neural/algorithmic decoding for QEC) are touched by this paper in any substantive or even superficial way.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "There is not even a superficial keyword overlap between this paper and Dr. Webb's research threads. The paper is entirely about federated learning with differential privacy for clinical prediction in healthcare settings. Dr. Webb's work is entirely about quantum error correction and fault-tolerant quantum computation. No shared terminology, methodology, or conceptual framework exists between the two.",
+          "resolution": "All four voices unanimously reject this paper. The council is essentially unanimous with maximum confidence that this paper has no relevance to Dr. Webb's research feed."
+        },
+        "decision_status": "ok"
+      }
+    ],
+    "feed_summary": {
+      "text": "The top three papers this week form a tightly coherent cluster around the practical realization of fault-tolerant quantum computation. The neural minimum-weight perfect matching decoder and the high-threshold surface code architecture under correlated Pauli noise directly address the twin challenges of decoding speed and noise robustness that determine whether surface codes are viable at scale, while the two magic state distillation papers — one leveraging concatenated Reed-Muller codes and one interpolating between established protocols — tackle the resource overhead that remains the principal bottleneck between surface code memory and universal fault-tolerant logic. Together, these papers collectively advance Dr. Webb's likely interest in closing the gap between theoretical fault-tolerance thresholds and the hardware-efficient, low-overhead architectures needed to make surface-code-based quantum computing practically achievable.",
+      "summary_status": "ok"
+    }
+  },
+  {
+    "researcher_id": "RES-003",
+    "researcher_name": "Dr. Aisha Patel",
+    "feed": [
+      {
+        "feed_item_id": "FI-R3-02",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-02",
+        "position": 1,
+        "title": "Scalable Gene Regulatory Network Inference from Single-Cell Data via Sparse Graphical Lasso",
+        "publication_date": "2026-02-25",
+        "relevance_decision": true,
+        "relevance_score": 0.97,
+        "council_confidence": 99,
+        "relevance_reason": "This paper is a direct source paper (PAP-R3-02) for RC-R3-02 ('Gene regulatory network inference from single-cell data'), making it a foundational match. The scGRNlasso method directly addresses GRN inference from scRNA-seq using sparse graphical models calibrated against CRISPR perturbation benchmarks, and additionally touches chromatin accessibility integration (RC-R3-04) via paired scRNA-seq/scATAC-seq application.",
+        "matched_components": [
+          {
+            "component": "Gene regulatory network inference from single-cell data",
+            "source_paper_ids": [
+              "PAP-R3-02"
+            ],
+            "match_explanation": "This paper IS the source paper for RC-R3-02. It presents scGRNlasso, a sparse graphical Lasso approach for inferring transcription factor-to-target gene regulatory networks from scRNA-seq data, benchmarked against CRISPR perturbation ground truth — exactly the research thread described in this component."
+          },
+          {
+            "component": "Chromatin accessibility and multimodal single-cell integration",
+            "source_paper_ids": [
+              "PAP-R3-04",
+              "PAP-R3-06"
+            ],
+            "match_explanation": "The paper demonstrates application to a paired scRNA-seq and scATAC-seq dataset for T-cell activation, connecting regulatory network inference with chromatin accessibility data, which aligns with RC-R3-04's focus on jointly embedding scRNA-seq and scATAC-seq modalities."
+          }
+        ],
+        "matched_subfields": [
+          "Single-cell genomics",
+          "Computational biology",
+          "Gene regulation and epigenomics"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is literally listed as PAP-R3-02, the source paper defining RC-R3-02. It is a perfect match by definition — it presents a GRN inference method using sparse graphical Lasso, benchmarks against CRISPR perturbation data, and scales to large scRNA-seq datasets. This is the core of Dr. Patel's research thread.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "No substantive skepticism is warranted here — the candidate paper ID matches exactly the source paper ID for the primary research component. The abstract confirms every element described in RC-R3-02: TF-to-target inference, scRNA-seq expression profiles, statistical/graphical model approaches, and CRISPR perturbation ground truth calibration.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper squarely falls in all three of Dr. Patel's selected subfields: single-cell genomics (scRNA-seq data), computational biology (sparse graphical Lasso methods), and gene regulation and epigenomics (GRN inference with TF binding motifs and scATAC-seq integration).",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "The paper's scope is entirely within Dr. Patel's stated research interests: GRN inference, scRNA-seq, and multimodal integration. There are no extraneous topics that dilute relevance.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is unambiguously substantive — this paper is the named source paper (PAP-R3-02) for research component RC-R3-02. It does not merely share keywords with the component; it is definitionally part of the research thread. The abstract confirms that scGRNlasso addresses dropout-confounded scRNA-seq GRN inference using graphical models with TF binding motif constraints and CRISPR benchmark validation, which are precisely the methodological and evaluative criteria described in RC-R3-02.",
+          "resolution": "All four council voices independently concluded this paper is a strong accept with no dissent. The paper is the source paper for the primary matched component, covers all three selected subfields, and aligns completely with Dr. Patel's stated research interests."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-05",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-05",
+        "position": 2,
+        "title": "Optimal Transport Pseudotime for Recovering Branching Differentiation Trajectories",
+        "publication_date": "2025-12-22",
+        "relevance_decision": true,
+        "relevance_score": 0.96,
+        "council_confidence": 98,
+        "relevance_reason": "OTPseudotime directly advances Dr. Patel's 'Cell trajectory inference and pseudotime analysis' component (RC-R3-03) by presenting a novel optimal transport-based method for pseudotime assignment and branching trajectory reconstruction from scRNA-seq data, which is precisely the focus of that research thread. The paper benchmarks against established methods like Monocle3, addresses known limitations in branching and discontinuous manifold handling, and falls squarely within Dr. Patel's subfields of single-cell genomics and computational biology.",
+        "matched_components": [
+          {
+            "component": "Cell trajectory inference and pseudotime analysis",
+            "source_paper_ids": [
+              "PAP-R3-05",
+              "PAP-R3-06"
+            ],
+            "match_explanation": "OTPseudotime directly extends the trajectory inference and pseudotime assignment thread by framing the problem as an optimal transport problem, enabling superior recovery of branching differentiation trajectories and handling discontinuous manifolds — core challenges identified in this research component. It provides quantitative benchmarks (28% lower Kendall tau error vs. Monocle3) on ground-truth trajectories, substantively advancing the state of the art in pseudotime methods relevant to this thread."
+          }
+        ],
+        "matched_subfields": [
+          "Single-cell genomics (Biological Sciences)",
+          "Computational biology (Biological Sciences)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is a direct methodological contribution to trajectory inference and pseudotime analysis — the exact focus of RC-R3-03. OTPseudotime introduces a principled optimal transport formulation for pseudotime assignment, addresses branching trajectory reconstruction, and benchmarks against canonical methods like Monocle3. It matches the component's description almost word-for-word: 'recovering the temporal ordering of cells along differentiation trajectories from static snapshot scRNA-seq data, including branching trajectory reconstruction and pseudotime assignment.' This is as strong a component match as possible.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The paper is indeed highly relevant, but I note it is listed as one of the source papers (PAP-R3-05) that defined the RC-R3-03 component itself. This means it is not merely relevant but is a constitutive paper of the researcher's existing work. However, as a candidate for the feed, it should still be included — a researcher would want to track papers at the core of their own threads.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls within single-cell genomics and computational biology, both selected subfields. The arXiv categories (q-bio.GN, stat.ML) and topic scores (cell trajectory inference: 0.97, scRNA-seq: 0.85) confirm strong alignment. No concerns here.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "The paper is squarely within Dr. Patel's stated research interests of trajectory inference and scRNA-seq. The optimal transport framing is a methodological innovation, not a superficial keyword match — the abstract clearly describes a new algorithm, benchmarking, and specific technical contributions relevant to Dr. Patel's work.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is entirely substantive. OTPseudotime does not merely mention pseudotime or single-cell data in passing; its entire contribution is a new computational method for pseudotime trajectory inference with branching reconstruction from scRNA-seq data — the precise focus of RC-R3-03. The paper introduces a novel algorithmic framing (optimal transport), demonstrates quantitative improvement over a leading baseline (Monocle3), and addresses specific technical shortcomings (branching trajectories, discontinuous manifolds) that are central challenges in the research thread. This is not surface keyword overlap; the paper's core technical substance is trajectory inference methodology.",
+          "resolution": "All four voices agreed on acceptance. The skeptic noted the paper appears to be a source paper for RC-R3-03, which if anything strengthens rather than weakens its relevance to Dr. Patel's feed. No dissent. Decision: strong accept."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-06",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-06",
+        "position": 3,
+        "title": "Multimodal Single-Cell Integration via Cross-Modal Variational Autoencoders",
+        "publication_date": "2026-04-18",
+        "relevance_decision": true,
+        "relevance_score": 0.95,
+        "council_confidence": 97,
+        "relevance_reason": "This paper directly advances RC-R3-04 (Chromatin accessibility and multimodal single-cell integration) by presenting scMVAE, a cross-modal variational autoencoder that jointly embeds scRNA-seq and scATAC-seq modalities — precisely the core concern of that component. It also touches RC-R3-03 via cell trajectory inference topics and is listed as a source paper (PAP-R3-06) for both RC-R3-03 and RC-R3-04, confirming direct provenance.",
+        "matched_components": [
+          {
+            "component": "Chromatin accessibility and multimodal single-cell integration",
+            "source_paper_ids": [
+              "PAP-R3-04",
+              "PAP-R3-06"
+            ],
+            "match_explanation": "scMVAE learns a shared latent space from both paired and unpaired scRNA-seq and scATAC-seq data, directly addressing the component's goal of jointly embedding these modalities to connect regulatory accessibility with gene expression. The cross-modal imputation capability (predicting RNA from ATAC inputs) and biologically interpretable latent dimensions are substantive advances in multimodal single-cell integration."
+          },
+          {
+            "component": "Cell trajectory inference and pseudotime analysis",
+            "source_paper_ids": [
+              "PAP-R3-05",
+              "PAP-R3-06"
+            ],
+            "match_explanation": "The shared latent space learned by scMVAE captures known regulatory axes in immune and stem cell contexts, which directly supports trajectory inference from multimodal data — a natural extension of pseudotime analysis across modalities."
+          }
+        ],
+        "matched_subfields": [
+          "Single-cell genomics (Biological Sciences)",
+          "Computational biology (Biological Sciences)",
+          "Gene regulation and epigenomics (Biological Sciences)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is listed as PAP-R3-06, which is a source paper for both RC-R3-03 and RC-R3-04. Beyond provenance, the abstract directly describes joint scRNA-seq and scATAC-seq integration via a variational autoencoder — the exact methodological focus of RC-R3-04. The benchmarking against WNN and the cross-modal imputation results are substantive contributions to the field Dr. Patel works in.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "Could the deep learning framing (VAE, cs.LG category) make this more of an ML methods paper than a genomics paper? One should check whether the biological contributions are genuine or whether this is primarily a machine learning contribution dressed in genomics language.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls squarely within Single-cell genomics and Computational biology. It uses 10x Multiome datasets from immune and stem cell contexts, reports adjusted Rand index for cell type co-embeddings, and discusses biologically interpretable regulatory axes — all hallmarks of computational biology research rather than pure ML. All three of Dr. Patel's selected subfields are matched.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "The candidate paper ID PAP-R3-06 is itself listed as a source paper for RC-R3-03 and RC-R3-04 in the researcher's profile, confirming it is definitionally within scope. This is not a borderline case.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is substantive, not superficial. RC-R3-04 explicitly targets jointly embedding scRNA-seq and scATAC-seq modalities to connect regulatory accessibility with gene expression — which is precisely what scMVAE does. The paper introduces a concrete computational architecture (cross-modal VAE), benchmarks it on paired 10x Multiome data, and demonstrates cell type co-embedding improvements and cross-modal imputation. This goes well beyond sharing keywords like 'chromatin accessibility'; it advances the methodological core of the component. The skeptic's concern about ML framing is addressed by the biological validation (cell type ARI benchmarks, regulatory axes, immune/stem cell contexts) that ground the method firmly in the genomics domain.",
+          "resolution": "All four voices converged on acceptance. The skeptic's concern was resolved by the subfield reviewer and scope checker pointing to the biological grounding of the paper and its explicit listing as a source paper in the researcher's profile. Confidence is very high."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-01",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-01",
+        "position": 4,
+        "title": "Contrastive Dimensionality Reduction for Single-Cell RNA-Seq Preserves Rare Cell Type Structure",
+        "publication_date": "2026-01-12",
+        "relevance_decision": true,
+        "relevance_score": 0.95,
+        "council_confidence": 97,
+        "relevance_reason": "This paper directly advances RC-R3-01 ('Single-cell RNA-seq preprocessing and dimensionality reduction') by introducing a novel contrastive dimensionality reduction method explicitly designed to preserve rare cell type structure in scRNA-seq data — a core concern of that component. It is listed as a source paper (PAP-R3-01) for that component and squarely falls within Dr. Patel's selected subfields of single-cell genomics and computational biology.",
+        "matched_components": [
+          {
+            "component": "Single-cell RNA-seq preprocessing and dimensionality reduction",
+            "source_paper_ids": [
+              "PAP-R3-01"
+            ],
+            "match_explanation": "The paper presents contrastive scDR, a dimensionality reduction method for scRNA-seq count matrices that explicitly preserves rare cell type structure — directly addressing the component's focus on 'preserving rare cell type structure and enabling downstream clustering and annotation.' It benchmarks against PCA, UMAP, and t-SNE on five scRNA-seq datasets and is implemented as a Scanpy-compatible module, making it immediately relevant to the preprocessing and dimensionality reduction pipeline described in RC-R3-01."
+          }
+        ],
+        "matched_subfields": [
+          "Single-cell genomics (Biological Sciences)",
+          "Computational biology (Biological Sciences)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This is PAP-R3-01, one of the two source papers that literally define RC-R3-01. It introduces a contrastive dimensionality reduction method for scRNA-seq that specifically targets rare cell type preservation — the exact focus of the component. The abstract demonstrates benchmarking against standard methods (PCA, UMAP, t-SNE), evaluation on five datasets with validated rare populations, and a 23% improvement in silhouette coefficient. This is a textbook match.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "There is nothing to be skeptical about here. The paper is a source paper for RC-R3-01, it directly addresses dimensionality reduction for scRNA-seq with rare cell type preservation, and it falls within the researcher's explicit subfields. The only theoretical concern would be if the paper were entirely peripheral to the component, but it is definitionally central.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper falls squarely within 'Single-cell genomics' and 'Computational biology' — both selected subfields. The arXiv categories q-bio.GN and cs.LG are fully consistent with Dr. Patel's interdisciplinary computational genomics focus. No subfield mismatch whatsoever.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Patel's research description explicitly mentions scRNA-seq, cell type annotation, and recovering structure from heterogeneous cell populations. This paper's contribution — a method that recovers rare cell types lost by standard dimensionality reduction — is precisely within scope. No scope concerns.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match here is deeply substantive, not superficial. The paper does not merely use scRNA-seq terminology; it introduces a novel algorithmic approach (contrastive dimensionality reduction) specifically designed to solve the rare cell type compression problem, which is a named concern within RC-R3-01. The method is evaluated rigorously on five datasets with ground-truth rare populations, and the Scanpy integration makes it immediately applicable to the preprocessing pipelines central to RC-R3-01. This is not a keyword match — it is a direct methodological contribution to the exact research thread.",
+          "resolution": "All four council voices agreed unanimously for acceptance. The paper is a source paper of RC-R3-01, substantively advances the dimensionality reduction thread with a novel contrastive method for rare cell type preservation, and matches both selected subfields and Dr. Patel's stated research interests. No dissent."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-04",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-04",
+        "position": 5,
+        "title": "Peak Calling and Differential Accessibility Analysis for Single-Cell ATAC-Seq",
+        "publication_date": "2026-01-30",
+        "relevance_decision": true,
+        "relevance_score": 0.93,
+        "council_confidence": 97,
+        "relevance_reason": "This paper directly advances RC-R3-04 ('Chromatin accessibility and multimodal single-cell integration') by introducing scPeak, a hierarchical peak caller for scATAC-seq that improves sensitivity for low-abundance cell populations and a differential accessibility test calibrated for single-cell sparsity. It also validates on matched scRNA-seq/scATAC-seq multiome datasets, which is precisely the multimodal integration work described in this component. PAP-R3-04 is listed as a source paper for this component, confirming direct provenance.",
+        "matched_components": [
+          {
+            "component": "Chromatin accessibility and multimodal single-cell integration",
+            "source_paper_ids": [
+              "PAP-R3-04",
+              "PAP-R3-06"
+            ],
+            "match_explanation": "The paper presents scPeak, a cell-type-aware hierarchical peak caller for scATAC-seq that improves sensitivity for rare cell populations by 35% over pseudobulk approaches, and introduces a differential accessibility test suited for single-cell sparsity. Validation on matched scRNA-seq/scATAC-seq multiome datasets directly supports the component's goal of analysing scATAC-seq data to map open chromatin regions and connecting regulatory accessibility with gene expression."
+          }
+        ],
+        "matched_subfields": [
+          "Single-cell genomics (Biological Sciences)",
+          "Computational biology (Biological Sciences)",
+          "Gene regulation and epigenomics (Biological Sciences)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is an exact match for RC-R3-04. It addresses peak calling in scATAC-seq — a core methodology for mapping open chromatin regions — and introduces differential accessibility analysis calibrated for single-cell sparsity. Validation on matched scRNA-seq/scATAC-seq multiome datasets explicitly connects to the multimodal integration aspect of the component. Furthermore, PAP-R3-04 is itself listed as a source paper for RC-R3-04, meaning this candidate paper is the very paper that defined this research thread.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "We should note that PAP-R3-04 in the candidate paper ID is identical to PAP-R3-04 in the source papers list, suggesting this paper is already a source paper for the component rather than a new paper to be evaluated. However, the task is to evaluate relevance, and this paper is clearly highly relevant on its merits regardless of its provenance status.",
+              "leaning": "for"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "All three of Dr. Patel's selected subfields are matched: Single-cell genomics (scATAC-seq is a single-cell genomics technique), Computational biology (scPeak is a computational method), and Gene regulation and epigenomics (chromatin accessibility is directly epigenomic). The match is thorough across subfields.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Patel's stated research interests include chromatin accessibility and ATAC-seq explicitly. The paper's core contributions — peak calling for scATAC-seq and differential accessibility — are central to these interests. There is no scope concern here.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match here is unambiguously substantive, not superficial. The paper does not merely use scATAC-seq as a backdrop; it makes methodological contributions (hierarchical peak calling, differential accessibility testing) that are the exact techniques RC-R3-04 describes — analysing scATAC-seq to map open chromatin regions and calling differential accessibility peaks. The validation on multiome datasets further advances the multimodal integration aspect of the component. This is not keyword overlap; scPeak directly operationalises and improves the core methods described in this research thread.",
+          "resolution": "All four voices converged in favour of acceptance. The paper is substantively aligned with RC-R3-04 in methodology, validation approach, and research goals. The skeptic's note about the paper being a source paper was acknowledged but did not affect the relevance decision. No dissent."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-03",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-03",
+        "position": 6,
+        "title": "Foundation Model Fine-Tuning for Robust Single-Cell Type Annotation Across Tissues",
+        "publication_date": "2026-03-15",
+        "relevance_decision": true,
+        "relevance_score": 0.82,
+        "council_confidence": 88,
+        "relevance_reason": "This paper directly advances the 'Single-cell RNA-seq preprocessing and dimensionality reduction' component (RC-R3-01), which includes cell type annotation as a downstream goal. The fine-tuned foundation model for universal cell-type annotation across tissues addresses a core interest of Dr. Patel's — enabling robust clustering and annotation from scRNA-seq data — and falls squarely within the single-cell genomics and computational biology subfields. Notably, PAP-R3-03 is listed as a source paper for RC-R3-01, confirming direct relevance.",
+        "matched_components": [
+          {
+            "component": "Single-cell RNA-seq preprocessing and dimensionality reduction",
+            "source_paper_ids": [
+              "PAP-R3-01",
+              "PAP-R3-03"
+            ],
+            "match_explanation": "The paper develops a universal cell-type annotator by fine-tuning a foundation model on a large multi-tissue scRNA-seq atlas, directly enabling downstream clustering and annotation — a stated goal of RC-R3-01. It also implicitly addresses batch effect handling, which relates to preprocessing concerns in this component."
+          }
+        ],
+        "matched_subfields": [
+          "Single-cell genomics (Biological Sciences)",
+          "Computational biology (Biological Sciences)"
+        ],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "This paper is a direct match: it fine-tunes a foundation model for cell-type annotation across 48 tissue types, achieving strong macro-F1 scores including on rare subtypes. Cell type annotation is explicitly listed as a research interest of Dr. Patel, and PAP-R3-03 is itself a source paper of RC-R3-01, making this a confirmed relevant paper.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The paper's focus is primarily on annotation via large-scale foundation model fine-tuning — it is more of an applied ML paper using LLM-style pretraining than a methods paper on QC, normalisation, or dimensionality reduction per se. One could argue it is closer to a classification/transfer-learning paper than to the core preprocessing thread.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "The paper clearly falls within single-cell genomics and computational biology as selected subfields. scRNA-seq cell type annotation is a fundamental downstream task in the single-cell workflow, and this paper's approach (handling batch effects without explicit correction, generalising across tissues) is highly relevant to practitioners in Dr. Patel's area.",
+              "leaning": "for"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "PAP-R3-03 is explicitly listed as a source paper for RC-R3-01, which is the strongest possible signal of relevance. Regardless of the skeptic's concern about the ML-heavy framing, this paper is part of the researcher's own canon and must be included.",
+              "leaning": "for"
+            }
+          ],
+          "substantive_vs_superficial": "The match is substantive, not superficial. The paper directly addresses cell-type annotation — an explicit downstream goal of RC-R3-01 — using scRNA-seq data across many tissue types, and handles batch effects relevant to preprocessing concerns. While the skeptic notes the paper leans toward applied ML (foundation model fine-tuning), this does not diminish its substantive contribution to Dr. Patel's research agenda: the paper tackles the exact problem of robust annotation across heterogeneous cell populations, which is central to her work. Furthermore, this paper is identified as a source paper (PAP-R3-03) within RC-R3-01 itself, confirming it is not a superficial keyword match.",
+          "resolution": "The council voted strongly in favour. The skeptic's concern about the ML-centric framing was noted but overruled given that (1) the paper is a source paper of RC-R3-01, (2) it directly advances cell-type annotation as an explicit interest, and (3) it falls within the researcher's selected subfields. No meaningful dissent remains."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-08",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-08",
+        "position": 7,
+        "title": "Genome-Wide CRISPR Screens for Cell Fate Regulators in Embryonic Stem Cell Differentiation",
+        "publication_date": "2026-03-25",
+        "relevance_decision": false,
+        "relevance_score": 0.28,
+        "council_confidence": 78,
+        "relevance_reason": "While this paper identifies cell fate regulators using CRISPR screens and mentions chromatin factors, it is fundamentally an experimental genomics study — it does not develop or evaluate computational methods for single-cell data analysis, GRN inference, trajectory inference, or multimodal integration. The CRISPR perturbation data it generates could serve as ground truth for GRN benchmarking (as in RC-R3-02), but the paper itself does not advance any of Dr. Patel's computational research threads.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "RC-R3-02 explicitly mentions 'calibrated against CRISPR perturbation ground truth' as a key element of GRN inference. This paper generates exactly that kind of CRISPR perturbation data — 18,000 gene knockouts with RNA-seq profiling — for cell fate regulators. It also touches on chromatin remodelling factors, which connects to RC-R3-04. Dr. Patel could use these results directly as benchmarking data.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The paper is an experimental CRISPR screen, not a computational methods paper. It does not develop any algorithms, statistical models, or analytical frameworks for single-cell data. The fact that CRISPR data can serve as ground truth for GRN methods doesn't mean every experimental CRISPR paper belongs in a computational biologist's feed. The paper's contribution is identifying 47 cell fate regulators, not advancing computational methodology.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Patel's selected subfields are single-cell genomics, computational biology, and gene regulation/epigenomics. This paper touches gene regulation broadly, but uses bulk RNA-seq for validation, not single-cell methods. It doesn't fall squarely in single-cell genomics or computational biology — it is experimental molecular biology. The subfield match is weak.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Dr. Patel's profile explicitly states her goal is to 'develop computational methods.' This paper develops no computational methods whatsoever. While the biological content is adjacent, her feed should prioritize papers she can build upon methodologically, not experimental screens that happen to produce data types she analyzes.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "The surface overlap here is real — CRISPR perturbations are mentioned in RC-R3-02 as ground truth calibration data, and chromatin factors appear in RC-R3-04. However, the paper's actual contribution is the experimental discovery of cell fate regulators through large-scale knockout screens with bulk RNA-seq validation. It does not develop, benchmark, or evaluate any computational methods for GRN inference, scRNA-seq analysis, trajectory reconstruction, or multimodal integration. RC-R3-02 references CRISPR data as inputs or benchmarks for computational tools; this paper is the upstream experimental work that might produce such benchmarks, not a paper that advances the computational thread itself. The match is therefore superficial — it shares biological domain and one methodological touchpoint but does not advance any of Dr. Patel's research components.",
+          "resolution": "Three of four voices argued against inclusion. The advocate's point about CRISPR ground truth is noted but ultimately insufficient — the paper must substantively advance a computational research thread, not merely generate potentially useful experimental data. The council resolves to reject with moderate-to-high confidence."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-07",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-07",
+        "position": 8,
+        "title": "Graph-Based Spatial Transcriptomics Deconvolution for Tissue Organisation Mapping",
+        "publication_date": "2026-02-10",
+        "relevance_decision": false,
+        "relevance_score": 0.28,
+        "council_confidence": 78,
+        "relevance_reason": "SpatialDeconv-GNN addresses spatial transcriptomics deconvolution using graph neural networks, which is methodologically distinct from Dr. Patel's research threads. While the paper references scRNA-seq as a reference atlas input, the core contribution — spatial neighbourhood-regularised deconvolution of tissue spots — does not advance any of her named components (scRNA-seq preprocessing, GRN inference, trajectory analysis, or chromatin/multimodal integration). Spatial transcriptomics is not among her selected subfields.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "The paper involves single-cell RNA sequencing data as a matched reference for deconvolution, and deconvolution relates to cell type annotation — a topic Dr. Patel's profile mentions. The paper falls under q-bio.GN and uses scRNA-seq data, which are core to her work. There could be relevance to her RC-R3-01 component on cell type annotation.",
+              "leaning": "for"
+            },
+            {
+              "role": "skeptic",
+              "argument": "The paper's primary contribution is a graph neural network for deconvolving spatially resolved tissue spots — the scRNA-seq reference is only used as an external input, not the subject of methodological development. Cell type annotation in Dr. Patel's profile refers to annotating single-cell clusters in scRNA-seq data, not deconvolving bulk spatial transcriptomics spots. These are fundamentally different problems.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Patel's selected subfields are single-cell genomics, computational biology, and gene regulation/epigenomics. Spatial transcriptomics is an adjacent but distinct subfield not listed in her profile. The paper does not touch chromatin accessibility, gene regulatory networks, or trajectory inference at all.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "None of Dr. Patel's four research components — preprocessing/dimensionality reduction, GRN inference, trajectory/pseudotime analysis, or chromatin/multimodal integration — are substantively advanced by a method for spatial spot deconvolution. The only overlap is the shared use of gene expression data, which is too broad a criterion to justify inclusion.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "The surface overlap is real but shallow: the paper uses scRNA-seq reference atlases and involves gene expression data, which share terminology with Dr. Patel's research. However, the substantive contribution — graph neural network regularisation of spatial neighbourhood structure for tissue spot deconvolution — is a spatial transcriptomics-specific problem that has no meaningful intersection with any of her four research components. Her RC-R3-01 is about scRNA-seq preprocessing and dimensionality reduction for single cells, not for mixed tissue spots. The paper does not contribute to GRN inference, trajectory analysis, or chromatin accessibility integration. The scRNA-seq angle is purely instrumental (as a reference) rather than a methodological contribution to single-cell genomics.",
+          "resolution": "Three voices voted against and one weakly for. The consensus is that the scRNA-seq connection is instrumental rather than substantive, and spatial transcriptomics deconvolution is outside Dr. Patel's research scope and selected subfields. The paper is rejected with moderate-high confidence."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-10",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-10",
+        "position": 9,
+        "title": "Large Language Models as Molecular Property Predictors for Drug Discovery",
+        "publication_date": "2026-04-26",
+        "relevance_decision": false,
+        "relevance_score": 0.03,
+        "council_confidence": 99,
+        "relevance_reason": "This paper is entirely focused on benchmarking large language models for ADMET molecular property prediction in drug discovery, using SMILES string representations of small molecules. It has no connection to single-cell genomics, gene regulatory network inference, chromatin accessibility, or trajectory inference — Dr. Patel's core research areas.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "One could argue that LLMs are increasingly applied across computational biology, and Dr. Patel works in computational biology broadly. However, this paper specifically addresses small-molecule ADMET property prediction using SMILES strings — a chemistry domain entirely orthogonal to single-cell genomics.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "This paper has zero overlap with any of Dr. Patel's research components. It does not involve RNA sequencing, chromatin accessibility, gene regulation, cell trajectories, or any genomic data modality. The computational biology subfield label is far too broad to justify inclusion here.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Patel's selected subfields are single-cell genomics, computational biology, and gene regulation/epigenomics. This paper falls under cheminformatics and drug discovery — none of her selected subfields. The arXiv categories cs.LG and q-bio.QM (quantitative methods) do not align with her work.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Even stretching the definition of computational biology, this paper's subject matter — benchmarking LLMs on lipophilicity, solubility, clearance, and toxicity of small molecules — is entirely outside Dr. Patel's described research interests and all four named research components.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "There is no substantive match here, not even a superficial keyword overlap with Dr. Patel's work. The paper concerns SMILES-based molecular property prediction for drug discovery, which is a distinct domain from single-cell genomics entirely. Dr. Patel's components all involve genomic and epigenomic data from cells, not molecular chemistry. There are no shared methods, data types, or biological questions.",
+          "resolution": "All four council voices agreed unanimously to reject. The paper is clearly out of scope for Dr. Patel's research profile in every dimension — topic, method, data type, and subfield. No dissent."
+        },
+        "decision_status": "ok"
+      },
+      {
+        "feed_item_id": "FI-R3-09",
+        "researcher_id": "RES-003",
+        "paper_id": "PAP-R3-09",
+        "position": 10,
+        "title": "AlphaFold3 Predictions for Intrinsically Disordered Protein Interaction Sites",
+        "publication_date": "2026-05-08",
+        "relevance_decision": false,
+        "relevance_score": 0.02,
+        "council_confidence": 99,
+        "relevance_reason": "This paper concerns protein structure prediction for intrinsically disordered regions using AlphaFold3, which has no substantive connection to Dr. Patel's research in single-cell genomics, gene regulatory network inference, chromatin accessibility, or trajectory inference. It falls outside all of her selected subfields.",
+        "matched_components": [],
+        "matched_subfields": [],
+        "council_deliberation": {
+          "voices": [
+            {
+              "role": "advocate",
+              "argument": "One could argue that transcription factors — central to Dr. Patel's GRN inference work — are proteins, and understanding their structural interactions could indirectly inform regulatory network biology. IDRs are also relevant to chromatin-associated proteins.",
+              "leaning": "against"
+            },
+            {
+              "role": "skeptic",
+              "argument": "This paper is entirely about protein structure prediction methodology using AlphaFold3 and NMR ensemble comparison. It has zero overlap with scRNA-seq, scATAC-seq, GRN inference, trajectory inference, or any computational genomics method Dr. Patel develops. The protein biology angle is too indirect to constitute a substantive match.",
+              "leaning": "against"
+            },
+            {
+              "role": "subfield_reviewer",
+              "argument": "Dr. Patel's selected subfields are single-cell genomics, computational biology, and gene regulation/epigenomics. This paper falls under structural bioinformatics/biophysics (q-bio.BM), which is a completely different subfield. None of her selected subfields are matched.",
+              "leaning": "against"
+            },
+            {
+              "role": "scope_checker",
+              "argument": "Even under the broadest interpretation of 'computational biology,' this paper's methods and contributions — contact map prediction, conformational entropy estimation, docking simulation filters — are irrelevant to Dr. Patel's work. No research component is advanced.",
+              "leaning": "against"
+            }
+          ],
+          "substantive_vs_superficial": "There is no substantive match here even at the surface level. Dr. Patel's work is focused on single-cell omics data analysis — RNA counts, chromatin accessibility, regulatory networks, and cell trajectories. This paper evaluates AlphaFold3 for predicting structural contacts in intrinsically disordered protein regions, a completely orthogonal domain. The only conceivable connection — that TFs are proteins — is far too tenuous to constitute advancement of any of her research threads.",
+          "resolution": "All four voices agree this paper is a clear reject. The advocate's attempt to find a connection via transcription factor biology was immediately recognised as superficial and indirect. There is no dissent. Relevance score set at 0.02."
+        },
+        "decision_status": "ok"
+      }
+    ],
+    "feed_summary": {
+      "text": "The top three papers this week form a particularly cohesive and powerful cluster for Dr. Patel's work: the sparse graphical lasso approach to gene regulatory network inference, the optimal transport pseudotime method for branching trajectories, and the cross-modal variational autoencoder framework for multimodal integration collectively address the full analytical pipeline from raw single-cell data to mechanistic insight. Together, they offer complementary advances — robust network structure recovery, principled temporal ordering of cell states, and the ability to fuse transcriptomic with other modalities — meaning Dr. Patel could apply these methods in sequence to move from multi-omic measurements through trajectory reconstruction to regulatory network discovery within a single coherent analytical framework. The high confidence scores across all three suggest these are mature, well-validated contributions rather than preliminary findings, making them immediately relevant as methodological foundations for ongoing or planned single-cell studies.",
+      "summary_status": "ok"
+    }
   }
-}
+]

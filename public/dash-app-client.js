@@ -1,161 +1,4 @@
-// Consumes /api/papers and /api/feed-summary — never reads output_data.json directly.
-
-const feedSummaryContent = document.getElementById('feed-summary-content');
-const feedList           = document.getElementById('feed-list');
-const detailContent      = document.getElementById('detail-content');
-
-let allPapers = [];
-let selectedId = null;
-
-function badgeClass(action) {
-  if (action === 'Read now') return 'badge-read';
-  if (action === 'Save')     return 'badge-save';
-  return 'badge-skip';
-}
-
-function simBarWidth(sim) {
-  return Math.round(sim * 80);
-}
-
-function createFeedItem(paper) {
-  const item = document.createElement('div');
-  item.className = 'feed-item';
-  item.setAttribute('role', 'option');
-  item.setAttribute('data-paper-id', paper.paper_id);
-  item.setAttribute('aria-selected', 'false');
-  item.tabIndex = 0;
-
-  item.innerHTML = `
-    <div class="feed-item-top">
-      <span class="rank-num">${paper.rank}</span>
-      <span class="action-badge ${badgeClass(paper.recommended_action)}">${paper.recommended_action}</span>
-    </div>
-    <div class="feed-item-title">${escHtml(paper.title)}</div>
-    <div class="feed-item-meta">
-      <span>sim ${paper.max_component_similarity.toFixed(2)}</span>
-      <span>${paper.date}</span>
-    </div>
-  `;
-
-  item.addEventListener('click',   () => selectPaper(paper.paper_id));
-  item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') selectPaper(paper.paper_id); });
-  return item;
-}
-
-function selectPaper(paperId) {
-  selectedId = paperId;
-
-  document.querySelectorAll('.feed-item').forEach(el => {
-    const selected = el.getAttribute('data-paper-id') === paperId;
-    el.classList.toggle('selected', selected);
-    el.setAttribute('aria-selected', String(selected));
-  });
-
-  const paper = allPapers.find(p => p.paper_id === paperId);
-  if (paper) renderDetail(paper);
-}
-
-function makeSection(label, bodyHtml) {
-  const det = document.createElement('details');
-  det.className = 'detail-section';
-
-  const sum = document.createElement('summary');
-  sum.textContent = label;
-  det.appendChild(sum);
-
-  const body = document.createElement('div');
-  body.className = 'section-body';
-  body.innerHTML = bodyHtml;
-  det.appendChild(body);
-
-  return det;
-}
-
-function rationaleBody(text, status) {
-  if (status !== 'ok' || !text) {
-    const chipClass = status === 'malformed' ? 'chip-malformed' : 'chip-unavailable';
-    const msg = status === 'malformed'
-      ? 'Response could not be parsed.'
-      : 'Rationale unavailable — retry the pipeline to regenerate.';
-    return `<div class="rationale-placeholder">
-      <span class="status-chip ${chipClass}">${escHtml(status)}</span>
-      <span class="placeholder-text">${escHtml(msg)}</span>
-    </div>`;
-  }
-  return `<p>${escHtml(text)}</p>`;
-}
-
-function componentsTable(components, status) {
-  const rows = components.map(c => {
-    const simClass = c.cleared ? 'comp-sim-cleared' : 'comp-sim-below';
-    const barClass = c.cleared ? 'cleared' : '';
-    const width = simBarWidth(c.component_similarity);
-    const explanation = (status === 'ok' && c.match_explanation)
-      ? `<div class="comp-explanation">${escHtml(c.match_explanation)}</div>`
-      : '';
-    return `<tr>
-      <td class="comp-name">${escHtml(c.component)}</td>
-      <td>
-        <div class="sim-bar-wrap">
-          <span class="comp-sim ${simClass}">${c.component_similarity.toFixed(2)}</span>
-          <span class="sim-bar ${barClass}" style="width:${width}px"></span>
-        </div>
-      </td>
-      <td>${explanation}</td>
-    </tr>`;
-  }).join('');
-
-  return `<table class="comp-table">
-    <thead><tr>
-      <th>Component</th><th>Similarity</th><th>Match explanation</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
-}
-
-function renderDetail(paper) {
-  const tangentialHtml = paper.tangential_flag
-    ? `<span class="tangential-badge">Tangential match</span>`
-    : '';
-
-  const header = document.createElement('div');
-  header.className = 'detail-header';
-  header.innerHTML = `
-    <h2 class="detail-title">${escHtml(paper.title)}</h2>
-    <div class="detail-meta-row">
-      <span class="action-badge ${badgeClass(paper.recommended_action)}">${paper.recommended_action}</span>
-      <span class="detail-rank">Rank ${paper.rank} / 10</span>
-      ${tangentialHtml}
-      <span class="detail-date">${paper.date}</span>
-    </div>
-  `;
-
-  const sections = document.createElement('div');
-  sections.className = 'detail-sections';
-  sections.appendChild(makeSection('Component Matches & Similarities', componentsTable(paper.components, paper.rationale_status)));
-  sections.appendChild(makeSection('Relevance Rationale', rationaleBody(paper.relevance_rationale, paper.rationale_status)));
-  sections.appendChild(makeSection('Recommended Action', `<p><strong>${escHtml(paper.recommended_action)}</strong> — max similarity ${paper.max_component_similarity.toFixed(2)}, ${paper.components_cleared_count} component(s) cleared.</p>`));
-  sections.appendChild(makeSection('Missing Information', `<p>${escHtml(paper.missing_information || 'nothing material missing')}</p>`));
-  sections.appendChild(makeSection('Position Rationale', rationaleBody(paper.position_rationale, paper.rationale_status)));
-
-  detailContent.innerHTML = '';
-  detailContent.appendChild(header);
-  detailContent.appendChild(sections);
-}
-
-function renderFeedSummary(summary) {
-  if (!summary || summary.summary_status !== 'ok' || !summary.text) {
-    feedSummaryContent.innerHTML = `
-      <div class="feed-summary-unavailable">
-        <span class="status-chip chip-unavailable">summary unavailable</span>
-        <span class="placeholder-text">— retry the pipeline to regenerate.</span>
-      </div>`;
-    return;
-  }
-  feedSummaryContent.innerHTML = `
-    <div class="feed-summary-label">Feed Summary</div>
-    <p class="feed-summary-text">${escHtml(summary.text)}</p>`;
-}
+// Consumes /api/artifact — never reads output_data.json directly.
 
 function escHtml(str) {
   return String(str)
@@ -165,30 +8,220 @@ function escHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-async function init() {
-  try {
-    const [papersRes, summaryRes] = await Promise.all([
-      fetch('/api/papers'),
-      fetch('/api/feed-summary'),
-    ]);
+function makeSection(label, bodyHtml) {
+  const det = document.createElement('details');
+  det.className = 'detail-section';
+  const sum = document.createElement('summary');
+  sum.textContent = label;
+  det.appendChild(sum);
+  const body = document.createElement('div');
+  body.className = 'section-body';
+  body.innerHTML = bodyHtml;
+  det.appendChild(body);
+  return det;
+}
 
-    if (!papersRes.ok) throw new Error(`/api/papers returned ${papersRes.status}`);
-    allPapers = await papersRes.json();
+function decisionBadge(decision, status) {
+  if (status !== 'ok') {
+    return `<span class="decision-badge badge-unavailable">Decision ${escHtml(status)}</span>`;
+  }
+  return decision
+    ? `<span class="decision-badge badge-accept">Council Accept</span>`
+    : `<span class="decision-badge badge-reject">Council Reject</span>`;
+}
 
-    const summary = summaryRes.ok ? await summaryRes.json() : null;
-    renderFeedSummary(summary);
+function deliberationHtml(delib, status) {
+  if (status !== 'ok' || !delib) {
+    return `<p class="placeholder-text">Deliberation unavailable — retry the pipeline.</p>`;
+  }
+  const voices = (delib.voices || []).map(v => {
+    const lean = v.leaning === 'for' ? 'leaning-for' : 'leaning-against';
+    return `<div class="voice-row">
+      <span class="voice-role">${escHtml(v.role)}</span>
+      <span class="voice-leaning ${lean}">${escHtml(v.leaning)}</span>
+      <p class="voice-argument">${escHtml(v.argument)}</p>
+    </div>`;
+  }).join('');
 
-    feedList.innerHTML = '';
-    for (const paper of allPapers) {
-      feedList.appendChild(createFeedItem(paper));
+  return `
+    <div class="deliberation-block">
+      <div class="deliberation-section-label">Voices</div>
+      <div class="voices-list">${voices}</div>
+      <div class="deliberation-section-label">Substantive vs superficial</div>
+      <p>${escHtml(delib.substantive_vs_superficial || '')}</p>
+      <div class="deliberation-section-label">Resolution</div>
+      <p>${escHtml(delib.resolution || '')}</p>
+    </div>`;
+}
+
+function matchedComponentsHtml(components, status) {
+  if (status !== 'ok' || !components || !components.length) {
+    return `<p class="placeholder-text">No matched components.</p>`;
+  }
+  const rows = components.map(mc => `
+    <div class="matched-component">
+      <div class="mc-name">${escHtml(mc.component)}</div>
+      <div class="mc-source">Source papers: ${escHtml((mc.source_paper_ids || []).join(', '))}</div>
+      <p class="mc-explanation">${escHtml(mc.match_explanation || '')}</p>
+    </div>`).join('');
+  return `<div class="matched-components-list">${rows}</div>`;
+}
+
+function subfieldsHtml(subfields) {
+  if (!subfields || !subfields.length) return `<p class="placeholder-text">No matched subfields.</p>`;
+  const tags = subfields.map(s => `<span class="subfield-tag">${escHtml(s)}</span>`).join('');
+  return `<div class="subfield-tags">${tags}</div>`;
+}
+
+function profileSubfieldsHtml(subfields) {
+  if (!subfields || !subfields.length) return `<p class="placeholder-text">No subfields on profile.</p>`;
+  const tags = subfields.map(s => `<span class="subfield-tag profile-subfield">${escHtml(s)}</span>`).join('');
+  return `<div class="subfield-tags">${tags}</div>`;
+}
+
+function renderFeedSummary(rf) {
+  const container = document.getElementById('feed-summary-content');
+  if (!rf.feed_summary || rf.feed_summary.summary_status !== 'ok' || !rf.feed_summary.text) {
+    container.innerHTML = `<div class="feed-summary-placeholder">Summary unavailable — retry the pipeline to regenerate.</div>`;
+    return;
+  }
+  container.innerHTML = `<p class="feed-summary-text">${escHtml(rf.feed_summary.text)}</p>`;
+}
+
+function renderFeedList(rf, selectedPaperId, onSelect) {
+  const list = document.getElementById('feed-list');
+  list.innerHTML = '';
+
+  for (const fi of rf.feed) {
+    const item = document.createElement('div');
+    const isSelected = fi.paper_id === selectedPaperId;
+    item.className = `feed-item${isSelected ? ' selected' : ''}${fi.relevance_decision ? '' : ' rejected'}`;
+    item.setAttribute('role', 'option');
+    item.setAttribute('aria-selected', String(isSelected));
+    item.dataset.paperId = fi.paper_id;
+
+    let decisionHtml;
+    if (fi.decision_status !== 'ok') {
+      decisionHtml = `<span class="fi-status-chip">Decision ${escHtml(fi.decision_status)}</span>`;
+    } else if (fi.relevance_decision) {
+      decisionHtml = `<span class="fi-decision accept">Accept</span>`;
+    } else {
+      decisionHtml = `<span class="fi-decision reject">Reject</span>`;
     }
 
-    // Select position 1 by default
-    const first = allPapers.find(p => p.rank === 1);
-    if (first) selectPaper(first.paper_id);
-  } catch (err) {
-    detailContent.innerHTML = `<p class="detail-empty">Failed to load papers: ${escHtml(String(err))}</p>`;
+    const topComponent = (fi.matched_components && fi.matched_components[0])
+      ? fi.matched_components[0].component
+      : '—';
+
+    item.innerHTML = `
+      <div class="fi-header">
+        <span class="fi-position">${fi.position}</span>
+        <span class="fi-score">${fi.relevance_score.toFixed(2)}</span>
+        ${decisionHtml}
+      </div>
+      <div class="fi-title">${escHtml(fi.title)}</div>
+      <div class="fi-meta">
+        <span class="fi-date">${escHtml(fi.publication_date)}</span>
+        <span class="fi-component">${escHtml(topComponent)}</span>
+      </div>`;
+
+    item.addEventListener('click', () => onSelect(fi.paper_id));
+    list.appendChild(item);
   }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+function renderDetail(fi, researcherSubfields) {
+  const container = document.getElementById('detail-content');
+
+  const header = document.createElement('div');
+  header.className = 'detail-header';
+  header.innerHTML = `
+    <h2 class="detail-title">${escHtml(fi.title)}</h2>
+    <div class="detail-meta-row">
+      ${decisionBadge(fi.relevance_decision, fi.decision_status)}
+      <span class="detail-position">Position ${fi.position} / 10</span>
+      <span class="detail-score">Score ${fi.relevance_score.toFixed(2)}</span>
+      <span class="detail-confidence">Confidence ${fi.council_confidence}</span>
+      <span class="detail-date">${escHtml(fi.publication_date)}</span>
+    </div>`;
+
+  const sections = document.createElement('div');
+  sections.className = 'detail-sections';
+
+  const reasonBody = (fi.decision_status === 'ok' && fi.relevance_reason)
+    ? `<p>${escHtml(fi.relevance_reason)}</p>`
+    : `<p class="placeholder-text">Unavailable — retry the pipeline.</p>`;
+
+  sections.appendChild(makeSection('Relevance Reason', reasonBody));
+  sections.appendChild(makeSection('Council Deliberation', deliberationHtml(fi.council_deliberation, fi.decision_status)));
+  sections.appendChild(makeSection('Matched Components', matchedComponentsHtml(fi.matched_components, fi.decision_status)));
+  sections.appendChild(makeSection('Matched Subfields', subfieldsHtml(fi.matched_subfields)));
+  sections.appendChild(makeSection('Researcher Profile — Selected Subfields', profileSubfieldsHtml(researcherSubfields)));
+
+  container.innerHTML = '';
+  container.appendChild(header);
+  container.appendChild(sections);
+}
+
+function renderResearcherSelector(feeds, selectedId, onSelect) {
+  const container = document.getElementById('researcher-selector');
+  container.innerHTML = '';
+  for (const rf of feeds) {
+    const btn = document.createElement('button');
+    btn.className = `researcher-tab${rf.researcher_id === selectedId ? ' active' : ''}`;
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(rf.researcher_id === selectedId));
+    btn.textContent = rf.researcher_name;
+    btn.addEventListener('click', () => onSelect(rf.researcher_id));
+    container.appendChild(btn);
+  }
+}
+
+function getProfileSubfields(rf) {
+  return [...new Set(rf.feed.flatMap(fi => fi.matched_subfields || []))];
+}
+
+async function main() {
+  const resp = await fetch('/api/artifact');
+  if (!resp.ok) {
+    document.getElementById('detail-content').innerHTML =
+      `<p class="placeholder-text">Failed to load artifact — is the pipeline output ready?</p>`;
+    return;
+  }
+
+  const feeds = await resp.json();
+  if (!feeds || !feeds.length) return;
+
+  let selectedResearcherId = feeds[0].researcher_id;
+  let selectedPaperId = feeds[0].feed[0] ? feeds[0].feed[0].paper_id : '';
+
+  function renderAll() {
+    const rf = feeds.find(r => r.researcher_id === selectedResearcherId) || feeds[0];
+    const fi = rf.feed.find(f => f.paper_id === selectedPaperId) || rf.feed[0];
+
+    renderResearcherSelector(feeds, selectedResearcherId, (id) => {
+      selectedResearcherId = id;
+      const newRf = feeds.find(r => r.researcher_id === id) || feeds[0];
+      selectedPaperId = newRf.feed[0] ? newRf.feed[0].paper_id : '';
+      renderAll();
+    });
+
+    renderFeedSummary(rf);
+
+    renderFeedList(rf, fi ? fi.paper_id : '', (paperId) => {
+      selectedPaperId = paperId;
+      renderAll();
+    });
+
+    if (fi) {
+      renderDetail(fi, getProfileSubfields(rf));
+    }
+  }
+
+  renderAll();
+}
+
+main().catch(err => {
+  document.getElementById('detail-content').innerHTML =
+    `<p class="placeholder-text">Client error: ${String(err)}</p>`;
+});

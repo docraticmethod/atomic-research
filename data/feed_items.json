@@ -1,0 +1,608 @@
+[
+  {
+    "id": "FI-R1-01",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-01",
+    "relevance_score": 0.93,
+    "relevance_decision": true,
+    "council_confidence": 91,
+    "relevance_reason": "This paper directly advances the sparse autoencoder feature steering component — it demonstrates SAE-based residual stream interventions for targeted behaviour change, the exact methodology at the centre of this researcher's work.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "The paper's core contribution — SAE feature identification and residual stream addition for targeted steering — is the canonical implementation of the researcher's RC-R1-01 thread.", "leaning": "for" },
+        { "role": "scope_checker", "argument": "The application to language model behaviour is squarely within the researcher's focus area. No cross-domain stretch required.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "The paper is clearly within the mechanistic interpretability and neural network feature analysis subfields the researcher selected.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "The match is substantive: the paper's primary contribution is the SAE steering methodology itself, not a downstream application that happens to mention SAEs. The abstract describes feature identification, residual stream addition, and ablation across dictionary sizes — all core to the researcher's RC-R1-01 component.",
+      "resolution": "Unanimous accept. High confidence. This is a must-surface paper for this researcher."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-02",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-02",
+    "relevance_score": 0.87,
+    "relevance_decision": true,
+    "council_confidence": 85,
+    "relevance_reason": "The paper advances circuit analysis and attention head identification, matching this researcher's RC-R1-02 component — it localises induction-like circuits in decoder-only transformers using patching, directly extending the methodology the researcher applies.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "Circuit identification using patching and head knockout maps directly to RC-R1-02. The scale range (70M–7B) also extends prior work and is practically relevant.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Within mechanistic interpretability and circuit analysis subfields. Clear accept.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive match: the paper is fundamentally about circuit identification using causal methods, which is the researcher's RC-R1-02 component. The induction circuit is a canonical target for this line of work.",
+      "resolution": "Accept with high confidence."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-03",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-03",
+    "relevance_score": 0.89,
+    "relevance_decision": true,
+    "council_confidence": 88,
+    "relevance_reason": "This paper is the canonical empirical treatment of the superposition hypothesis, which is the direct theoretical foundation for this researcher's RC-R1-03 component on polysemanticity and the motivation for SAE-based decomposition.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R1-03 is explicitly about superposition and polysemanticity. This paper is a systematic empirical test of the superposition hypothesis itself.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Mechanistic interpretability, representation learning, and neural network feature analysis are all squarely matched.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper's primary subject is the superposition geometry and phase transitions, not a downstream application. This is directly load-bearing theory for the researcher's component.",
+      "resolution": "Strong accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-04",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-04",
+    "relevance_score": 0.82,
+    "relevance_decision": true,
+    "council_confidence": 80,
+    "relevance_reason": "This paper extends SAE feature steering to vision-language models, advancing RC-R1-01. The cross-modal transfer finding is a new capability result for the researcher's steering methodology.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "The core methodology — SAE training, feature identification, steering via feature activation — is the same RC-R1-01 thread, now extended to multimodal settings.", "leaning": "for" },
+        { "role": "scope_checker", "argument": "The extension to vision inputs is a lateral move, but the mechanistic interpretability method transfers and the finding is novel. Within scope.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper advances the SAE steering methodology itself, not merely citing it.",
+      "resolution": "Accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-05",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-05",
+    "relevance_score": 0.80,
+    "relevance_decision": true,
+    "council_confidence": 79,
+    "relevance_reason": "The paper substantially extends activation patching methodology across model families, directly advancing RC-R1-04. The scale and stability analysis adds methodological rigour to a tool this researcher uses.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R1-04 is explicitly activation patching and causal tracing. This paper is a systematic expansion of that methodology.", "leaning": "for" },
+        { "role": "scope_checker", "argument": "The focus is methodological rather than finding a new circuit, but the methodology is the research thread, not just a tool.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper's contribution is advancing the patching methodology itself.",
+      "resolution": "Accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-06",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-06",
+    "relevance_score": 0.38,
+    "relevance_decision": false,
+    "council_confidence": 74,
+    "relevance_reason": "The paper uses linear probing on multilingual model representations, but its subject — typological feature encoding across languages — is outside the researcher's components and subfields. Probing is a method used in mechanistic interpretability but this paper does not advance any of the researcher's components.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "Probing representations could be argued to relate to RC-R1-03 (superposition, polysemanticity), but the paper's subject is typological features in multilingual models, not feature geometry or polysemanticity.", "leaning": "against" },
+        { "role": "subfield_reviewer", "argument": "The paper's primary subfield is multilingual NLP, not mechanistic interpretability. It does not appear in the researcher's selected subfields.", "leaning": "against" },
+        { "role": "skeptic", "argument": "Sharing a method (linear probing) with mechanistic interpretability work does not make this a mechanistic interpretability paper. The question being asked is about cross-lingual typological transfer, not about feature geometry.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "Superficial match: the paper uses probing, which is a tool in the mechanistic interpretability toolkit, but it uses it to answer a multilingual NLP question. The apparent interpretability connection is a surface-level method overlap, not a substantive contribution to any of this researcher's research components.",
+      "resolution": "Reject. Method overlap with interpretability probing does not make this relevant to the researcher's mechanistic interpretability components."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-07",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-07",
+    "relevance_score": 0.78,
+    "relevance_decision": true,
+    "council_confidence": 77,
+    "relevance_reason": "The attention head taxonomy advances RC-R1-02 directly — it provides a systematic functional classification of the head types that circuit analysis methods aim to identify, including induction and copying heads at the centre of the researcher's circuit work.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R1-02 is about identifying attention heads by function. This paper builds a taxonomy of functional head types at scale — it is the systematic reference work for the researcher's component.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Clearly within mechanistic interpretability and circuit analysis.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the taxonomy is a direct output of the circuit analysis methodology the researcher uses.",
+      "resolution": "Accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-08",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-08",
+    "relevance_score": 0.18,
+    "relevance_decision": false,
+    "council_confidence": 82,
+    "relevance_reason": "This paper benchmarks post-hoc explainability methods (SHAP, LIME, integrated gradients) — a different paradigm from mechanistic interpretability. It does not advance any of the researcher's components and falls outside their selected subfields.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "The paper is labelled 'interpretability' in the title, and the researcher works on interpretability. But mechanistic interpretability and post-hoc explainability are fundamentally different research programmes.", "leaning": "against" },
+        { "role": "skeptic", "argument": "SHAP, LIME, and integrated gradients are input-attribution methods that treat the model as a black box. Mechanistic interpretability, by contrast, opens the model and identifies computational circuits. These do not advance each other's questions. The title overlap is misleading.", "leaning": "against" },
+        { "role": "subfield_reviewer", "argument": "Feature attribution and explainability methods are not in the researcher's selected subfields (mechanistic interpretability, representation learning, neural network feature analysis). The paper is adjacent in name but orthogonal in content.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "Superficial match via label: both this paper and the researcher use the word 'interpretability,' but the paper's contribution is a benchmark of attribution methods that are categorically not mechanistic interpretability. Attribution methods answer 'which input tokens mattered?' while the researcher's programme asks 'what algorithm does the model implement?' These are different questions answered by different methods.",
+      "resolution": "Reject. The interpretability label is shared, but the paradigm is different. This must be argued down: the paper does not advance SAE steering, circuit analysis, superposition, or causal tracing."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-09",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-09",
+    "relevance_score": 0.08,
+    "relevance_decision": false,
+    "council_confidence": 88,
+    "relevance_reason": "Knowledge graph embeddings for question answering have no substantive connection to any of this researcher's components — SAE steering, circuit analysis, superposition, or activation patching.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "No path from knowledge graph embeddings to any RC-R1 component.", "leaning": "against" },
+        { "role": "subfield_reviewer", "argument": "The paper's topics (knowledge graph embeddings, open-domain QA) are outside all three of the researcher's selected subfields.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "No meaningful overlap. Reject.",
+      "resolution": "Reject with high confidence."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R1-10",
+    "researcher_id": "RES-001",
+    "paper_id": "PAP-R1-10",
+    "relevance_score": 0.03,
+    "relevance_decision": false,
+    "council_confidence": 97,
+    "relevance_reason": "GPU cluster scheduling for distributed training is entirely outside this researcher's domain — mechanistic interpretability, sparse autoencoders, circuits, feature steering. Must dismiss.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "No connection to any RC-R1 component whatsoever.", "leaning": "against" },
+        { "role": "skeptic", "argument": "The paper is about distributed systems scheduling. The researcher studies how transformers implement algorithms internally.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "No overlap of any kind. Clear must-dismiss.",
+      "resolution": "Reject with very high confidence."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-01",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-01",
+    "relevance_score": 0.94,
+    "relevance_decision": true,
+    "council_confidence": 93,
+    "relevance_reason": "This paper directly advances RC-R2-01 — it introduces a new surface code architecture with an improved error threshold under correlated Pauli noise, the researcher's primary area of focus.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "New surface code architecture + threshold analysis under correlated noise = exactly RC-R2-01. High-priority accept.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Quantum error correction and surface codes — both selected subfields.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper's primary contribution is an architectural redesign and threshold improvement, not a surface code application.",
+      "resolution": "Must-surface. Unanimous accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-02",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-02",
+    "relevance_score": 0.90,
+    "relevance_decision": true,
+    "council_confidence": 88,
+    "relevance_reason": "The paper reduces magic state distillation qubit overhead by 40% using concatenated Reed-Muller codes — a direct advance on RC-R2-03 and RC-R2-02, the researcher's distillation and fault-tolerant gate synthesis components.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "Magic state distillation protocol improvement is the researcher's RC-R2-03, and the fault-tolerant T gate context matches RC-R2-02.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Fault-tolerant quantum computation and magic state distillation — both in scope.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper reduces the dominant resource cost in fault-tolerant computation, advancing the researcher's core thread.",
+      "resolution": "Strong accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-03",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-03",
+    "relevance_score": 0.86,
+    "relevance_decision": true,
+    "council_confidence": 84,
+    "relevance_reason": "GNN-based MWPM decoding advances RC-R2-04 directly — the researcher is building fast surface code decoders, and this paper achieves speed parity with learned approaches while matching MWPM accuracy.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R2-04 is about decoding algorithms. This paper introduces a GNN decoder that matches MWPM accuracy at much lower latency.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Quantum error correction and quantum decoding — both selected subfields.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper contributes a new decoding method, not merely an application of an existing one.",
+      "resolution": "Accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-04",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-04",
+    "relevance_score": 0.88,
+    "relevance_decision": true,
+    "council_confidence": 87,
+    "relevance_reason": "Bridged magic state distillation reduces qubit-time cost by 25% — a direct advance on RC-R2-03 and the researcher's goal of reducing fault-tolerant gate resource overhead.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R2-03 is exactly magic state distillation protocol optimisation. The bridged protocol reduces overhead between the two leading protocols.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Both fault-tolerant quantum computation and distillation in scope.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper introduces a new protocol family with concrete resource reduction.",
+      "resolution": "Accept with high confidence."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-05",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-05",
+    "relevance_score": 0.78,
+    "relevance_decision": true,
+    "council_confidence": 79,
+    "relevance_reason": "Transversal CNOT in 3D color codes advances RC-R2-02 — fault-tolerant two-qubit gate synthesis without magic state distillation overhead is directly relevant to the researcher's gate synthesis component.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "Fault-tolerant CNOT synthesis via transversality is RC-R2-02 territory. The planar projection is a practical hardware contribution.", "leaning": "for" },
+        { "role": "scope_checker", "argument": "3D color codes are a departure from the researcher's primary surface code focus, but fault-tolerant gate synthesis crosses code families.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive match on fault-tolerant gate synthesis.",
+      "resolution": "Accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-06",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-06",
+    "relevance_score": 0.83,
+    "relevance_decision": true,
+    "council_confidence": 82,
+    "relevance_reason": "Generalised threshold theorems for biased Pauli noise directly advance RC-R2-01 — rigorous threshold analysis under realistic noise models is a core component of this researcher's surface code architecture work.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R2-01 includes threshold analysis. This paper provides a rigorous threshold theorem for biased noise across planar codes including XZZX variants.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Quantum error correction and surface codes subfields — both matched.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper advances the theory behind the threshold calculations the researcher uses.",
+      "resolution": "Accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-07",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-07",
+    "relevance_score": 0.28,
+    "relevance_decision": false,
+    "council_confidence": 70,
+    "relevance_reason": "Zero-noise extrapolation is an error mitigation technique for NISQ circuits — it does not correct errors and provides no logical qubit protection. This is categorically different from quantum error correction, which is this researcher's focus.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "The paper involves 'quantum errors' and noise, which could loosely relate to the researcher's error correction work.", "leaning": "for" },
+        { "role": "skeptic", "argument": "Error mitigation and error correction are categorically distinct. Error correction achieves fault tolerance via redundancy and syndrome measurement. Error mitigation statistically reduces noise on expectation values but provides no fault-tolerance guarantee and does not protect logical qubits. The researcher's entire programme is about fault-tolerant logical qubits, which ZNE does not provide.", "leaning": "against" },
+        { "role": "subfield_reviewer", "argument": "Zero-noise extrapolation is a NISQ technique; the researcher's subfields are quantum error correction and fault-tolerant quantum computation. ZNE is relevant to NISQ computing, which is a different subfield.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "Superficial match on 'quantum' and 'noise': the paper addresses noise in quantum circuits, but through a mitigation approach fundamentally incompatible with the researcher's fault-tolerance programme. Error mitigation produces better noisy results; error correction produces logically protected results. The distinction is foundational, not a matter of degree.",
+      "resolution": "Reject. The error mitigation vs. error correction distinction is categorical. Despite sharing quantum hardware context, this paper does not advance any of the researcher's components."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-08",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-08",
+    "relevance_score": 0.12,
+    "relevance_decision": false,
+    "council_confidence": 78,
+    "relevance_reason": "VQE for molecular ground state energies is a NISQ application outside the researcher's fault-tolerant QEC focus. The paper uses error mitigation, not error correction.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "Quantum chemistry is a motivating application for fault-tolerant computation, but this paper is about NISQ VQE, not fault-tolerant algorithms.", "leaning": "against" },
+        { "role": "subfield_reviewer", "argument": "VQE and quantum chemistry are outside the researcher's selected subfields.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "No relevant overlap with fault-tolerant QEC research components.",
+      "resolution": "Reject."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-09",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-09",
+    "relevance_score": 0.08,
+    "relevance_decision": false,
+    "council_confidence": 85,
+    "relevance_reason": "Quantum kernel methods for classification are a NISQ machine learning technique with no connection to quantum error correction, surface codes, magic state distillation, or decoding.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "Quantum computing context is shared, but quantum ML and fault-tolerant QEC are orthogonal research programmes.", "leaning": "against" },
+        { "role": "subfield_reviewer", "argument": "Quantum machine learning is outside the researcher's subfields.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "No substantive overlap with any RC-R2 component.",
+      "resolution": "Reject."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R2-10",
+    "researcher_id": "RES-002",
+    "paper_id": "PAP-R2-10",
+    "relevance_score": 0.02,
+    "relevance_decision": false,
+    "council_confidence": 98,
+    "relevance_reason": "Federated learning with differential privacy for healthcare is a classical ML systems paper with no connection to quantum computing, error correction, or any of this researcher's components. Must dismiss.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "No quantum content. Entirely classical ML.", "leaning": "against" },
+        { "role": "skeptic", "argument": "This paper has no quantum content whatsoever. It is about privacy-preserving distributed machine learning. Clear must-dismiss.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "No overlap of any kind.",
+      "resolution": "Must-dismiss. Highest confidence reject."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-01",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-01",
+    "relevance_score": 0.92,
+    "relevance_decision": true,
+    "council_confidence": 91,
+    "relevance_reason": "This paper directly advances RC-R3-01 — it introduces a new dimensionality reduction method for scRNA-seq that specifically preserves rare cell type structure, addressing a known limitation the researcher works to overcome.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R3-01 is scRNA-seq preprocessing and dimensionality reduction. This paper introduces contrastive scDR, a novel method in exactly that space, with Scanpy integration.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Single-cell genomics and computational biology — both selected subfields.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper's primary contribution is a new dimensionality reduction method for scRNA-seq.",
+      "resolution": "Must-surface. Unanimous accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-02",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-02",
+    "relevance_score": 0.88,
+    "relevance_decision": true,
+    "council_confidence": 86,
+    "relevance_reason": "scGRNlasso advances RC-R3-02 directly — it introduces a sparse graphical Lasso approach for GRN inference from scRNA-seq, calibrated against CRISPR ground truth, which is the researcher's primary GRN inference methodology.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R3-02 is GRN inference from single-cell data. This paper is a new method for exactly that, validated against CRISPR perturbation data.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Gene regulatory network inference is in the researcher's selected subfields.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive match on GRN inference methodology.",
+      "resolution": "Strong accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-03",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-03",
+    "relevance_score": 0.84,
+    "relevance_decision": true,
+    "council_confidence": 83,
+    "relevance_reason": "Foundation model fine-tuning for cell type annotation advances RC-R3-01 — the researcher works on annotation pipelines, and this paper provides a universal annotator that handles batch effects without explicit correction.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R3-01 includes cell type annotation. The scBERT fine-tuning approach directly addresses the annotation step in the researcher's pipeline.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Single-cell genomics subfield matches.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper contributes a new annotation method.",
+      "resolution": "Accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-04",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-04",
+    "relevance_score": 0.80,
+    "relevance_decision": true,
+    "council_confidence": 80,
+    "relevance_reason": "scPeak advances RC-R3-04 — cell-type-aware peak calling and differential accessibility testing for scATAC-seq is the researcher's chromatin accessibility component.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R3-04 is chromatin accessibility and scATAC-seq. This paper introduces better peak calling and differential accessibility methods for scATAC-seq.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Gene regulation and epigenomics subfield matches.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: scPeak is a new peak calling method, not an application.",
+      "resolution": "Accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-05",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-05",
+    "relevance_score": 0.86,
+    "relevance_decision": true,
+    "council_confidence": 85,
+    "relevance_reason": "OTPseudotime advances RC-R3-03 — optimal transport pseudotime for branching trajectory inference is exactly the researcher's trajectory inference component, with improved branching point recovery.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "RC-R3-03 is cell trajectory inference and pseudotime. This paper introduces a new OT-based pseudotime method with demonstrated improvements on branching trajectories.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Single-cell genomics subfield.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: OTPseudotime advances the trajectory inference methodology itself.",
+      "resolution": "Strong accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-06",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-06",
+    "relevance_score": 0.89,
+    "relevance_decision": true,
+    "council_confidence": 88,
+    "relevance_reason": "scMVAE advances both RC-R3-03 and RC-R3-04 — cross-modal VAE integration of scRNA-seq and scATAC-seq directly connects the researcher's trajectory inference and chromatin accessibility components.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "scMVAE integrates RNA and ATAC modalities, advancing both RC-R3-04 (chromatin) and RC-R3-03 (trajectory embedding). Dual component match.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Single-cell genomics and gene regulation/epigenomics subfields both match.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Substantive: the paper contributes a new multimodal integration method.",
+      "resolution": "Strong accept."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-07",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-07",
+    "relevance_score": 0.64,
+    "relevance_decision": true,
+    "council_confidence": 68,
+    "relevance_reason": "Spatial transcriptomics deconvolution using GNNs is adjacent to the researcher's work — it uses scRNA-seq references and contributes to tissue-level cell type mapping, which connects to the researcher's annotation and trajectory work, though it does not directly advance any core component.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "The paper uses scRNA-seq reference atlases and relates to cell type mapping, which is adjacent to RC-R3-01 and RC-R3-02.", "leaning": "for" },
+        { "role": "scope_checker", "argument": "Spatial transcriptomics is a related modality but not the researcher's primary focus. The deconvolution problem is distinct from trajectory inference and GRN inference.", "leaning": "for" },
+        { "role": "subfield_reviewer", "argument": "Single-cell genomics and computational biology subfields broadly cover spatial transcriptomics.", "leaning": "for" }
+      ],
+      "substantive_vs_superficial": "Moderate substantive connection: the paper uses single-cell references and addresses cell type mapping at tissue scale, which is related to but not squarely within the researcher's primary components. Relevance is genuine but not deep.",
+      "resolution": "Accept with moderate confidence — spatial transcriptomics is adjacent to the researcher's work and the GNN deconvolution method is relevant to their single-cell analysis pipeline."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-08",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-08",
+    "relevance_score": 0.30,
+    "relevance_decision": false,
+    "council_confidence": 72,
+    "relevance_reason": "Despite the cell fate framing, this CRISPR screen paper identifies regulators via genetic perturbation, not via single-cell RNA-seq analysis or trajectory inference. The computational methods are screen analysis pipelines, not the researcher's scRNA-seq or GRN inference tools.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "Cell fate determination is mentioned in the researcher's interests. The paper identifies cell fate regulators. There is a nominal connection.", "leaning": "for" },
+        { "role": "skeptic", "argument": "The paper uses genome-wide CRISPR screens — genetic perturbation at scale — to identify regulators. The computational methods are screen analysis (hit calling, enrichment). This is categorically different from the researcher's work on scRNA-seq dimensionality reduction, GRN inference from expression data, trajectory inference, and chromatin accessibility. The shared phrase 'cell fate' is a thematic label, not a methodological connection.", "leaning": "against" },
+        { "role": "subfield_reviewer", "argument": "CRISPR screens is its own subfield. The paper's topics (CRISPR screens, cell fate determination) are not in the researcher's selected subfields (single-cell genomics, computational biology, gene regulation/epigenomics).", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "Superficial match via 'cell fate' label: the paper and the researcher both work on cell differentiation, but the researcher uses scRNA-seq computational methods to study it, while this paper uses genetic perturbation screens. The methodological foundations are different, and the paper does not advance any of the researcher's components.",
+      "resolution": "Reject. Cell fate is a shared thematic area, but the experimental approach (CRISPR screens) and computational methods (screen hit analysis) are outside the researcher's single-cell computational biology programme."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-09",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-09",
+    "relevance_score": 0.10,
+    "relevance_decision": false,
+    "council_confidence": 82,
+    "relevance_reason": "Protein structure prediction for intrinsically disordered proteins has no substantive connection to this researcher's components — scRNA-seq, GRN inference, trajectory inference, chromatin accessibility.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "Both are computational biology, but protein structure prediction is a different domain from single-cell genomics.", "leaning": "against" },
+        { "role": "subfield_reviewer", "argument": "Protein structure prediction is not in the researcher's selected subfields.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "No substantive connection to any RC-R3 component.",
+      "resolution": "Reject."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  },
+  {
+    "id": "FI-R3-10",
+    "researcher_id": "RES-003",
+    "paper_id": "PAP-R3-10",
+    "relevance_score": 0.04,
+    "relevance_decision": false,
+    "council_confidence": 96,
+    "relevance_reason": "LLMs for molecular property prediction in drug discovery is entirely outside this researcher's domain — single-cell RNA-seq, GRN inference, trajectory inference, chromatin accessibility. Must dismiss.",
+    "council_deliberation": {
+      "voices": [
+        { "role": "component_advocate", "argument": "No connection to scRNA-seq or genomics computation.", "leaning": "against" },
+        { "role": "skeptic", "argument": "Drug discovery and ADMET prediction are outside all of the researcher's components and subfields. Clear must-dismiss.", "leaning": "against" }
+      ],
+      "substantive_vs_superficial": "No overlap of any kind.",
+      "resolution": "Must-dismiss. Highest confidence reject."
+    },
+    "council_version": "v3",
+    "status": "pending",
+    "surfaced_at": "2026-06-06T00:00:00Z"
+  }
+]

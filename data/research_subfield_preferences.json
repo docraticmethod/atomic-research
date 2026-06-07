@@ -1,0 +1,74 @@
+[
+  {
+    "id": "SFP-R1-01",
+    "researcher_id": "RES-001",
+    "subfield_id": "subfields/2738synthetic",
+    "subfield_name": "Mechanistic interpretability",
+    "field_id": "fields/17",
+    "field_name": "Computer Science"
+  },
+  {
+    "id": "SFP-R1-02",
+    "researcher_id": "RES-001",
+    "subfield_id": "subfields/2741synthetic",
+    "subfield_name": "Representation learning",
+    "field_id": "fields/17",
+    "field_name": "Computer Science"
+  },
+  {
+    "id": "SFP-R1-03",
+    "researcher_id": "RES-001",
+    "subfield_id": "subfields/2745synthetic",
+    "subfield_name": "Neural network feature analysis",
+    "field_id": "fields/17",
+    "field_name": "Computer Science"
+  },
+  {
+    "id": "SFP-R2-01",
+    "researcher_id": "RES-002",
+    "subfield_id": "subfields/3801synthetic",
+    "subfield_name": "Quantum error correction",
+    "field_id": "fields/13",
+    "field_name": "Physics"
+  },
+  {
+    "id": "SFP-R2-02",
+    "researcher_id": "RES-002",
+    "subfield_id": "subfields/3804synthetic",
+    "subfield_name": "Fault-tolerant quantum computation",
+    "field_id": "fields/13",
+    "field_name": "Physics"
+  },
+  {
+    "id": "SFP-R2-03",
+    "researcher_id": "RES-002",
+    "subfield_id": "subfields/3807synthetic",
+    "subfield_name": "Quantum decoding algorithms",
+    "field_id": "fields/13",
+    "field_name": "Physics"
+  },
+  {
+    "id": "SFP-R3-01",
+    "researcher_id": "RES-003",
+    "subfield_id": "subfields/4901synthetic",
+    "subfield_name": "Single-cell genomics",
+    "field_id": "fields/27",
+    "field_name": "Biological Sciences"
+  },
+  {
+    "id": "SFP-R3-02",
+    "researcher_id": "RES-003",
+    "subfield_id": "subfields/4905synthetic",
+    "subfield_name": "Computational biology",
+    "field_id": "fields/27",
+    "field_name": "Biological Sciences"
+  },
+  {
+    "id": "SFP-R3-03",
+    "researcher_id": "RES-003",
+    "subfield_id": "subfields/4908synthetic",
+    "subfield_name": "Gene regulation and epigenomics",
+    "field_id": "fields/27",
+    "field_name": "Biological Sciences"
+  }
+]
