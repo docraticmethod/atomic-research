@@ -38,10 +38,24 @@ function makeFeedItem(overrides: Partial<FeedItem>): FeedItem {
         { role: 'skeptic', argument: 'Checked — no superficial overlap issue.', leaning: 'for' },
       ],
       substantive_vs_superficial: 'The match is substantive: the paper contributes directly to the component, not just sharing terminology.',
+      subfield_weighing: 'Subfield match reinforced the decision alongside the component match.',
       resolution: 'Unanimous accept.',
     },
     decision_status: 'ok',
     ...overrides,
+  };
+}
+
+function makeGroundedProfile(researcherId: string): ResearcherFeed['grounded_profile'] {
+  return {
+    researcher_id: researcherId,
+    grounding_status: 'ok',
+    research_components: [
+      { name: 'Test component', description: 'desc', source_paper_ids: ['PUB-SRC-01'], explanation: 'why', aptness_flags: [] },
+    ],
+    research_subfield_preferences: [
+      { name: 'Test subfield', description: 'desc', source_paper_ids: ['PUB-SRC-01'], explanation: 'why', aptness_flags: [] },
+    ],
   };
 }
 
@@ -82,6 +96,9 @@ function makeValidFeed(researcherId: string, paperIdPrefix: string): ResearcherF
         substantive_vs_superficial: isReject
           ? 'Superficial: the paper only shares a keyword but does not advance any research component.'
           : 'Substantive: the paper directly extends the component with new methodology.',
+        subfield_weighing: isReject
+          ? 'Subfield match did not apply — the paper falls outside the researcher\'s selected subfields.'
+          : 'Subfield match was a contributing factor alongside the component match.',
         resolution: isReject ? 'Reject — off-topic.' : 'Accept.',
       },
       relevance_reason: isReject ? 'Off-topic — clear dismiss.' : 'Strong component match.',
@@ -91,6 +108,8 @@ function makeValidFeed(researcherId: string, paperIdPrefix: string): ResearcherF
   return {
     researcher_id: researcherId,
     researcher_name: `Researcher ${researcherId}`,
+    grounding_status: 'ok',
+    grounded_profile: makeGroundedProfile(researcherId),
     feed: sorted,
     feed_summary: { text: 'Summary of top papers.', summary_status: 'ok' },
   };
@@ -145,13 +164,42 @@ describe('Phase 2 — eval gate (v3)', () => {
     assert.ok(result.errors.some(e => e.includes('matched_components')));
   });
 
-  test('eval fails when an accepted item has empty matched_subfields', async () => {
+  test('eval PASSES when an accepted item has empty matched_subfields (v3.1: weighed, not mandated)', async () => {
     const [feeds, researchers] = makeValidArtifact();
     const accepted = feeds[0].feed.find(fi => fi.relevance_decision && fi.decision_status === 'ok')!;
     accepted.matched_subfields = [];
     const result = await evaluate(feeds, researchers, silentLogger());
+    assert.strictEqual(result.passed, true, `empty matched_subfields should not fail v3.1 eval: ${result.errors.join('; ')}`);
+  });
+
+  test('eval fails when subfield_weighing is missing from a council deliberation', async () => {
+    const [feeds, researchers] = makeValidArtifact();
+    feeds[0].feed[0].council_deliberation.subfield_weighing = '';
+    const result = await evaluate(feeds, researchers, silentLogger());
     assert.strictEqual(result.passed, false);
-    assert.ok(result.errors.some(e => e.includes('matched_subfields')));
+    assert.ok(result.errors.some(e => e.includes('subfield_weighing')));
+  });
+
+  test('eval fails when grounding_status is ok but grounded_profile is null', async () => {
+    const [feeds, researchers] = makeValidArtifact();
+    feeds[0].grounded_profile = null;
+    const result = await evaluate(feeds, researchers, silentLogger());
+    assert.strictEqual(result.passed, false);
+    assert.ok(result.errors.some(e => e.includes('grounded_profile is null')));
+  });
+
+  test('eval passes for a grounding-degraded researcher (null profile, empty feed)', async () => {
+    const [feeds, researchers] = makeValidArtifact();
+    feeds[2] = {
+      researcher_id: 'RES-003',
+      researcher_name: 'Researcher RES-003',
+      grounding_status: 'unavailable',
+      grounded_profile: null,
+      feed: [],
+      feed_summary: { text: '', summary_status: 'unavailable' },
+    };
+    const result = await evaluate(feeds, researchers, silentLogger());
+    assert.strictEqual(result.passed, true, `degraded researcher should pass eval: ${result.errors.join('; ')}`);
   });
 
   test('eval fails when feed order does not match relevance_score sort', async () => {

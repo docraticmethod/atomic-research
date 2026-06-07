@@ -1,106 +1,106 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { join } from '../src/join.js';
+import { joinResearcher, assertNoIdSpaceConflict } from '../src/join.js';
 import { sortFeed, assertRecencyWindow } from '../src/sequencer.js';
-import type { FeedItem } from '../src/schemas.js';
+import type { FeedItem, GroundedProfile, Publication, Researcher, Paper, FeedItemSeed } from '../src/schemas.js';
 
 describe('Phase 1 — join and sequencer', () => {
-  describe('join — cross-file id resolution', () => {
+  describe('join — cross-file id resolution (per researcher, grounded)', () => {
     async function loadFixtures() {
-      const [researchersRaw, papersRaw, componentsRaw, feedItemsRaw, subfieldsRaw] = await Promise.all([
+      const [researchersRaw, papersRaw, publicationsRaw, feedItemsRaw] = await Promise.all([
         readFile('data/researchers.json', 'utf-8'),
         readFile('data/papers.json', 'utf-8'),
-        readFile('data/research_components.json', 'utf-8'),
+        readFile('data/publications.json', 'utf-8'),
         readFile('data/feed_items.json', 'utf-8'),
-        readFile('data/research_subfield_preferences.json', 'utf-8'),
       ]);
       return {
-        researchers: JSON.parse(researchersRaw),
-        papers: JSON.parse(papersRaw),
-        components: JSON.parse(componentsRaw),
-        feedItems: JSON.parse(feedItemsRaw),
-        subfields: JSON.parse(subfieldsRaw),
+        researchers: JSON.parse(researchersRaw) as Researcher[],
+        papers: JSON.parse(papersRaw) as Paper[],
+        publications: JSON.parse(publicationsRaw) as Publication[],
+        feedItems: JSON.parse(feedItemsRaw) as FeedItemSeed[],
       };
     }
 
-    test('join resolves without orphans — all fixtures', async () => {
-      const { researchers, papers, components, feedItems, subfields } = await loadFixtures();
-      assert.doesNotThrow(() => join(researchers, papers, components, subfields, feedItems));
+    // Build a minimal valid grounded profile from a researcher's real publications.
+    function makeGroundedProfile(researcherId: string, pubs: Publication[]): GroundedProfile {
+      const ids = pubs.map(p => p.publication_id);
+      return {
+        researcher_id: researcherId,
+        grounding_status: 'ok',
+        research_components: [
+          { name: 'Component A', description: 'desc', source_paper_ids: ids.slice(0, 2), explanation: 'why', aptness_flags: [] },
+        ],
+        research_subfield_preferences: [
+          { name: 'Subfield A', description: 'desc', source_paper_ids: ids.slice(0, 1), explanation: 'why', aptness_flags: [] },
+        ],
+      };
+    }
+
+    function forResearcher(rid: string, f: Awaited<ReturnType<typeof loadFixtures>>) {
+      const researcher = f.researchers.find(r => r.researcher_id === rid)!;
+      const pubs = f.publications.filter(p => p.researcher_id === rid);
+      const publicationIds = new Set(pubs.map(p => p.publication_id));
+      const feedItems = f.feedItems.filter(fi => fi.researcher_id === rid);
+      const paperIds = new Set(feedItems.map(fi => fi.paper_id));
+      const papers = f.papers.filter(p => paperIds.has(p.paper_id));
+      const profile = makeGroundedProfile(rid, pubs);
+      return { researcher, papers, profile, feedItems, publicationIds };
+    }
+
+    test('assertNoIdSpaceConflict passes — publications and papers are disjoint', async () => {
+      const { papers, publications } = await loadFixtures();
+      assert.doesNotThrow(() => assertNoIdSpaceConflict(papers, publications));
     });
 
-    test('join returns 3 JoinedResearcher entries', async () => {
-      const { researchers, papers, components, feedItems, subfields } = await loadFixtures();
-      const joined = join(researchers, papers, components, subfields, feedItems);
-      assert.strictEqual(joined.length, 3);
+    test('joinResearcher resolves without orphans for each researcher', async () => {
+      const f = await loadFixtures();
+      for (const r of f.researchers) {
+        const { researcher, papers, profile, feedItems, publicationIds } = forResearcher(r.researcher_id, f);
+        assert.doesNotThrow(() => joinResearcher(researcher, papers, profile, feedItems, publicationIds));
+      }
     });
 
     test('each joined researcher has exactly 10 papers and 10 feed items', async () => {
-      const { researchers, papers, components, feedItems, subfields } = await loadFixtures();
-      const joined = join(researchers, papers, components, subfields, feedItems);
-      for (const jr of joined) {
-        assert.strictEqual(jr.papers.length, 10, `${jr.researcher.researcher_id} has ${jr.papers.length} papers`);
-        assert.strictEqual(jr.feedItems.length, 10, `${jr.researcher.researcher_id} has ${jr.feedItems.length} feed items`);
+      const f = await loadFixtures();
+      for (const r of f.researchers) {
+        const { researcher, papers, profile, feedItems, publicationIds } = forResearcher(r.researcher_id, f);
+        const jr = joinResearcher(researcher, papers, profile, feedItems, publicationIds);
+        assert.strictEqual(jr.papers.length, 10, `${r.researcher_id} has ${jr.papers.length} papers`);
+        assert.strictEqual(jr.feedItems.length, 10, `${r.researcher_id} has ${jr.feedItems.length} feed items`);
       }
     });
 
-    test('no paper_id appears in more than one researcher set', async () => {
-      const { researchers, papers, components, feedItems, subfields } = await loadFixtures();
-      const joined = join(researchers, papers, components, subfields, feedItems);
-      const seen = new Set<string>();
-      for (const jr of joined) {
-        for (const p of jr.papers) {
-          assert.ok(!seen.has(p.paper_id), `paper_id "${p.paper_id}" appears in multiple researcher sets`);
-          seen.add(p.paper_id);
-        }
-      }
+    test('joinResearcher throws on a feed item with a foreign researcher_id', async () => {
+      const f = await loadFixtures();
+      const { researcher, papers, profile, feedItems, publicationIds } = forResearcher('RES-001', f);
+      const bad = [...feedItems, { ...feedItems[0], id: 'FI-BAD', researcher_id: 'RES-999' }];
+      assert.throws(() => joinResearcher(researcher, papers, profile, bad, publicationIds), /contamination|researcher_id/i);
     });
 
-    test('each joined researcher has at least one component with source_paper_ids', async () => {
-      const { researchers, papers, components, feedItems, subfields } = await loadFixtures();
-      const joined = join(researchers, papers, components, subfields, feedItems);
-      for (const jr of joined) {
-        assert.ok(jr.components.length > 0, `${jr.researcher.researcher_id} has no components`);
-        for (const c of jr.components) {
-          assert.ok(c.source_paper_ids.length > 0, `component ${c.component_id} has no source_paper_ids`);
-        }
-      }
+    test('joinResearcher throws on orphan paper_id in feed_items', async () => {
+      const f = await loadFixtures();
+      const { researcher, papers, profile, feedItems, publicationIds } = forResearcher('RES-001', f);
+      const bad = [...feedItems, { ...feedItems[0], id: 'FI-BAD2', paper_id: 'PAP-DOES-NOT-EXIST' }];
+      assert.throws(() => joinResearcher(researcher, papers, profile, bad, publicationIds), /orphan/i);
     });
 
-    test('join throws on orphan researcher_id in feed_items', async () => {
-      const { researchers, papers, components, feedItems, subfields } = await loadFixtures();
-      const badFeedItems = [...feedItems, {
-        id: 'FI-BAD-01',
-        researcher_id: 'RES-999',
-        paper_id: papers[0].paper_id,
-        relevance_score: 0.5,
-        relevance_decision: true,
-        council_confidence: 70,
-        relevance_reason: 'test',
-        council_deliberation: { voices: [], substantive_vs_superficial: 'test', resolution: 'test' },
-        council_version: 'v3',
-        status: 'pending',
-        surfaced_at: '2026-06-06T00:00:00Z',
-      }];
-      assert.throws(() => join(researchers, papers, components, subfields, badFeedItems), /orphan/i);
+    test('joinResearcher throws when a component source_paper_id is not in publications', async () => {
+      const f = await loadFixtures();
+      const { researcher, papers, profile, feedItems, publicationIds } = forResearcher('RES-001', f);
+      const badProfile: GroundedProfile = {
+        ...profile,
+        research_components: [
+          { name: 'Bad', description: 'd', source_paper_ids: ['PUB-DOES-NOT-EXIST'], explanation: 'e', aptness_flags: [] },
+        ],
+      };
+      assert.throws(() => joinResearcher(researcher, papers, badProfile, feedItems, publicationIds), /not in publications/i);
     });
 
-    test('join throws on orphan paper_id in feed_items', async () => {
-      const { researchers, papers, components, feedItems, subfields } = await loadFixtures();
-      const badFeedItems = [...feedItems, {
-        id: 'FI-BAD-02',
-        researcher_id: researchers[0].researcher_id,
-        paper_id: 'PAP-DOES-NOT-EXIST',
-        relevance_score: 0.5,
-        relevance_decision: true,
-        council_confidence: 70,
-        relevance_reason: 'test',
-        council_deliberation: { voices: [], substantive_vs_superficial: 'test', resolution: 'test' },
-        council_version: 'v3',
-        status: 'pending',
-        surfaced_at: '2026-06-06T00:00:00Z',
-      }];
-      assert.throws(() => join(researchers, papers, components, subfields, badFeedItems), /orphan/i);
+    test('assertNoIdSpaceConflict throws on a colliding id', () => {
+      const papers = [{ paper_id: 'X-01' }] as Paper[];
+      const publications = [{ publication_id: 'X-01' }] as Publication[];
+      assert.throws(() => assertNoIdSpaceConflict(papers, publications), /id-space conflict/i);
     });
   });
 
@@ -119,7 +119,7 @@ describe('Phase 1 — join and sequencer', () => {
         relevance_reason: 'test',
         matched_components: [],
         matched_subfields: [],
-        council_deliberation: { voices: [], substantive_vs_superficial: 'test', resolution: 'test' },
+        council_deliberation: { voices: [], substantive_vs_superficial: 'test', subfield_weighing: 'test', resolution: 'test' },
         decision_status: 'ok',
         ...overrides,
       };

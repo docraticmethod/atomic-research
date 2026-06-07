@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atomic Research — Pipeline Flow</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 48px 32px;
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: #f8fafc;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .diagram-card {
+      background: #1e2130;
+      border: 1px solid #2d3148;
+      border-radius: 12px;
+      padding: 40px;
+      overflow-x: auto;
+    }
+
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    .legend {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .legend-item {
+      background: #161822;
+      border: 1px solid #2d3148;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .legend-item .label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .legend-item .value {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .dot-llm   { color: #818cf8; }
+    .dot-det   { color: #34d399; }
+    .dot-data  { color: #f59e0b; }
+    .dot-obs   { color: #f472b6; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Atomic Research — Agent &amp; Data Flow</h1>
+    <p>Pipeline architecture · v3 council model · claude-sonnet-4-6</p>
+  </header>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+flowchart TD
+    classDef fixture  fill:#1e3a5f,stroke:#3b82f6,color:#bfdbfe
+    classDef llm      fill:#2e1065,stroke:#818cf8,color:#ddd6fe
+    classDef det      fill:#052e16,stroke:#34d399,color:#bbf7d0
+    classDef output   fill:#1c1917,stroke:#f59e0b,color:#fde68a
+    classDef obs      fill:#2d1b3d,stroke:#f472b6,color:#fbcfe8
+
+    subgraph FIXTURES["📂 Data Fixtures"]
+        F1["researchers.json\n3 researchers"]:::fixture
+        F2["papers.json\n30 papers"]:::fixture
+        F3["research_components.json\ncomponents + source_paper_ids"]:::fixture
+        F4["feed_items.json\nseed decisions"]:::fixture
+        F5["subfield_preferences.json"]:::fixture
+    end
+
+    ORCH["🔧 orchestrator.ts\nload · validate · join fixtures"]:::det
+    JOIN["🔗 join.ts\ncross-file ID resolution\nper-researcher view ×3"]:::det
+
+    FIXTURES --> ORCH --> JOIN
+
+    subgraph LOOP["🔄 Per-Researcher Loop  ×3  sequential"]
+        direction TB
+
+        BATCH["📤 runCouncilBatch\nBatches API — 10 requests at once"]:::llm
+
+        subgraph COUNCIL["🧠 Council Prompt  ×10 per batch  — skills/council.ts"]
+            direction LR
+            VA["advocate"]:::llm
+            VS["skeptic"]:::llm
+            VR["subfield\nreviewer"]:::llm
+            VC["scope\nchecker"]:::llm
+            RES["resolution +\nsubstantive_vs\n_superficial"]:::llm
+            VA & VS & VR & VC --> RES
+        end
+
+        PARSE["📋 parseCouncilResult\nrelevance_decision · score\nconfidence · matched_components"]:::det
+        SORT["⚙️ sortFeed — sequencer.ts\nDETERMINISTIC\nscore ↓ · confidence ↓ · recency ↓"]:::det
+        SUMMARY["✍️ runFeedSummary\nsingle LLM call\ngated: after sort only"]:::llm
+
+        BATCH --> COUNCIL --> PARSE --> SORT --> SUMMARY
+    end
+
+    JOIN --> LOOP
+
+    EVAL["✅ evaluate — eval.ts\nscale · order · council fields\ngrounding · coverage roles · recency"]:::det
+    OUTPUT["📄 output_data.json\nResearcherFeed ×3"]:::output
+    DASH["🖥️ dash-app-server.ts\n/api/papers · /api/feed-summary"]:::det
+    UI["🌐 dash-app.html\nbrowser dashboard"]:::output
+
+    LOOP --> EVAL --> OUTPUT --> DASH --> UI
+
+    subgraph OBS["📡 Observability"]
+        WEAVE["Weave\nper-call trace tree\naudit trail for council"]:::obs
+        WB["W&amp;B run\ndecision distributions\neval pass/fail"]:::obs
+    end
+
+    LOOP -. "op() decorators" .-> WEAVE
+    EVAL -. "op() decorators" .-> WEAVE
+    ORCH -. "run metadata" .-> WB
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="label"><span class="dot-data">■</span> Blue nodes</div>
+        <div class="value">Input fixture files — static JSON loaded at pipeline start</div>
+      </div>
+      <div class="legend-item">
+        <div class="label"><span class="dot-llm">■</span> Purple nodes</div>
+        <div class="value">LLM calls — non-deterministic, traced in Weave as audit trail</div>
+      </div>
+      <div class="legend-item">
+        <div class="label"><span class="dot-det">■</span> Green nodes</div>
+        <div class="value">Deterministic logic — no LLM, pure functions (sort, validate, join)</div>
+      </div>
+      <div class="legend-item">
+        <div class="label"><span class="dot-obs">■</span> Pink nodes</div>
+        <div class="value">Observability — Weave trace tree + W&amp;B run per pipeline execution</div>
+      </div>
+      <div class="legend-item">
+        <div class="label">Council voices</div>
+        <div class="value">4 prompt-engineered voices inside one LLM call — not separate agents</div>
+      </div>
+      <div class="legend-item">
+        <div class="label">Batch parallelism</div>
+        <div class="value">10 council calls per researcher submitted simultaneously via Batches API</div>
+      </div>
+      <div class="legend-item">
+        <div class="label">Feed summary gate</div>
+        <div class="value">runFeedSummary cannot start until the full batch completes and feed is sorted</div>
+      </div>
+      <div class="legend-item">
+        <div class="label">Loop order</div>
+        <div class="value">3 researchers processed sequentially — RES-001 fully completes before RES-002 starts</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    flowchart: { curve: 'basis', padding: 20 },
+    themeVariables: {
+      fontSize: '13px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    },
+  });
+</script>
+</html>

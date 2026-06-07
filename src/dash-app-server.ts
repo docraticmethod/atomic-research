@@ -55,6 +55,16 @@ app.get('/api/feed/:researcher_id', (req: Request, res: Response) => {
   res.json(rf);
 });
 
+// Returns one researcher's grounding status + grounded profile (components/subfields)
+app.get('/api/researcher/:researcher_id/profile', (req: Request, res: Response) => {
+  const rf = artifact.find(r => r.researcher_id === req.params.researcher_id);
+  if (!rf) {
+    res.status(404).json({ error: 'researcher not found' });
+    return;
+  }
+  res.json({ grounding_status: rf.grounding_status, grounded_profile: rf.grounded_profile });
+});
+
 app.get('/', (_req: Request, res: Response) => {
   res.sendFile(resolve(PUBLIC_DIR, 'dash-app.html'));
 });

@@ -33,6 +33,7 @@ const wandbRun = await wandb.init({
     researchers: 3,
     papers_per_researcher: 10,
     total_papers: 30,
+    grounding_enabled: true,
   },
 });
 
@@ -70,6 +71,15 @@ try {
     metrics[`${rid}_decision_ok_count`] = okItems.length;
     metrics[`${rid}_decision_unavailable_count`] = rf.feed.filter(fi => fi.decision_status === 'unavailable').length;
     metrics[`${rid}_decision_malformed_count`] = rf.feed.filter(fi => fi.decision_status === 'malformed').length;
+
+    // Grounding (Stage 1) metrics
+    const gp = rf.grounded_profile;
+    metrics[`${rid}_grounding_ok`] = rf.grounding_status === 'ok' ? 1 : 0;
+    metrics[`${rid}_components_count`] = gp ? gp.research_components.length : 0;
+    metrics[`${rid}_subfields_count`] = gp ? gp.research_subfield_preferences.length : 0;
+    metrics[`${rid}_aptness_flags_total`] = gp
+      ? [...gp.research_components, ...gp.research_subfield_preferences].reduce((n, x) => n + x.aptness_flags.length, 0)
+      : 0;
   }
 
   wandb.log(metrics);

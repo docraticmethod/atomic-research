@@ -639,3 +639,125 @@ details.detail-section[open] > summary::after {
 }
 
 .placeholder-text { color: var(--text-muted); line-height: 1.5; }
+
+/* ── Grounding: degraded state ──────────────────────────────────────────── */
+.researcher-tab.grounding-degraded {
+  color: #a05050;
+  border-color: #3a1f1f;
+  font-style: italic;
+}
+
+.grounding-unavailable-state {
+  margin: 1rem;
+  padding: 1.25rem;
+  border: 1px solid #3a1f1f;
+  border-left: 3px solid #a05050;
+  border-radius: 4px;
+  background: #160f0f;
+}
+
+.grounding-unavailable-state.detail {
+  margin: 1.5rem;
+}
+
+.gus-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #c06060;
+  margin-bottom: 0.5rem;
+}
+
+.gus-body {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.gus-retry {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
+
+/* ── Grounding: grounded profile panel ──────────────────────────────────── */
+.researcher-profile-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-block-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+.grounded-components-list,
+.grounded-subfields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.grounded-component {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  background: #121212;
+}
+
+.gc-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+.gc-description {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.gc-source,
+.gs-source {
+  font-size: 0.7rem;
+  color: #6a9ad4;
+  font-family: var(--serif);
+  letter-spacing: 0.02em;
+}
+
+.grounded-subfield {
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  background: #121212;
+}
+
+.gs-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6a9ad4;
+  margin-bottom: 0.2rem;
+}
+
+/* ── Grounding: advisory aptness flags (Layer 3) ────────────────────────── */
+.aptness-flags {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+}
+
+.aptness-flag {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  background: #3a2e12;
+  color: #c8a040;
+  line-height: 1.4;
+}

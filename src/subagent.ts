@@ -1,10 +1,107 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { op } from 'weave';
 import { buildCouncilMessages } from './skills/council.js';
-import type { Researcher, Paper, ResearchComponent, SubfieldPreference, FeedItem, FeedSummary, CouncilDeliberation, MatchedComponent } from './schemas.js';
+import { buildExtractionMessages, buildAptnessMessages } from './skills/grounding.js';
+import type {
+  Researcher, Paper, Publication, GroundedProfile,
+  FeedItem, FeedSummary, CouncilDeliberation, MatchedComponent,
+} from './schemas.js';
 import type { Logger } from './logger.js';
 
 const MODEL = 'claude-sonnet-4-6';
+
+// ── Stage 1: grounding calls (single calls per researcher, not batched) ─────
+
+// Call 1 — extraction. Reads the full publications corpus, emits a structured
+// (but not yet validated) research profile as raw text for integrity.ts.
+export const runGroundingExtraction = op(async function runGroundingExtraction(
+  researcher: Researcher,
+  publications: Publication[],
+  logger: Logger,
+): Promise<string | null> {
+  const client = new Anthropic({ maxRetries: 3 });
+  const { system, user } = await buildExtractionMessages(researcher, publications);
+
+  logger.info('issuing grounding extraction call', {
+    researcher_id: researcher.researcher_id,
+    publications: publications.length,
+    model: MODEL,
+  });
+
+  try {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 4096,
+      system,
+      messages: [{ role: 'user', content: user }],
+    });
+    const block = response.content[0];
+    return block.type === 'text' ? block.text : null;
+  } catch (err) {
+    logger.error('grounding extraction call failed', { researcher_id: researcher.researcher_id, error: String(err) });
+    return null;
+  }
+});
+
+// Call 2 — evidence-aptness validation. Audits Call 1's output for weak/fabricated
+// semantic lineage. Advisory only (Layer 3) — never gates acceptance.
+export const runAptnessValidation = op(async function runAptnessValidation(
+  researcher: Researcher,
+  extractedRaw: string,
+  logger: Logger,
+): Promise<string | null> {
+  const client = new Anthropic({ maxRetries: 3 });
+  const { system, user } = await buildAptnessMessages(researcher, extractedRaw);
+
+  logger.info('issuing aptness validation call', { researcher_id: researcher.researcher_id, model: MODEL });
+
+  try {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 2048,
+      system,
+      messages: [{ role: 'user', content: user }],
+    });
+    const block = response.content[0];
+    return block.type === 'text' ? block.text : null;
+  } catch (err) {
+    logger.error('aptness validation call failed', { researcher_id: researcher.researcher_id, error: String(err) });
+    return null;
+  }
+});
+
+// Layer-1 repair re-prompt. Re-issues extraction with the structural failure
+// appended so the model can correct it. Throws on transport failure (the
+// integrity loop logs and counts the attempt).
+export const runGroundingRepair = op(async function runGroundingRepair(
+  researcher: Researcher,
+  publications: Publication[],
+  failureReason: string,
+  logger: Logger,
+): Promise<string> {
+  const client = new Anthropic({ maxRetries: 3 });
+  const { system, user } = await buildExtractionMessages(researcher, publications);
+  const repairUser = `${user}
+
+PREVIOUS ATTEMPT FAILED VALIDATION: ${failureReason}
+Fix the issue and return valid JSON only — no markdown fences, no prose outside the JSON object.`;
+
+  logger.info('issuing grounding repair call', { researcher_id: researcher.researcher_id, reason: failureReason, model: MODEL });
+
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 4096,
+    system,
+    messages: [{ role: 'user', content: repairUser }],
+  });
+  const block = response.content[0];
+  if (block.type !== 'text') {
+    throw new Error('repair call returned non-text content');
+  }
+  return block.text;
+});
+
+// ── Stage 2: council deliberation (one call per paper) ──────────────────────
 
 export type CouncilBatchResult = {
   paper_id: string;
@@ -15,8 +112,7 @@ export type CouncilBatchResult = {
 export const runCouncilBatch = op(async function runCouncilBatch(
   researcher: Researcher,
   papers: Paper[],
-  components: ResearchComponent[],
-  subfields: SubfieldPreference[],
+  groundedProfile: GroundedProfile,
   logger: Logger,
 ): Promise<CouncilBatchResult[]> {
   const client = new Anthropic({ maxRetries: 3 });
@@ -29,7 +125,12 @@ export const runCouncilBatch = op(async function runCouncilBatch(
 
   const results = await Promise.all(
     papers.map(async (paper): Promise<CouncilBatchResult> => {
-      const { system, user } = await buildCouncilMessages(researcher, components, subfields, paper);
+      const { system, user } = await buildCouncilMessages(
+        researcher,
+        groundedProfile.research_components,
+        groundedProfile.research_subfield_preferences,
+        paper,
+      );
       try {
         const response = await client.messages.create({
           model: MODEL,
@@ -64,6 +165,37 @@ export const runCouncilBatch = op(async function runCouncilBatch(
   return results;
 });
 
+function degradedItem(
+  feedItemId: string,
+  researcherId: string,
+  paperId: string,
+  paper: Paper,
+  status: 'unavailable' | 'malformed',
+  message: string,
+): FeedItem {
+  return {
+    feed_item_id: feedItemId,
+    researcher_id: researcherId,
+    paper_id: paperId,
+    position: 10,
+    title: paper.title,
+    publication_date: paper.publication_date,
+    relevance_decision: false,
+    relevance_score: 0,
+    council_confidence: 0,
+    relevance_reason: message,
+    matched_components: [],
+    matched_subfields: [],
+    council_deliberation: {
+      voices: [],
+      substantive_vs_superficial: '',
+      subfield_weighing: '',
+      resolution: message,
+    },
+    decision_status: status,
+  };
+}
+
 export function parseCouncilResult(
   raw: string | null,
   paperId: string,
@@ -72,30 +204,9 @@ export function parseCouncilResult(
   researcherId: string,
   logger: Logger,
 ): FeedItem {
-  const conservativePosition = 10;
-
   if (raw === null) {
     logger.warn('council decision unavailable', { paperId });
-    return {
-      feed_item_id: feedItemId,
-      researcher_id: researcherId,
-      paper_id: paperId,
-      position: conservativePosition,
-      title: paper.title,
-      publication_date: paper.publication_date,
-      relevance_decision: false,
-      relevance_score: 0,
-      council_confidence: 0,
-      relevance_reason: 'Decision unavailable — retry',
-      matched_components: [],
-      matched_subfields: [],
-      council_deliberation: {
-        voices: [],
-        substantive_vs_superficial: '',
-        resolution: 'Decision unavailable — retry',
-      },
-      decision_status: 'unavailable',
-    };
+    return degradedItem(feedItemId, researcherId, paperId, paper, 'unavailable', 'Decision unavailable — retry');
   }
 
   try {
@@ -112,42 +223,26 @@ export function parseCouncilResult(
 
     const voices = (rawDelib?.voices as CouncilDeliberation['voices'] | undefined) ?? [];
     const svs = String(rawDelib?.substantive_vs_superficial ?? '').trim();
+    const subfield_weighing = String(rawDelib?.subfield_weighing ?? '').trim();
     const resolution = String(rawDelib?.resolution ?? '').trim();
 
     // Treat a structurally incomplete deliberation as malformed so it renders
     // as a retryable placeholder rather than silently passing a broken record.
-    if (voices.length === 0 || svs.length === 0) {
-      logger.error('council deliberation incomplete — voices or substantive_vs_superficial empty', {
+    if (voices.length === 0 || svs.length === 0 || subfield_weighing.length === 0) {
+      logger.error('council deliberation incomplete — voices, substantive_vs_superficial, or subfield_weighing empty', {
         paperId,
         voices_count: voices.length,
         svs_len: svs.length,
+        subfield_weighing_len: subfield_weighing.length,
         rawPreview: raw.slice(0, 400),
       });
-      return {
-        feed_item_id: feedItemId,
-        researcher_id: researcherId,
-        paper_id: paperId,
-        position: conservativePosition,
-        title: paper.title,
-        publication_date: paper.publication_date,
-        relevance_decision: false,
-        relevance_score: 0,
-        council_confidence: 0,
-        relevance_reason: 'Decision malformed — retry',
-        matched_components: [],
-        matched_subfields: [],
-        council_deliberation: {
-          voices: [],
-          substantive_vs_superficial: '',
-          resolution: 'Decision malformed — retry',
-        },
-        decision_status: 'malformed',
-      };
+      return degradedItem(feedItemId, researcherId, paperId, paper, 'malformed', 'Decision malformed — retry');
     }
 
     const council_deliberation: CouncilDeliberation = {
       voices,
       substantive_vs_superficial: svs,
+      subfield_weighing,
       resolution,
     };
 
@@ -169,28 +264,11 @@ export function parseCouncilResult(
     };
   } catch {
     logger.error('malformed council JSON', { paperId, rawPreview: raw.slice(0, 300) });
-    return {
-      feed_item_id: feedItemId,
-      researcher_id: researcherId,
-      paper_id: paperId,
-      position: conservativePosition,
-      title: paper.title,
-      publication_date: paper.publication_date,
-      relevance_decision: false,
-      relevance_score: 0,
-      council_confidence: 0,
-      relevance_reason: 'Decision malformed — retry',
-      matched_components: [],
-      matched_subfields: [],
-      council_deliberation: {
-        voices: [],
-        substantive_vs_superficial: '',
-        resolution: 'Decision malformed — retry',
-      },
-      decision_status: 'malformed',
-    };
+    return degradedItem(feedItemId, researcherId, paperId, paper, 'malformed', 'Decision malformed — retry');
   }
 }
+
+// ── Stage 2B: feed summary (post-decision, post-sort) ───────────────────────
 
 export const runFeedSummary = op(async function runFeedSummary(
   researcherName: string,

@@ -3,9 +3,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import {
   validateResearchers,
+  validatePublications,
   validatePapers,
-  validateResearchComponents,
-  validateSubfieldPreferences,
   validateFeedItemSeeds,
 } from '../src/schemas.js';
 
@@ -67,29 +66,41 @@ describe('Phase 0 — fixtures load and validate', () => {
     }
   });
 
-  test('research_components.json validates', async () => {
-    const raw = await readFile('data/research_components.json', 'utf-8');
+  test('publications.json validates — 45–60 records', async () => {
+    const raw = await readFile('data/publications.json', 'utf-8');
     const data = JSON.parse(raw);
-    const valid = validateResearchComponents(data);
-    assert.ok(valid, `validation errors: ${JSON.stringify(validateResearchComponents.errors)}`);
+    assert.ok(data.length >= 45 && data.length <= 60, `expected 45–60 publications, got ${data.length}`);
+    const valid = validatePublications(data);
+    assert.ok(valid, `validation errors: ${JSON.stringify(validatePublications.errors)}`);
   });
 
-  test('research_components.json — each component has source_paper_ids', async () => {
-    const raw = await readFile('data/research_components.json', 'utf-8');
-    const components = JSON.parse(raw);
-    for (const c of components) {
-      assert.ok(
-        Array.isArray(c.source_paper_ids) && c.source_paper_ids.length > 0,
-        `component ${c.component_id} has empty source_paper_ids`,
-      );
+  test('publications.json — 15–20 records per researcher', async () => {
+    const raw = await readFile('data/publications.json', 'utf-8');
+    const pubs = JSON.parse(raw);
+    const byResearcher = new Map<string, number>();
+    for (const p of pubs) {
+      byResearcher.set(p.researcher_id, (byResearcher.get(p.researcher_id) ?? 0) + 1);
+    }
+    assert.strictEqual(byResearcher.size, 3, 'expected publications for exactly 3 researchers');
+    for (const [rid, count] of byResearcher) {
+      assert.ok(count >= 12 && count <= 20, `${rid} has ${count} publications, expected ~15–20`);
     }
   });
 
-  test('research_subfield_preferences.json validates', async () => {
-    const raw = await readFile('data/research_subfield_preferences.json', 'utf-8');
-    const data = JSON.parse(raw);
-    const valid = validateSubfieldPreferences(data);
-    assert.ok(valid, `validation errors: ${JSON.stringify(validateSubfieldPreferences.errors)}`);
+  test('publications.json — synthetic ids, distinct id-space from candidate papers', async () => {
+    const [pubRaw, paperRaw] = await Promise.all([
+      readFile('data/publications.json', 'utf-8'),
+      readFile('data/papers.json', 'utf-8'),
+    ]);
+    const pubs = JSON.parse(pubRaw);
+    const papers = JSON.parse(paperRaw);
+    for (const p of pubs) {
+      assert.ok(p.openalex_id.includes('synthetic'), `${p.publication_id} openalex_id should be obviously synthetic`);
+    }
+    const paperIds = new Set(papers.map((p: { paper_id: string }) => p.paper_id));
+    for (const pub of pubs) {
+      assert.ok(!paperIds.has(pub.publication_id), `publication_id "${pub.publication_id}" collides with a candidate paper_id`);
+    }
   });
 
   test('feed_items.json validates — exactly 30 items', async () => {

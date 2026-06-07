@@ -1,5 +1,5 @@
 import { op } from 'weave';
-import { validateOutputArtifact, validateFeedSummary } from './schemas.js';
+import { validateOutputArtifact, validateFeedSummary, validateGroundedProfile } from './schemas.js';
 import type { ResearcherFeed, Researcher, FeedItem } from './schemas.js';
 import { WINDOW_START, WINDOW_END } from './sequencer.js';
 import type { Logger } from './logger.js';
@@ -25,42 +25,65 @@ export const evaluate = op(function evaluate(
     }
   }
 
-  // Scale: exactly 3 researchers, 30 feed items total
+  // Scale: exactly 3 researcher feeds (one per researcher, degraded or not)
   if (feeds.length !== 3) {
     errors.push(`sanity: expected 3 researcher feeds, got ${feeds.length}`);
   }
 
-  const allFeedItems = feeds.flatMap(f => f.feed);
-  if (allFeedItems.length !== 30) {
-    errors.push(`sanity: expected 30 total feed items, got ${allFeedItems.length}`);
-  }
-
-  // Each researcher has exactly 10 feed items
+  // Grounding contract: ok ⇒ profile present + 10 items; unavailable ⇒ null profile + 0 items
   for (const rf of feeds) {
-    if (rf.feed.length !== 10) {
-      errors.push(`sanity: researcher ${rf.researcher_id} has ${rf.feed.length} feed items, expected 10`);
-    }
-  }
-
-  // No cross-researcher paper reuse — all paper_ids globally unique
-  const allPaperIds = allFeedItems.map(fi => fi.paper_id);
-  const paperIdSet = new Set(allPaperIds);
-  if (paperIdSet.size !== allPaperIds.length) {
-    const seen = new Set<string>();
-    for (const pid of allPaperIds) {
-      if (seen.has(pid)) {
-        errors.push(`sanity: paper_id "${pid}" appears in more than one researcher's feed (cross-researcher reuse)`);
+    const rid = rf.researcher_id;
+    if (rf.grounding_status === 'ok') {
+      if (!rf.grounded_profile) {
+        errors.push(`sanity: researcher ${rid} grounding_status is ok but grounded_profile is null`);
+      } else {
+        if (!validateGroundedProfile(rf.grounded_profile)) {
+          errors.push(`schema: researcher ${rid} grounded_profile invalid: ${JSON.stringify(validateGroundedProfile.errors)}`);
+        }
+        for (const c of rf.grounded_profile.research_components) {
+          if (!c.source_paper_ids || c.source_paper_ids.length === 0) {
+            errors.push(`sanity: researcher ${rid} grounded component "${c.name}" has empty source_paper_ids`);
+          }
+        }
+        for (const s of rf.grounded_profile.research_subfield_preferences) {
+          if (!s.source_paper_ids || s.source_paper_ids.length === 0) {
+            errors.push(`sanity: researcher ${rid} grounded subfield "${s.name}" has empty source_paper_ids`);
+          }
+        }
       }
-      seen.add(pid);
+      if (rf.feed.length !== 10) {
+        errors.push(`sanity: researcher ${rid} (grounding ok) has ${rf.feed.length} feed items, expected 10`);
+      }
+    } else {
+      // grounding_status === 'unavailable'
+      if (rf.grounded_profile !== null) {
+        errors.push(`sanity: researcher ${rid} grounding_status is unavailable but grounded_profile is non-null (no partial profile allowed)`);
+      }
+      if (rf.feed.length !== 0) {
+        errors.push(`sanity: researcher ${rid} grounding_status is unavailable but feed is non-empty (council must not run)`);
+      }
     }
   }
 
-  // Per-researcher checks
+  // No cross-researcher paper reuse — all paper_ids globally unique across feeds
+  const allFeedItems = feeds.flatMap(f => f.feed);
+  const allPaperIds = allFeedItems.map(fi => fi.paper_id);
+  const seen = new Set<string>();
+  for (const pid of allPaperIds) {
+    if (seen.has(pid)) {
+      errors.push(`sanity: paper_id "${pid}" appears in more than one researcher's feed (cross-researcher reuse)`);
+    }
+    seen.add(pid);
+  }
+
+  // Per-researcher per-item checks — only for grounded (ok) researchers with a feed
   for (const rf of feeds) {
+    if (rf.grounding_status !== 'ok') continue;
     const rid = rf.researcher_id;
     checkFeedOrder(rf.feed, rid, errors);
     checkCouncilFields(rf.feed, rid, errors);
     checkGroundingOnAccepted(rf.feed, rid, errors);
+    checkSubfieldWeighing(rf.feed, rid, errors);
     checkCoverageRoles(rf.feed, rid, errors);
     checkSubstantiveVsSuperficial(rf.feed, rid, errors);
     checkNoSilentDrop(rf.feed, rid, errors);
@@ -102,10 +125,10 @@ const checkFeedOrder = op(function checkFeedOrder(feed: FeedItem[], rid: string,
     return new Date(b.publication_date).getTime() - new Date(a.publication_date).getTime();
   });
 
-  reranked.forEach((expected, i) => {
-    const actual = feed.find(fi => fi.paper_id === expected.paper_id);
+  reranked.forEach((exp, i) => {
+    const actual = feed.find(fi => fi.paper_id === exp.paper_id);
     if (!actual || actual.position !== i + 1) {
-      errors.push(`sanity: researcher ${rid} paper ${expected.paper_id} should be position ${i + 1}, got ${actual?.position ?? 'missing'}`);
+      errors.push(`sanity: researcher ${rid} paper ${exp.paper_id} should be position ${i + 1}, got ${actual?.position ?? 'missing'}`);
     }
   });
 });
@@ -135,6 +158,7 @@ const checkCouncilFields = op(function checkCouncilFields(feed: FeedItem[], rid:
 const checkGroundingOnAccepted = op(function checkGroundingOnAccepted(feed: FeedItem[], rid: string, errors: string[]): void {
   for (const fi of feed) {
     if (fi.relevance_decision && fi.decision_status === 'ok') {
+      // Accepted items must carry ≥1 matched_component with explanation + lineage
       if (!fi.matched_components || fi.matched_components.length === 0) {
         errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} accepted but matched_components is empty`);
       } else {
@@ -147,8 +171,19 @@ const checkGroundingOnAccepted = op(function checkGroundingOnAccepted(feed: Feed
           }
         }
       }
-      if (!fi.matched_subfields || fi.matched_subfields.length === 0) {
-        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} accepted but matched_subfields is empty`);
+      // NOTE (v3.1): matched_subfields is NOT mandated non-empty on every accepted
+      // item — subfield match is weighed inside deliberation (see checkSubfieldWeighing),
+      // and a paper may be accepted on component/focus match alone.
+    }
+  }
+});
+
+const checkSubfieldWeighing = op(function checkSubfieldWeighing(feed: FeedItem[], rid: string, errors: string[]): void {
+  for (const fi of feed) {
+    if (fi.decision_status === 'ok') {
+      const sw = fi.council_deliberation?.subfield_weighing ?? '';
+      if (sw.trim().length < SUBSTANTIVE_MIN_LENGTH) {
+        errors.push(`sanity: researcher ${rid} paper ${fi.paper_id} council_deliberation.subfield_weighing is too short or missing`);
       }
     }
   }

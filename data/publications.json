@@ -1,0 +1,1626 @@
+[
+  {
+    "publication_id": "PUB-R1-01",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100101synthetic",
+    "title": "Sparse Autoencoders for Decomposing Polysemantic Neurons into Interpretable Features",
+    "abstract": "We introduce a method for decomposing the polysemantic neurons of large language models into interpretable monosemantic features using sparse autoencoders trained on residual stream activations. By enforcing L1 sparsity during training, the autoencoder learns a dictionary of features where each feature activates on a coherent concept. We demonstrate that the recovered features are human-interpretable, consistent across contexts, and largely faithful to the model's computational process. We evaluate our approach on a 7B parameter transformer, identifying over 4,000 interpretable features covering factual associations, syntactic roles, and abstract concepts. Our method provides a scalable path toward mechanistic understanding of large neural networks.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Marcus Lee",
+        "openalex_id": "A9100102synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "NeurIPS",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.95
+      },
+      {
+        "id": "TP10002synthetic",
+        "display_name": "Sparse autoencoders",
+        "score": 0.98
+      },
+      {
+        "id": "TP10006synthetic",
+        "display_name": "Polysemanticity",
+        "score": 0.91
+      }
+    ],
+    "citation_count": 312
+  },
+  {
+    "publication_id": "PUB-R1-02",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100102synthetic",
+    "title": "Circuit-Level Analysis of Indirect Object Identification in GPT-2",
+    "abstract": "We identify and characterise the minimal circuit in GPT-2 responsible for indirect object identification — the task of completing sentences like 'John gave Mary the book; she returned it to ___'. Using activation patching and path patching, we localise the computation to a small set of attention heads distributed across layers, characterise their roles (subject inhibition, induction, name mover), and verify that ablating the circuit degrades performance while leaving unrelated capabilities intact. Our results provide a detailed mechanistic account of how a single algorithmic capability is implemented across a transformer's layers.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Daniel Park",
+        "openalex_id": "A9100103synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "ICLR",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.94
+      },
+      {
+        "id": "TP10003synthetic",
+        "display_name": "Circuit analysis in neural networks",
+        "score": 0.97
+      }
+    ],
+    "citation_count": 587
+  },
+  {
+    "publication_id": "PUB-R1-03",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100103synthetic",
+    "title": "Scaling Sparse Autoencoders: Dictionary Size and Downstream Interpretability",
+    "abstract": "We investigate how the size of the sparse autoencoder dictionary affects the quality and interpretability of recovered features. Training SAEs with dictionaries ranging from 512 to 65,536 features on the same model, we find that larger dictionaries recover more specific, less polysemantic features at the cost of reduced activation frequency per feature. We introduce a set of automated and human-evaluation metrics for feature interpretability and show that dictionary size is the primary driver of quality up to a saturation point. We further demonstrate that features from larger dictionaries transfer more reliably to downstream steering tasks. Our scaling analysis provides practical guidance for SAE practitioners.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "ICML",
+    "arxiv_categories": [
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP10002synthetic",
+        "display_name": "Sparse autoencoders",
+        "score": 0.97
+      },
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.88
+      }
+    ],
+    "citation_count": 144
+  },
+  {
+    "publication_id": "PUB-R1-04",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100104synthetic",
+    "title": "Activation Addition: Linearly Steering Language Model Behaviour at Inference Time",
+    "abstract": "We show that targeted behavioural changes can be induced in language models by adding a steering vector — derived from the difference between activations on contrasting prompts — to the residual stream at a chosen layer during inference. Unlike fine-tuning, activation addition requires no gradient computation and produces immediate, reversible changes. We characterise the conditions under which steering is effective, identifying layer depth, magnitude, and prompt-pair similarity as key factors. Experiments on toxicity reduction, sentiment steering, and factual editing demonstrate that this approach is competitive with fine-tuning baselines while being orders of magnitude cheaper.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Yuki Tanaka",
+        "openalex_id": "A9100104synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "arXiv",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10004synthetic",
+        "display_name": "Feature steering",
+        "score": 0.96
+      },
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.85
+      }
+    ],
+    "citation_count": 229
+  },
+  {
+    "publication_id": "PUB-R1-05",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100105synthetic",
+    "title": "Causal Tracing: Localising Factual Associations in Transformer Models",
+    "abstract": "We introduce causal tracing, a technique for identifying which hidden states are causally responsible for a model's recall of factual associations. By corrupting a subject token in the input and then restoring individual hidden states while measuring recovery of the correct output, we generate causal effect maps across all layers and positions. Applied to GPT-2 and GPT-J, we find that factual associations are primarily stored in the early MLP layers of mid-depth transformers. We further show that these causal maps guide targeted model editing interventions that update specific facts without disrupting unrelated knowledge.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Priya Rao",
+        "openalex_id": "A9100105synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "NeurIPS",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10007synthetic",
+        "display_name": "Causal tracing",
+        "score": 0.97
+      },
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.93
+      }
+    ],
+    "citation_count": 891
+  },
+  {
+    "publication_id": "PUB-R1-06",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100106synthetic",
+    "title": "Superposition and Polysemanticity: When Do Neural Networks Store Multiple Features per Neuron?",
+    "abstract": "We provide a theoretical and empirical account of when and why transformers represent more features than they have dimensions, storing multiple features per neuron via near-orthogonal superposition. We characterise the conditions — feature sparsity, relative importance, and model capacity — under which superposition emerges or is suppressed. We introduce the concept of polysemanticity as a graded property and show that features transition from monosemantic to polysemantic in a predictable way as capacity is reduced. Our analysis identifies the geometric structure of superposed features and derives interference bounds that explain when superposition is tolerable versus harmful for downstream tasks.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Helena Voss",
+        "openalex_id": "A9100106synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "Transformer Circuits Workshop",
+    "arxiv_categories": [
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP10005synthetic",
+        "display_name": "Superposition hypothesis",
+        "score": 0.98
+      },
+      {
+        "id": "TP10006synthetic",
+        "display_name": "Polysemanticity",
+        "score": 0.95
+      }
+    ],
+    "citation_count": 674
+  },
+  {
+    "publication_id": "PUB-R1-07",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100107synthetic",
+    "title": "Attention Head Function Classification via Output Weight Analysis",
+    "abstract": "We propose a systematic method for classifying attention heads in transformer models by their computational roles using output weight analysis rather than activation inspection. By examining the principal subspaces of each head's output weight matrix and testing specific circuit hypotheses with activation knockouts, we identify and validate a taxonomy of head functions — including induction heads, name movers, inhibition heads, and positional heads — across multiple model families. We release an open-source toolkit for head role identification and report a cross-model survey of head function distributions at various scales.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Tomás Herrera",
+        "openalex_id": "A9100107synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "ICLR",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10003synthetic",
+        "display_name": "Circuit analysis in neural networks",
+        "score": 0.96
+      },
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.92
+      }
+    ],
+    "citation_count": 203
+  },
+  {
+    "publication_id": "PUB-R1-08",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100108synthetic",
+    "title": "SAE Feature Steering Generalises Across Prompt Distributions",
+    "abstract": "We evaluate whether sparse autoencoder features trained on one prompt distribution produce reliable steering effects when applied out-of-distribution. Testing SAE-derived steering vectors across six datasets with varying style, domain, and length, we find that features associated with abstract concepts (sentiment, deception, formality) generalise substantially better than features tied to surface-level tokens. We introduce a transfer fidelity metric based on downstream task performance and show that broader-dictionary SAEs trained with diverse corpora produce features that transfer most reliably. Our results establish the conditions under which SAE-based steering is robust for deployment.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "ICML",
+    "arxiv_categories": [
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP10004synthetic",
+        "display_name": "Feature steering",
+        "score": 0.95
+      },
+      {
+        "id": "TP10002synthetic",
+        "display_name": "Sparse autoencoders",
+        "score": 0.9
+      }
+    ],
+    "citation_count": 88
+  },
+  {
+    "publication_id": "PUB-R1-09",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100109synthetic",
+    "title": "Evaluating Interpretability Claims: A Benchmark for Sparse Autoencoder Features",
+    "abstract": "We develop a systematic evaluation framework for claims about sparse autoencoder feature interpretability. Existing evaluations rely on human ratings of feature labels, which are subjective and expensive. We introduce a set of automated proxy tasks — feature probing accuracy, activation consistency across paraphrase, causal intervention effect size, and cross-model alignment — and show they correlate with human judgements at r=0.78 on our annotated benchmark. Using this framework, we re-evaluate five published SAE approaches and find significant variation in feature quality that prior work obscured by using inconsistent evaluation protocols.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Marcus Lee",
+        "openalex_id": "A9100102synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "NeurIPS",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10002synthetic",
+        "display_name": "Sparse autoencoders",
+        "score": 0.94
+      },
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.91
+      }
+    ],
+    "citation_count": 67
+  },
+  {
+    "publication_id": "PUB-R1-10",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100110synthetic",
+    "title": "In-Context Learning Circuits: The Mechanistic Basis of Few-Shot Prompting",
+    "abstract": "We investigate the mechanistic basis of in-context learning (ICL) in decoder-only transformers, identifying the circuits responsible for extracting and applying input-output mappings from few-shot examples. Using activation patching and attention head ablations, we show that ICL relies on a combination of induction heads for pattern matching, name-mover heads for retrieving relevant tokens, and late MLP layers for combining retrieved information into predictions. We characterise how circuit utilisation changes as the number of demonstrations increases and show that model robustness to out-of-order demonstrations correlates with circuit stability.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Daniel Park",
+        "openalex_id": "A9100103synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "NeurIPS",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10003synthetic",
+        "display_name": "Circuit analysis in neural networks",
+        "score": 0.95
+      },
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.9
+      }
+    ],
+    "citation_count": 156
+  },
+  {
+    "publication_id": "PUB-R1-11",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100111synthetic",
+    "title": "Feature Geometry in Overcomplete Dictionaries: Interference, Orthogonality, and Representational Capacity",
+    "abstract": "We study the geometry of features learned by sparse autoencoders in overcomplete dictionaries, characterising how features relate to each other and to the model's underlying representational structure. We find that features form clusters of related concepts that share a common subspace, with inter-cluster interference considerably lower than intra-cluster interference. We derive theoretical bounds on representational capacity as a function of dictionary overcomplete ratio and feature correlation, and validate these bounds empirically across five model families. Our analysis suggests that feature geometry provides a richer lens for understanding model representations than individual feature analysis.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Helena Voss",
+        "openalex_id": "A9100106synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "ICML",
+    "arxiv_categories": [
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP10005synthetic",
+        "display_name": "Superposition hypothesis",
+        "score": 0.93
+      },
+      {
+        "id": "TP10002synthetic",
+        "display_name": "Sparse autoencoders",
+        "score": 0.89
+      }
+    ],
+    "citation_count": 42
+  },
+  {
+    "publication_id": "PUB-R1-12",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100112synthetic",
+    "title": "Activation Patching at Scale: Localising Computations in 70B Parameter Models",
+    "abstract": "We extend activation patching methodology to 70B parameter language models, addressing the computational and interpretive challenges that arise at this scale. We introduce a hierarchical patching protocol that first identifies the responsible layer ranges and then refines to specific heads and MLP components, reducing the number of forward passes required by 6× relative to exhaustive patching. Applied to four factual recall tasks, we show that the causal structures identified at smaller scales generalise to 70B models with quantitative shifts in the depth at which information is stored. We release an efficient patching library supporting models up to 70B parameters.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Priya Rao",
+        "openalex_id": "A9100105synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "ICLR",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10007synthetic",
+        "display_name": "Causal tracing",
+        "score": 0.96
+      },
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.9
+      }
+    ],
+    "citation_count": 95
+  },
+  {
+    "publication_id": "PUB-R1-13",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100113synthetic",
+    "title": "Residual Stream Analysis: Decomposing Transformer Representations Layer by Layer",
+    "abstract": "We develop a framework for tracking how information accumulates and is transformed in the residual stream of decoder-only transformers, layer by layer. By projecting residual stream states onto feature dictionaries learned by sparse autoencoders at each layer, we produce interpretable decompositions of how a model's representation of a given input evolves from embedding to final logit. We demonstrate that specific factual attributes are added to the residual stream at predictable layers, and that circuit-level interventions can be understood as modifications to the feature composition at specific residual stream positions.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Transformer Circuits Workshop",
+    "arxiv_categories": [
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.94
+      },
+      {
+        "id": "TP10002synthetic",
+        "display_name": "Sparse autoencoders",
+        "score": 0.87
+      }
+    ],
+    "citation_count": 78
+  },
+  {
+    "publication_id": "PUB-R1-14",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100114synthetic",
+    "title": "Steering Vectors from Contrastive Activation Differences: Theoretical Foundations",
+    "abstract": "We provide a theoretical foundation for why contrastive activation differences (CADs) — the residual stream difference between activations on semantically contrasting prompt pairs — function as effective steering vectors. We show that under a linear representation hypothesis, CADs isolate the directions corresponding to the contrasting concept, and derive conditions under which they are expected to transfer across prompts. We characterise the failure modes — entanglement with topic-specific directions, sensitivity to paraphrase distance — and provide practical recommendations for selecting contrastive pairs. Our framework unifies activation addition, representation engineering, and related steering approaches.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Yuki Tanaka",
+        "openalex_id": "A9100104synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "ICML",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "topics": [
+      {
+        "id": "TP10004synthetic",
+        "display_name": "Feature steering",
+        "score": 0.97
+      },
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.88
+      }
+    ],
+    "citation_count": 51
+  },
+  {
+    "publication_id": "PUB-R1-15",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100115synthetic",
+    "title": "Mechanistic Interpretability for Safety-Critical Properties: Deception Detection and Scope Sensitivity",
+    "abstract": "We apply mechanistic interpretability tools to two safety-relevant properties: deceptive alignment detection and scope sensitivity in ethical reasoning. For deception, we train classifiers on SAE features active during deceptive versus honest completions and show that these classifiers generalise across context styles with 89% accuracy. For scope sensitivity, we identify attention heads responsible for tracking quantifier scope and show that heads implicated in scope-insensitive reasoning can be identified by their activation patterns on minimal pairs. Our results demonstrate that mechanistic methods can surface interpretable signatures of safety-relevant model properties.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Tomás Herrera",
+        "openalex_id": "A9100107synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "NeurIPS",
+    "arxiv_categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "topics": [
+      {
+        "id": "TP10001synthetic",
+        "display_name": "Mechanistic interpretability",
+        "score": 0.92
+      },
+      {
+        "id": "TP10008synthetic",
+        "display_name": "AI safety",
+        "score": 0.85
+      }
+    ],
+    "citation_count": 113
+  },
+  {
+    "publication_id": "PUB-R1-16",
+    "researcher_id": "RES-001",
+    "openalex_id": "W9100116synthetic",
+    "title": "Cross-Layer Feature Reuse and Composition in Transformer Sparse Autoencoders",
+    "abstract": "We study whether sparse autoencoder features learned at one layer can be composed to explain features at a later layer, testing the hypothesis that transformers implement multi-step feature computation. By training SAEs at every residual stream checkpoint and tracing the ancestry of late-layer features through earlier-layer features using gradient-based attribution, we find that approximately 40% of late-layer feature activations can be substantially explained as nonlinear combinations of a small set of earlier features. This cross-layer composition structure provides evidence that transformer computations are organised into interpretable algorithmic stages.",
+    "authors": [
+      {
+        "name": "Sarah Chen",
+        "openalex_id": "A9100101synthetic"
+      },
+      {
+        "name": "Marcus Lee",
+        "openalex_id": "A9100102synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "ICLR",
+    "arxiv_categories": [
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP10002synthetic",
+        "display_name": "Sparse autoencoders",
+        "score": 0.92
+      },
+      {
+        "id": "TP10003synthetic",
+        "display_name": "Circuit analysis in neural networks",
+        "score": 0.88
+      }
+    ],
+    "citation_count": 37
+  },
+  {
+    "publication_id": "PUB-R2-01",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200101synthetic",
+    "title": "Threshold Analysis for Planar Surface Codes Under Depolarising Noise",
+    "abstract": "We compute precise error thresholds for planar surface codes under depolarising noise models using large-scale Monte Carlo simulations. By implementing the minimum-weight perfect matching (MWPM) decoder with hardware-realistic syndrome extraction circuits, we determine that the threshold lies at 1.08% physical error rate under circuit-level noise, consistent with leading theoretical predictions. We further characterise how threshold degrades as a function of measurement error rate, finite-distance effects, and decoder latency, providing a quantitative guide for hardware teams targeting fault-tolerant operation.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Aiko Hashimoto",
+        "openalex_id": "A9200102synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "Physical Review X",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.95
+      },
+      {
+        "id": "TP20002synthetic",
+        "display_name": "Surface codes",
+        "score": 0.97
+      }
+    ],
+    "citation_count": 442
+  },
+  {
+    "publication_id": "PUB-R2-02",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200102synthetic",
+    "title": "Transversal CNOT Gates in Rotated Surface Codes with Minimal Overhead",
+    "abstract": "We present a scheme for implementing transversal CNOT gates between logical qubits encoded in rotated surface codes, achieving fault-tolerance with a qubit overhead of 4d² per logical qubit at code distance d. Our construction uses a twist-based lattice surgery protocol that eliminates the need for ancilla magic states for the CNOT, reducing resource overhead by 35% compared to prior proposals. We provide a full fault-tolerance analysis under circuit-level noise and verify via numerical simulation that the logical error rate below threshold scales as expected.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "PRX Quantum",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20003synthetic",
+        "display_name": "Fault-tolerant quantum computation",
+        "score": 0.96
+      },
+      {
+        "id": "TP20002synthetic",
+        "display_name": "Surface codes",
+        "score": 0.92
+      }
+    ],
+    "citation_count": 178
+  },
+  {
+    "publication_id": "PUB-R2-03",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200103synthetic",
+    "title": "Neural Decoders for Surface Codes: Real-Time Decoding Below the Threshold",
+    "abstract": "We develop a neural network decoder for surface codes that achieves decoding latency under 1 µs on GPU hardware while maintaining logical error rates competitive with MWPM. Our architecture uses a convolutional neural network trained via reinforcement learning on syndrome histories, enabling it to exploit temporal correlations in error patterns that MWPM treats as independent. We demonstrate that the neural decoder outperforms MWPM by 15% in logical fidelity at code distances d=5 and d=7 near threshold, and provides a clear path to real-time decoding for near-term fault-tolerant processors.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Chiara Romano",
+        "openalex_id": "A9200103synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Nature Physics",
+    "arxiv_categories": [
+      "quant-ph",
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP20005synthetic",
+        "display_name": "Quantum decoding",
+        "score": 0.97
+      },
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.9
+      }
+    ],
+    "citation_count": 303
+  },
+  {
+    "publication_id": "PUB-R2-04",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200104synthetic",
+    "title": "Compact Magic State Distillation via Concatenated Reed-Muller Codes",
+    "abstract": "We present a magic state distillation protocol based on concatenated Reed-Muller codes that achieves asymptotic yield rate approaching the theoretical optimum. The protocol produces high-fidelity T states from noisy inputs at a cost of O(log(1/ε)) code qubits per output state at output error rate ε, improving qubit-time overhead by 2× over the best prior protocols in the regime of interest for near-term quantum processors. We provide a complete circuit description, fault-tolerance analysis, and resource estimation for a 1000-logical-qubit fault-tolerant computation.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Lena Brauer",
+        "openalex_id": "A9200104synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "Physical Review Letters",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20004synthetic",
+        "display_name": "Magic state distillation",
+        "score": 0.98
+      },
+      {
+        "id": "TP20003synthetic",
+        "display_name": "Fault-tolerant quantum computation",
+        "score": 0.92
+      }
+    ],
+    "citation_count": 391
+  },
+  {
+    "publication_id": "PUB-R2-05",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200105synthetic",
+    "title": "Low-Overhead T Gate Synthesis from Distilled Magic States in Surface Code Architectures",
+    "abstract": "We present an optimised pipeline for T gate synthesis that integrates magic state distillation directly into a surface code architecture, minimising the spatial and temporal overhead. By co-designing the distillation factory layout with the logical qubit array, we reduce the number of physical qubits required per T gate by 28% and the space-time volume by 31% compared to independently optimised distillation and surface code components. We validate our design against circuit-level noise models and provide open-source layout tools.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Aiko Hashimoto",
+        "openalex_id": "A9200102synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "PRX Quantum",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20004synthetic",
+        "display_name": "Magic state distillation",
+        "score": 0.94
+      },
+      {
+        "id": "TP20003synthetic",
+        "display_name": "Fault-tolerant quantum computation",
+        "score": 0.95
+      }
+    ],
+    "citation_count": 212
+  },
+  {
+    "publication_id": "PUB-R2-06",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200106synthetic",
+    "title": "Heavy-Hex Surface Code Architecture for Superconducting Qubits",
+    "abstract": "We present the heavy-hex surface code architecture, a variant of the planar surface code adapted for the heavy-hexagonal qubit connectivity of superconducting processors. The architecture achieves code distances up to d=15 while requiring only degree-2 and degree-3 qubit connectivity, compatible with current fabrication capabilities. We characterise syndrome extraction circuits for this connectivity, derive the error threshold under realistic crosstalk and leakage noise, and demonstrate via simulation that the architecture achieves logical error rates below 10⁻⁶ at distance d=9 with physical error rate 0.3%.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Chiara Romano",
+        "openalex_id": "A9200103synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Physical Review X",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20002synthetic",
+        "display_name": "Surface codes",
+        "score": 0.97
+      },
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.93
+      }
+    ],
+    "citation_count": 157
+  },
+  {
+    "publication_id": "PUB-R2-07",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200107synthetic",
+    "title": "Union-Find Decoders for Quantum LDPC Codes: Near-Linear Time Correction",
+    "abstract": "We extend the union-find decoder, previously proposed for surface codes, to general quantum LDPC codes, achieving near-linear time decoding O(n α(n)) for codes of length n. Our generalisation handles variable check node degrees and irregular Tanner graphs while preserving the decoder's key properties: linear expected time, competitive accuracy, and natural parallelism. We benchmark the decoder on surface codes, hypergraph product codes, and bivariate bicycle codes, showing accuracy within 5% of MWPM at significantly lower computational cost, making real-time decoding viable for large LDPC code instances.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Lena Brauer",
+        "openalex_id": "A9200104synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Quantum",
+    "arxiv_categories": [
+      "quant-ph",
+      "cs.IT"
+    ],
+    "topics": [
+      {
+        "id": "TP20005synthetic",
+        "display_name": "Quantum decoding",
+        "score": 0.97
+      },
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.91
+      }
+    ],
+    "citation_count": 268
+  },
+  {
+    "publication_id": "PUB-R2-08",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200108synthetic",
+    "title": "Logical Qubit Fidelity Benchmarking via Randomised Benchmarking on Encoded States",
+    "abstract": "We develop a randomised benchmarking protocol for logical qubits encoded in quantum error-correcting codes, enabling the extraction of logical gate error rates without full process tomography. The protocol decomposes logical Clifford operations into physical gate sequences, applies them to encoded states, and extracts the logical depolarising parameter from the exponential decay in fidelity. We validate the protocol on surface code logical qubits at d=3 and d=5, confirm that logical gate error rates scale correctly with code distance, and use the resulting fidelity data to calibrate our syndrome extraction circuits.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "Physical Review Applied",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.93
+      },
+      {
+        "id": "TP20002synthetic",
+        "display_name": "Surface codes",
+        "score": 0.89
+      }
+    ],
+    "citation_count": 134
+  },
+  {
+    "publication_id": "PUB-R2-09",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200109synthetic",
+    "title": "Resource Overhead Comparison of Fault-Tolerant Universal Gate Sets",
+    "abstract": "We perform a systematic resource overhead comparison of four routes to fault-tolerant universal gate sets: magic state distillation with surface codes, code switching to triorthogonal codes, flag fault-tolerance, and concatenated codes. For each approach, we compute the total qubit-time overhead required to implement a T gate at target logical error rate 10⁻¹², accounting for distillation factories, routing overhead, and syndrome extraction. We find that magic state distillation with optimised factories remains most resource-efficient for near-term processors, while code switching becomes competitive at distances above d=21.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Aiko Hashimoto",
+        "openalex_id": "A9200102synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "PRX Quantum",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20003synthetic",
+        "display_name": "Fault-tolerant quantum computation",
+        "score": 0.96
+      },
+      {
+        "id": "TP20004synthetic",
+        "display_name": "Magic state distillation",
+        "score": 0.9
+      }
+    ],
+    "citation_count": 98
+  },
+  {
+    "publication_id": "PUB-R2-10",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200110synthetic",
+    "title": "Correlated Error Models for Superconducting Qubit Arrays and Their Impact on Surface Code Thresholds",
+    "abstract": "We characterise spatially correlated errors in superconducting qubit arrays caused by cosmic ray impacts and low-frequency charge noise, and analyse their impact on surface code error thresholds. We develop a correlated noise model calibrated on experimental data from a 65-qubit processor, implement correlated-noise-aware MWPM decoding using a hyperedge representation, and show that the threshold under correlated noise is 0.72%, significantly below the uncorrelated threshold of 1.08%. We demonstrate that the correlated decoder recovers 90% of this threshold gap.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Chiara Romano",
+        "openalex_id": "A9200103synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Nature Communications",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20002synthetic",
+        "display_name": "Surface codes",
+        "score": 0.94
+      },
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.92
+      }
+    ],
+    "citation_count": 89
+  },
+  {
+    "publication_id": "PUB-R2-11",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200111synthetic",
+    "title": "CCZ State Distillation via Triorthogonal Codes with Reduced Qubit Overhead",
+    "abstract": "We present a CCZ magic state distillation protocol using triorthogonal CSS codes that achieves asymptotic overhead O(log³(1/ε)) per CCZ state. By selecting codes with maximally transversal CCZ gates and optimising the distillation circuit layout for spatial locality, our protocol reduces the qubit overhead of prior CCZ distillation schemes by 40% in the near-threshold regime. We provide a complete resource estimation for implementing Toffoli-heavy quantum algorithms at fault-tolerant scale and compare favourably against T-gate decomposition approaches for Toffoli-dense circuits.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Lena Brauer",
+        "openalex_id": "A9200104synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Physical Review Letters",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20004synthetic",
+        "display_name": "Magic state distillation",
+        "score": 0.97
+      },
+      {
+        "id": "TP20003synthetic",
+        "display_name": "Fault-tolerant quantum computation",
+        "score": 0.93
+      }
+    ],
+    "citation_count": 73
+  },
+  {
+    "publication_id": "PUB-R2-12",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200112synthetic",
+    "title": "Noise Threshold Theorems for Stabiliser Codes Under Local Stochastic Noise",
+    "abstract": "We prove a noise threshold theorem for a broad class of stabiliser codes under local stochastic noise, extending prior results to codes with non-constant rate. Our theorem shows that for any stabiliser code family with minimum distance d growing as Ω(n^α) for α > 0, a noise threshold exists below which logical error rates decrease exponentially in d. We derive explicit threshold values for surface codes, colour codes, and hypergraph product codes using our proof technique, recovering and tightening known bounds. The result establishes a unified theoretical foundation for the practical thresholds observed in simulation.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "Journal of Mathematical Physics",
+    "arxiv_categories": [
+      "quant-ph",
+      "math-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.96
+      },
+      {
+        "id": "TP20003synthetic",
+        "display_name": "Fault-tolerant quantum computation",
+        "score": 0.88
+      }
+    ],
+    "citation_count": 231
+  },
+  {
+    "publication_id": "PUB-R2-13",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200113synthetic",
+    "title": "Syndrome Extraction Circuit Optimisation for Rotated Surface Codes",
+    "abstract": "We present optimised syndrome extraction circuits for the rotated surface code that reduce the number of two-qubit gate layers per syndrome round from six to four, enabling faster error correction cycles without degrading threshold. Our circuits use a modified X/Z stabiliser measurement ordering that eliminates hook error sensitivity at the cost of two ancilla qubits per syndrome round. We verify the construction via stabiliser simulation and show that the four-layer circuit achieves threshold within 0.05% of the optimal six-layer circuit while reducing cycle time by 33% on hardware with limited parallelism.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Aiko Hashimoto",
+        "openalex_id": "A9200102synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Physical Review A",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20002synthetic",
+        "display_name": "Surface codes",
+        "score": 0.95
+      },
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.91
+      }
+    ],
+    "citation_count": 117
+  },
+  {
+    "publication_id": "PUB-R3-01",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300101synthetic",
+    "title": "Benchmarking Single-Cell RNA-seq Preprocessing Pipelines: Normalisation and Doublet Detection",
+    "abstract": "We perform a comprehensive benchmark of single-cell RNA-seq preprocessing choices — including read alignment, unique molecular identifier (UMI) counting, normalisation (scran, SCnorm, Seurat, TMM), and doublet detection (Scrublet, DoubletFinder, scDblFinder) — across twelve datasets spanning multiple tissues, organisms, and sequencing protocols. We find that normalisation choice has the largest downstream impact on cell type clustering and differential expression, with library-size-adjusted log-normalisation performing consistently well. Doublet removal substantially reduces clustering artifacts. We provide a reproducible benchmarking framework and recommend a default preprocessing pipeline for general use.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Sofia Engström",
+        "openalex_id": "A9300102synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "Genome Biology",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "q-bio.QM"
+    ],
+    "topics": [
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.97
+      },
+      {
+        "id": "TP30009synthetic",
+        "display_name": "Preprocessing and normalisation",
+        "score": 0.94
+      }
+    ],
+    "citation_count": 561
+  },
+  {
+    "publication_id": "PUB-R3-02",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300102synthetic",
+    "title": "CRISPR Perturbation Ground Truth for Gene Regulatory Network Inference Benchmarking",
+    "abstract": "We generate a ground-truth gene regulatory network (GRN) benchmark dataset by performing CRISPRi knockdown of 96 transcription factors in K562 cells and profiling transcriptome-wide effects via scRNA-seq. We use this perturbation dataset to evaluate twelve GRN inference algorithms — including SCENIC, GRNBoost, GENIE3, CellOracle, and GEARS — on their ability to recover direct regulatory relationships. We find that methods combining expression correlation with chromatin accessibility substantially outperform correlation-only methods. We release the perturbation dataset and a standardised evaluation harness for the GRN inference community.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "James Osei-Bonsu",
+        "openalex_id": "A9300103synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Nature Methods",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "q-bio.MN"
+    ],
+    "topics": [
+      {
+        "id": "TP30002synthetic",
+        "display_name": "Gene regulatory network inference",
+        "score": 0.98
+      },
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.88
+      }
+    ],
+    "citation_count": 412
+  },
+  {
+    "publication_id": "PUB-R3-03",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300103synthetic",
+    "title": "Contrastive Dimensionality Reduction Preserves Rare Cell Types in Single-Cell Embedding",
+    "abstract": "We introduce contrastive scRNA-seq dimensionality reduction (ConDR), a method that learns low-dimensional embeddings preserving rare cell types by explicitly contrasting cell-type-enriched datasets against background datasets during training. Standard methods such as UMAP and PCA cluster rare cell types inconsistently when they constitute less than 0.5% of the dataset. ConDR trains a deep encoder with a contrastive objective that up-weights rare cell types in the loss function, recovering their cluster structure with 3.2× higher adjusted rand index on twelve benchmark datasets. We demonstrate recovery of known rare progenitor populations missed by standard pipelines.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Sofia Engström",
+        "openalex_id": "A9300102synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Cell Systems",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.93
+      },
+      {
+        "id": "TP30010synthetic",
+        "display_name": "Dimensionality reduction",
+        "score": 0.95
+      }
+    ],
+    "citation_count": 278
+  },
+  {
+    "publication_id": "PUB-R3-04",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300104synthetic",
+    "title": "Joint Embedding of scRNA-seq and scATAC-seq via Multi-Modal Variational Autoencoders",
+    "abstract": "We develop MultiVAE, a variational autoencoder framework for joint embedding of single-cell RNA-seq and ATAC-seq data. MultiVAE learns a shared latent space that captures complementary regulatory information from both modalities, with separate encoders that project into a common latent distribution. Applied to paired SHARE-seq and SNARE-seq datasets, we show that the joint embedding clusters cell types more cleanly than either modality alone, recovers gene-peak regulatory links consistent with ChIP-seq ground truth, and enables cross-modal imputation with held-out modality correlation r=0.74.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Ryo Kimura",
+        "openalex_id": "A9300104synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "Genome Research",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "q-bio.QM"
+    ],
+    "topics": [
+      {
+        "id": "TP30005synthetic",
+        "display_name": "Multimodal single-cell integration",
+        "score": 0.97
+      },
+      {
+        "id": "TP30004synthetic",
+        "display_name": "Chromatin accessibility",
+        "score": 0.92
+      }
+    ],
+    "citation_count": 347
+  },
+  {
+    "publication_id": "PUB-R3-05",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300105synthetic",
+    "title": "Robust Trajectory Inference from Snapshot Single-Cell Data via Optimal Transport",
+    "abstract": "We introduce OT-Trajectory, a trajectory inference method based on optimal transport that is robust to high cell-type heterogeneity and dropout. Unlike graph-based methods that require a minimum spanning tree heuristic, OT-Trajectory solves a regularised optimal transport problem to construct a probabilistic transition matrix between cells, then extracts principal trajectories via spectral decomposition. On benchmarking datasets with known ground-truth lineages, OT-Trajectory achieves the highest geodesic distance correlation (0.87) of twelve compared methods, with particular advantage on branching and multi-fate trajectories.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "James Osei-Bonsu",
+        "openalex_id": "A9300103synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Nature Computational Science",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP30003synthetic",
+        "display_name": "Cell trajectory inference",
+        "score": 0.98
+      },
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.87
+      }
+    ],
+    "citation_count": 389
+  },
+  {
+    "publication_id": "PUB-R3-06",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300106synthetic",
+    "title": "Pseudotime Uncertainty Quantification via Bootstrapped Trajectory Inference",
+    "abstract": "We present a bootstrap framework for quantifying uncertainty in pseudotime assignments from trajectory inference algorithms. Most trajectory methods produce point estimates of pseudotime, making it difficult to assess confidence in ordering, branch assignment, or gene expression trends along a trajectory. Our method applies the trajectory algorithm to B bootstrap-resampled datasets, producing a distribution over pseudotime assignments per cell, from which confidence intervals and branch posterior probabilities are derived. We show that pseudotime uncertainty correlates with true reconstruction error on simulated data and reveals genuine biological ambiguity in differentiation decision points on real datasets.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Sofia Engström",
+        "openalex_id": "A9300102synthetic"
+      }
+    ],
+    "year": 2022,
+    "venue": "Bioinformatics",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "stat.ME"
+    ],
+    "topics": [
+      {
+        "id": "TP30003synthetic",
+        "display_name": "Cell trajectory inference",
+        "score": 0.96
+      },
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.84
+      }
+    ],
+    "citation_count": 203
+  },
+  {
+    "publication_id": "PUB-R3-07",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300107synthetic",
+    "title": "Reference-Free Cell Type Annotation via Contrastive Self-Supervised Learning",
+    "abstract": "We develop scAnnotate, a reference-free cell type annotation method that uses contrastive self-supervised pretraining on unlabelled scRNA-seq data before supervised fine-tuning on a small labelled set. Standard annotation tools require large, well-curated reference datasets that may not exist for novel tissues or organisms. scAnnotate achieves competitive accuracy with reference-based methods (91.2% vs 93.7% macro-F1 on PBMC benchmarks) using 10% of the labelled data, and substantially outperforms them (82.1% vs 71.4%) when annotating tissues absent from the reference.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Ryo Kimura",
+        "openalex_id": "A9300104synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Cell Genomics",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP30006synthetic",
+        "display_name": "Cell type annotation",
+        "score": 0.97
+      },
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.88
+      }
+    ],
+    "citation_count": 156
+  },
+  {
+    "publication_id": "PUB-R3-08",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300108synthetic",
+    "title": "ATAC-seq Peak Calling and Differential Accessibility Analysis in Single-Cell Data",
+    "abstract": "We present scPeaks, a peak calling and differential chromatin accessibility analysis framework for scATAC-seq data. Existing bulk ATAC-seq peak callers are suboptimal for single-cell data due to low per-cell coverage. scPeaks uses a pseudo-bulk strategy with cell-type-stratified read pooling, followed by likelihood ratio testing that accounts for intra-cell-type heterogeneity. On benchmark datasets with ChIP-seq-validated peak sets, scPeaks recovers 91% of ground-truth accessible regions with a false discovery rate of 4%, outperforming existing approaches by 12 percentage points in F1 score.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "James Osei-Bonsu",
+        "openalex_id": "A9300103synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Genome Biology",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "q-bio.QM"
+    ],
+    "topics": [
+      {
+        "id": "TP30004synthetic",
+        "display_name": "Chromatin accessibility",
+        "score": 0.97
+      },
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.82
+      }
+    ],
+    "citation_count": 94
+  },
+  {
+    "publication_id": "PUB-R3-09",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300109synthetic",
+    "title": "Regulatory Grammar Inference from Paired scRNA-seq and scATAC-seq via Graph Neural Networks",
+    "abstract": "We develop RegGNN, a graph neural network that jointly analyses scRNA-seq expression and scATAC-seq chromatin accessibility to infer context-specific transcription factor binding and gene regulatory grammar. RegGNN constructs a bipartite graph linking ATAC-seq peaks to gene expression via transcription factor motif scores, learns edge weights via message-passing trained against CRISPR perturbation responses, and identifies cell-type-specific regulatory modules. Applied to hematopoiesis, we recover known TF-target relationships with 0.81 AUROC and identify novel context-specific regulatory links validated by orthogonal Hi-C data.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Sofia Engström",
+        "openalex_id": "A9300102synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Nature Methods",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP30002synthetic",
+        "display_name": "Gene regulatory network inference",
+        "score": 0.96
+      },
+      {
+        "id": "TP30005synthetic",
+        "display_name": "Multimodal single-cell integration",
+        "score": 0.9
+      }
+    ],
+    "citation_count": 127
+  },
+  {
+    "publication_id": "PUB-R3-10",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300110synthetic",
+    "title": "RNA Velocity in Single Cells: Estimating Kinetic Parameters from Spliced and Unspliced Counts",
+    "abstract": "We revisit RNA velocity estimation, introducing a hierarchical Bayesian model of transcription, splicing, and degradation kinetics that jointly infers gene-specific rate parameters and cell-level velocity vectors from the ratio of spliced to unspliced transcript counts. Unlike deterministic rate-equation models, our Bayesian approach quantifies uncertainty in velocity estimates and propagates it into trajectory predictions. Applied to developing mouse brain and pancreatic beta cell differentiation, our method recovers known developmental dynamics with lower extrapolation error and more consistent velocity fields than deterministic baselines.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Ryo Kimura",
+        "openalex_id": "A9300104synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Cell Systems",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "stat.ME"
+    ],
+    "topics": [
+      {
+        "id": "TP30003synthetic",
+        "display_name": "Cell trajectory inference",
+        "score": 0.92
+      },
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.89
+      }
+    ],
+    "citation_count": 218
+  },
+  {
+    "publication_id": "PUB-R3-11",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300111synthetic",
+    "title": "Multimodal Cell State Transitions: Coupling Chromatin Accessibility Dynamics to Transcriptional Programmes",
+    "abstract": "We characterise the temporal coupling between chromatin accessibility changes and transcriptional reprogramming during pluripotent stem cell differentiation using time-series paired scRNA-seq and scATAC-seq data. By developing a dynamic multimodal model that infers lead/lag relationships between ATAC-seq accessibility at regulatory elements and downstream gene expression, we show that chromatin opening precedes transcriptional activation by 4–12 hours for most target genes, with the delay depending on transcription factor binding affinity and chromatin context. Our framework identifies regulatory bottlenecks that can be targeted to accelerate or block cell fate transitions.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "James Osei-Bonsu",
+        "openalex_id": "A9300103synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Nature Cell Biology",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "q-bio.MN"
+    ],
+    "topics": [
+      {
+        "id": "TP30005synthetic",
+        "display_name": "Multimodal single-cell integration",
+        "score": 0.95
+      },
+      {
+        "id": "TP30004synthetic",
+        "display_name": "Chromatin accessibility",
+        "score": 0.93
+      }
+    ],
+    "citation_count": 143
+  },
+  {
+    "publication_id": "PUB-R3-12",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300112synthetic",
+    "title": "Foundation Models for Single-Cell Biology: Pretraining on 30 Million Cells",
+    "abstract": "We train scFM, a transformer foundation model pretrained on 30 million single-cell RNA-seq profiles spanning 120 tissues and 14 species. Using a masked gene expression prediction objective, scFM learns universal representations of cell state that transfer across tissues and diseases with minimal fine-tuning. Zero-shot embeddings from scFM outperform supervised methods on cell type annotation for three novel tissue types absent from pretraining, and fine-tuned scFM achieves state-of-the-art performance on trajectory inference, GRN inference, and perturbation response prediction benchmarks. We release model weights and a pretraining data pipeline.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Sofia Engström",
+        "openalex_id": "A9300102synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Cell",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.92
+      },
+      {
+        "id": "TP30002synthetic",
+        "display_name": "Gene regulatory network inference",
+        "score": 0.86
+      },
+      {
+        "id": "TP30003synthetic",
+        "display_name": "Cell trajectory inference",
+        "score": 0.83
+      }
+    ],
+    "citation_count": 201
+  },
+  {
+    "publication_id": "PUB-R2-14",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200114synthetic",
+    "title": "Lattice Surgery Protocols for Modular Surface Code Architectures",
+    "abstract": "We develop lattice surgery protocols enabling fault-tolerant logical operations between surface code patches in a modular quantum processor architecture. By formalising merge and split operations on rotated surface code patches and analysing their fault-tolerance under circuit-level noise, we derive the time and space overhead of arbitrary logical Clifford operations via lattice surgery. We show that careful scheduling of merges reduces the routing overhead for dense logical circuits by 22%, and provide a compiler that maps logical circuits to lattice surgery schedules.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Aiko Hashimoto",
+        "openalex_id": "A9200102synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "PRX Quantum",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20002synthetic",
+        "display_name": "Surface codes",
+        "score": 0.93
+      },
+      {
+        "id": "TP20003synthetic",
+        "display_name": "Fault-tolerant quantum computation",
+        "score": 0.91
+      }
+    ],
+    "citation_count": 122
+  },
+  {
+    "publication_id": "PUB-R2-15",
+    "researcher_id": "RES-002",
+    "openalex_id": "W9200115synthetic",
+    "title": "Real-Time Decoding Latency Budgets for Superconducting Fault-Tolerant Processors",
+    "abstract": "We analyse the decoding latency budget for fault-tolerant superconducting quantum processors, where syndrome data must be decoded faster than it accumulates to avoid an exponential backlog. We model the interplay between syndrome extraction cycle time, decoder throughput, and code distance, deriving the maximum tolerable decoder latency as a function of physical error rate. We show that union-find and neural decoders both meet the budget at d=11 on current hardware, while MWPM requires hardware acceleration. We provide an open-source latency simulation framework.",
+    "authors": [
+      {
+        "name": "Marcus Webb",
+        "openalex_id": "A9200101synthetic"
+      },
+      {
+        "name": "Chiara Romano",
+        "openalex_id": "A9200103synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Quantum",
+    "arxiv_categories": [
+      "quant-ph"
+    ],
+    "topics": [
+      {
+        "id": "TP20005synthetic",
+        "display_name": "Quantum decoding",
+        "score": 0.94
+      },
+      {
+        "id": "TP20001synthetic",
+        "display_name": "Quantum error correction",
+        "score": 0.9
+      }
+    ],
+    "citation_count": 64
+  },
+  {
+    "publication_id": "PUB-R3-13",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300113synthetic",
+    "title": "Batch Effect Correction in Large-Scale Single-Cell Atlases via Conditional Adversarial Training",
+    "abstract": "We present scHarmony-Adv, a batch effect correction method for large-scale single-cell atlases that uses conditional adversarial training to remove technical variation while preserving biological signal. Existing integration methods either over-correct, removing genuine biological differences, or under-correct, leaving residual batch structure. Our approach trains a generator to embed cells into a batch-invariant latent space against a discriminator that predicts batch identity, conditioned on cell type to preserve biological structure. On a 1.2-million-cell atlas spanning 18 donors, scHarmony-Adv achieves the best batch mixing while preserving rare cell type separation.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Ryo Kimura",
+        "openalex_id": "A9300104synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Genome Biology",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "cs.LG"
+    ],
+    "topics": [
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.91
+      },
+      {
+        "id": "TP30005synthetic",
+        "display_name": "Multimodal single-cell integration",
+        "score": 0.85
+      }
+    ],
+    "citation_count": 71
+  },
+  {
+    "publication_id": "PUB-R3-14",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300114synthetic",
+    "title": "Spatial Transcriptomics Deconvolution Using Single-Cell Reference Profiles",
+    "abstract": "We develop a deconvolution method that estimates cell type composition at each spot in spatial transcriptomics data using single-cell RNA-seq reference profiles. Spatial platforms with spot-level resolution capture mixtures of multiple cells, obscuring cell-type-specific expression. Our method formulates deconvolution as a regularised non-negative regression with a spatial smoothness prior, jointly estimating cell type proportions across neighbouring spots. On benchmark datasets with ground-truth composition, our method achieves the lowest deconvolution error and recovers known anatomical tissue structure.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "Sofia Engström",
+        "openalex_id": "A9300102synthetic"
+      }
+    ],
+    "year": 2023,
+    "venue": "Nature Communications",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "q-bio.QM"
+    ],
+    "topics": [
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.88
+      },
+      {
+        "id": "TP30006synthetic",
+        "display_name": "Cell type annotation",
+        "score": 0.86
+      }
+    ],
+    "citation_count": 109
+  },
+  {
+    "publication_id": "PUB-R3-15",
+    "researcher_id": "RES-003",
+    "openalex_id": "W9300115synthetic",
+    "title": "Differential Abundance Testing for Single-Cell Populations Without Discrete Clustering",
+    "abstract": "We introduce a method for differential abundance testing across conditions in single-cell data that operates on the continuous manifold of cell states rather than requiring discrete cluster assignments. Conventional differential abundance analysis depends on a clustering step that imposes arbitrary boundaries and misses continuous shifts. Our approach builds a k-nearest-neighbour graph over cells, tests each neighbourhood for condition-associated abundance changes using a negative binomial model, and controls the spatial false discovery rate. We demonstrate detection of subtle compositional shifts in disease versus control that clustering-based methods miss.",
+    "authors": [
+      {
+        "name": "Aisha Patel",
+        "openalex_id": "A9300101synthetic"
+      },
+      {
+        "name": "James Osei-Bonsu",
+        "openalex_id": "A9300103synthetic"
+      }
+    ],
+    "year": 2024,
+    "venue": "Cell Systems",
+    "arxiv_categories": [
+      "q-bio.GN",
+      "stat.ME"
+    ],
+    "topics": [
+      {
+        "id": "TP30001synthetic",
+        "display_name": "Single-cell RNA sequencing",
+        "score": 0.9
+      },
+      {
+        "id": "TP30003synthetic",
+        "display_name": "Cell trajectory inference",
+        "score": 0.8
+      }
+    ],
+    "citation_count": 48
+  }
+]

@@ -17,6 +17,31 @@ export type Researcher = {
   topics: ResearcherTopic[];
 };
 
+export type PublicationAuthor = {
+  name: string;
+  openalex_id: string;
+};
+
+export type PublicationTopic = {
+  id: string;
+  display_name: string;
+  score: number;
+};
+
+export type Publication = {
+  publication_id: string;
+  researcher_id: string;
+  openalex_id: string;
+  title: string;
+  abstract: string;
+  authors: PublicationAuthor[];
+  year: number;
+  venue: string;
+  arxiv_categories: string[];
+  topics: PublicationTopic[];
+  citation_count: number;
+};
+
 export type PaperAuthor = {
   name: string;
   openalex_id: string;
@@ -41,24 +66,6 @@ export type Paper = {
   topics: PaperTopic[];
   citation_count: number;
   is_open_access: boolean;
-};
-
-export type ResearchComponent = {
-  component_id: string;
-  researcher_id: string;
-  name: string;
-  description: string;
-  source_paper_ids: string[];
-  is_active: boolean;
-};
-
-export type SubfieldPreference = {
-  id: string;
-  researcher_id: string;
-  subfield_id: string;
-  subfield_name: string;
-  field_id: string;
-  field_name: string;
 };
 
 export type CouncilVoice = {
@@ -87,6 +94,33 @@ export type FeedItemSeed = {
   surfaced_at: string;
 };
 
+// ── Grounded profile types (Stage-1 output) ────────────────────────────────
+
+export type GroundingStatus = 'ok' | 'unavailable';
+
+export type GroundedComponent = {
+  name: string;
+  description: string;
+  source_paper_ids: string[];
+  explanation: string;
+  aptness_flags: string[];
+};
+
+export type GroundedSubfield = {
+  name: string;
+  description: string;
+  source_paper_ids: string[];
+  explanation: string;
+  aptness_flags: string[];
+};
+
+export type GroundedProfile = {
+  researcher_id: string;
+  grounding_status: GroundingStatus;
+  research_components: GroundedComponent[];
+  research_subfield_preferences: GroundedSubfield[];
+};
+
 // ── Output types ────────────────────────────────────────────────────────────
 
 export type DecisionStatus = 'ok' | 'unavailable' | 'malformed';
@@ -101,6 +135,7 @@ export type MatchedComponent = {
 export type CouncilDeliberation = {
   voices: CouncilVoice[];
   substantive_vs_superficial: string;
+  subfield_weighing: string;
   resolution: string;
 };
 
@@ -129,6 +164,8 @@ export type FeedSummary = {
 export type ResearcherFeed = {
   researcher_id: string;
   researcher_name: string;
+  grounding_status: GroundingStatus;
+  grounded_profile: GroundedProfile | null;
   feed: FeedItem[];
   feed_summary: FeedSummary;
 };
@@ -173,6 +210,55 @@ ajv.addSchema({
   minItems: 3,
   maxItems: 3,
   items: { $ref: 'Researcher' },
+});
+
+const publicationAuthorSchema = {
+  type: 'object',
+  required: ['name', 'openalex_id'],
+  additionalProperties: false,
+  properties: {
+    name: { type: 'string' },
+    openalex_id: { type: 'string' },
+  },
+};
+
+const publicationTopicSchema = {
+  type: 'object',
+  required: ['id', 'display_name', 'score'],
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string' },
+    display_name: { type: 'string' },
+    score: { type: 'number', minimum: 0, maximum: 1 },
+  },
+};
+
+ajv.addSchema({
+  $id: 'Publication',
+  type: 'object',
+  required: ['publication_id', 'researcher_id', 'openalex_id', 'title', 'abstract', 'authors', 'year', 'venue', 'arxiv_categories', 'topics', 'citation_count'],
+  additionalProperties: false,
+  properties: {
+    publication_id: { type: 'string' },
+    researcher_id: { type: 'string' },
+    openalex_id: { type: 'string' },
+    title: { type: 'string', minLength: 1 },
+    abstract: { type: 'string', minLength: 10 },
+    authors: { type: 'array', minItems: 1, items: publicationAuthorSchema },
+    year: { type: 'integer', minimum: 2018 },
+    venue: { type: 'string' },
+    arxiv_categories: { type: 'array', minItems: 1, items: { type: 'string' } },
+    topics: { type: 'array', minItems: 1, items: publicationTopicSchema },
+    citation_count: { type: 'integer', minimum: 0 },
+  },
+});
+
+ajv.addSchema({
+  $id: 'PublicationsArray',
+  type: 'array',
+  minItems: 45,
+  maxItems: 60,
+  items: { $ref: 'Publication' },
 });
 
 const paperAuthorSchema = {
@@ -225,50 +311,6 @@ ajv.addSchema({
   items: { $ref: 'Paper' },
 });
 
-ajv.addSchema({
-  $id: 'ResearchComponent',
-  type: 'object',
-  required: ['component_id', 'researcher_id', 'name', 'description', 'source_paper_ids', 'is_active'],
-  additionalProperties: false,
-  properties: {
-    component_id: { type: 'string' },
-    researcher_id: { type: 'string' },
-    name: { type: 'string', minLength: 1 },
-    description: { type: 'string', minLength: 1 },
-    source_paper_ids: { type: 'array', minItems: 1, items: { type: 'string' } },
-    is_active: { type: 'boolean' },
-  },
-});
-
-ajv.addSchema({
-  $id: 'ResearchComponentsArray',
-  type: 'array',
-  minItems: 1,
-  items: { $ref: 'ResearchComponent' },
-});
-
-ajv.addSchema({
-  $id: 'SubfieldPreference',
-  type: 'object',
-  required: ['id', 'researcher_id', 'subfield_id', 'subfield_name', 'field_id', 'field_name'],
-  additionalProperties: false,
-  properties: {
-    id: { type: 'string' },
-    researcher_id: { type: 'string' },
-    subfield_id: { type: 'string' },
-    subfield_name: { type: 'string' },
-    field_id: { type: 'string' },
-    field_name: { type: 'string' },
-  },
-});
-
-ajv.addSchema({
-  $id: 'SubfieldPreferencesArray',
-  type: 'array',
-  minItems: 1,
-  items: { $ref: 'SubfieldPreference' },
-});
-
 const councilVoiceSchema = {
   type: 'object',
   required: ['role', 'argument', 'leaning'],
@@ -317,6 +359,47 @@ ajv.addSchema({
   items: { $ref: 'FeedItemSeed' },
 });
 
+// ── Grounded profile schemas ────────────────────────────────────────────────
+
+const groundedComponentSchema = {
+  type: 'object',
+  required: ['name', 'description', 'source_paper_ids', 'explanation', 'aptness_flags'],
+  additionalProperties: false,
+  properties: {
+    name: { type: 'string', minLength: 1 },
+    description: { type: 'string', minLength: 1 },
+    source_paper_ids: { type: 'array', minItems: 1, items: { type: 'string' } },
+    explanation: { type: 'string', minLength: 1 },
+    aptness_flags: { type: 'array', items: { type: 'string' } },
+  },
+};
+
+const groundedSubfieldSchema = {
+  type: 'object',
+  required: ['name', 'description', 'source_paper_ids', 'explanation', 'aptness_flags'],
+  additionalProperties: false,
+  properties: {
+    name: { type: 'string', minLength: 1 },
+    description: { type: 'string', minLength: 1 },
+    source_paper_ids: { type: 'array', minItems: 1, items: { type: 'string' } },
+    explanation: { type: 'string', minLength: 1 },
+    aptness_flags: { type: 'array', items: { type: 'string' } },
+  },
+};
+
+ajv.addSchema({
+  $id: 'GroundedProfile',
+  type: 'object',
+  required: ['researcher_id', 'grounding_status', 'research_components', 'research_subfield_preferences'],
+  additionalProperties: false,
+  properties: {
+    researcher_id: { type: 'string' },
+    grounding_status: { type: 'string', enum: ['ok', 'unavailable'] },
+    research_components: { type: 'array', minItems: 1, items: groundedComponentSchema },
+    research_subfield_preferences: { type: 'array', minItems: 1, items: groundedSubfieldSchema },
+  },
+});
+
 // ── Output schemas ──────────────────────────────────────────────────────────
 
 const matchedComponentSchema = {
@@ -331,12 +414,11 @@ const matchedComponentSchema = {
 
 const councilDeliberationSchema = {
   type: 'object',
-  required: ['voices', 'substantive_vs_superficial', 'resolution'],
+  required: ['voices', 'substantive_vs_superficial', 'subfield_weighing', 'resolution'],
   properties: {
-    // minItems/minLength not enforced here — degraded items (malformed/unavailable)
-    // legitimately carry empty arrays/strings. Content is validated by eval.ts for ok items.
     voices: { type: 'array', items: councilVoiceSchema },
     substantive_vs_superficial: { type: 'string' },
+    subfield_weighing: { type: 'string' },
     resolution: { type: 'string' },
   },
 };
@@ -381,15 +463,20 @@ ajv.addSchema({
 ajv.addSchema({
   $id: 'ResearcherFeed',
   type: 'object',
-  required: ['researcher_id', 'researcher_name', 'feed', 'feed_summary'],
+  required: ['researcher_id', 'researcher_name', 'grounding_status', 'grounded_profile', 'feed', 'feed_summary'],
   additionalProperties: false,
   properties: {
     researcher_id: { type: 'string' },
     researcher_name: { type: 'string' },
+    grounding_status: { type: 'string', enum: ['ok', 'unavailable'] },
+    grounded_profile: {
+      oneOf: [
+        { $ref: 'GroundedProfile' },
+        { type: 'null' },
+      ],
+    },
     feed: {
       type: 'array',
-      minItems: 10,
-      maxItems: 10,
       items: { $ref: 'FeedItem' },
     },
     feed_summary: { $ref: 'FeedSummary' },
@@ -407,10 +494,10 @@ ajv.addSchema({
 // ── Compiled validators ─────────────────────────────────────────────────────
 
 export const validateResearchers = ajv.compile<Researcher[]>({ $ref: 'ResearchersArray' });
+export const validatePublications = ajv.compile<Publication[]>({ $ref: 'PublicationsArray' });
 export const validatePapers = ajv.compile<Paper[]>({ $ref: 'PapersArray' });
-export const validateResearchComponents = ajv.compile<ResearchComponent[]>({ $ref: 'ResearchComponentsArray' });
-export const validateSubfieldPreferences = ajv.compile<SubfieldPreference[]>({ $ref: 'SubfieldPreferencesArray' });
 export const validateFeedItemSeeds = ajv.compile<FeedItemSeed[]>({ $ref: 'FeedItemsArray' });
+export const validateGroundedProfile = ajv.compile<GroundedProfile>({ $ref: 'GroundedProfile' });
 export const validateFeedItem = ajv.compile<FeedItem>({ $ref: 'FeedItem' });
 export const validateFeedSummary = ajv.compile<FeedSummary>({ $ref: 'FeedSummary' });
 export const validateResearcherFeed = ajv.compile<ResearcherFeed>({ $ref: 'ResearcherFeed' });

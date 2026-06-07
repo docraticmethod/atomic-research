@@ -1,4 +1,5 @@
 // Consumes /api/artifact — never reads output_data.json directly.
+// Mirror of src/dash-app-client.ts (no build step; kept in sync by hand).
 
 function escHtml(str) {
   return String(str)
@@ -49,6 +50,8 @@ function deliberationHtml(delib, status) {
       <div class="voices-list">${voices}</div>
       <div class="deliberation-section-label">Substantive vs superficial</div>
       <p>${escHtml(delib.substantive_vs_superficial || '')}</p>
+      <div class="deliberation-section-label">Subfield weighing</div>
+      <p>${escHtml(delib.subfield_weighing || '')}</p>
       <div class="deliberation-section-label">Resolution</div>
       <p>${escHtml(delib.resolution || '')}</p>
     </div>`;
@@ -61,7 +64,7 @@ function matchedComponentsHtml(components, status) {
   const rows = components.map(mc => `
     <div class="matched-component">
       <div class="mc-name">${escHtml(mc.component)}</div>
-      <div class="mc-source">Source papers: ${escHtml((mc.source_paper_ids || []).join(', '))}</div>
+      <div class="mc-source">Source publications: ${escHtml((mc.source_paper_ids || []).join(', '))}</div>
       <p class="mc-explanation">${escHtml(mc.match_explanation || '')}</p>
     </div>`).join('');
   return `<div class="matched-components-list">${rows}</div>`;
@@ -73,19 +76,63 @@ function subfieldsHtml(subfields) {
   return `<div class="subfield-tags">${tags}</div>`;
 }
 
-function profileSubfieldsHtml(subfields) {
-  if (!subfields || !subfields.length) return `<p class="placeholder-text">No subfields on profile.</p>`;
-  const tags = subfields.map(s => `<span class="subfield-tag profile-subfield">${escHtml(s)}</span>`).join('');
-  return `<div class="subfield-tags">${tags}</div>`;
+function groundedProfileHtml(profile) {
+  if (!profile) {
+    return `<p class="placeholder-text">Profile grounding unavailable for this researcher.</p>`;
+  }
+  const components = profile.research_components.map(c => {
+    const flags = (c.aptness_flags && c.aptness_flags.length)
+      ? `<div class="aptness-flags">${c.aptness_flags.map(f => `<span class="aptness-flag">⚑ ${escHtml(f)}</span>`).join('')}</div>`
+      : '';
+    return `<div class="grounded-component">
+      <div class="gc-name">${escHtml(c.name)}</div>
+      <p class="gc-description">${escHtml(c.description)}</p>
+      <div class="gc-source">Source publications: ${escHtml(c.source_paper_ids.join(', '))}</div>
+      ${flags}
+    </div>`;
+  }).join('');
+
+  const subfields = profile.research_subfield_preferences.map(s => `
+    <div class="grounded-subfield">
+      <div class="gs-name">${escHtml(s.name)}</div>
+      <div class="gs-source">Source publications: ${escHtml(s.source_paper_ids.join(', '))}</div>
+    </div>`).join('');
+
+  return `
+    <div class="researcher-profile-panel">
+      <div class="profile-block-label">Grounded Research Components</div>
+      <div class="grounded-components-list">${components}</div>
+      <div class="profile-block-label">Grounded Subfields</div>
+      <div class="grounded-subfields-list">${subfields}</div>
+    </div>`;
 }
 
 function renderFeedSummary(rf) {
   const container = document.getElementById('feed-summary-content');
+  if (rf.grounding_status !== 'ok') {
+    container.innerHTML = `<div class="feed-summary-placeholder">Profile grounding unavailable for ${escHtml(rf.researcher_name)}.</div>`;
+    return;
+  }
   if (!rf.feed_summary || rf.feed_summary.summary_status !== 'ok' || !rf.feed_summary.text) {
     container.innerHTML = `<div class="feed-summary-placeholder">Summary unavailable — retry the pipeline to regenerate.</div>`;
     return;
   }
   container.innerHTML = `<p class="feed-summary-text">${escHtml(rf.feed_summary.text)}</p>`;
+}
+
+function renderGroundingDegraded(rf) {
+  const list = document.getElementById('feed-list');
+  list.innerHTML = `<div class="grounding-unavailable-state">
+    <div class="gus-title">Profile grounding unavailable</div>
+    <p class="gus-body">Grounding did not produce a validated profile for ${escHtml(rf.researcher_name)}, so the council did not run. No partial profile is shown.</p>
+    <div class="gus-retry">Retry the pipeline to regenerate this researcher's profile.</div>
+  </div>`;
+
+  const detail = document.getElementById('detail-content');
+  detail.innerHTML = `<div class="grounding-unavailable-state detail">
+    <div class="gus-title">Profile grounding unavailable</div>
+    <p class="gus-body">This researcher entered the grounding degraded state. The relevance council is unreachable without a validated profile.</p>
+  </div>`;
 }
 
 function renderFeedList(rf, selectedPaperId, onSelect) {
@@ -130,7 +177,7 @@ function renderFeedList(rf, selectedPaperId, onSelect) {
   }
 }
 
-function renderDetail(fi, researcherSubfields) {
+function renderDetail(fi, profile) {
   const container = document.getElementById('detail-content');
 
   const header = document.createElement('div');
@@ -156,7 +203,7 @@ function renderDetail(fi, researcherSubfields) {
   sections.appendChild(makeSection('Council Deliberation', deliberationHtml(fi.council_deliberation, fi.decision_status)));
   sections.appendChild(makeSection('Matched Components', matchedComponentsHtml(fi.matched_components, fi.decision_status)));
   sections.appendChild(makeSection('Matched Subfields', subfieldsHtml(fi.matched_subfields)));
-  sections.appendChild(makeSection('Researcher Profile — Selected Subfields', profileSubfieldsHtml(researcherSubfields)));
+  sections.appendChild(makeSection('Researcher Profile — Grounded', groundedProfileHtml(profile)));
 
   container.innerHTML = '';
   container.appendChild(header);
@@ -168,17 +215,16 @@ function renderResearcherSelector(feeds, selectedId, onSelect) {
   container.innerHTML = '';
   for (const rf of feeds) {
     const btn = document.createElement('button');
-    btn.className = `researcher-tab${rf.researcher_id === selectedId ? ' active' : ''}`;
+    const degraded = rf.grounding_status !== 'ok' ? ' grounding-degraded' : '';
+    btn.className = `researcher-tab${rf.researcher_id === selectedId ? ' active' : ''}${degraded}`;
     btn.setAttribute('role', 'tab');
     btn.setAttribute('aria-selected', String(rf.researcher_id === selectedId));
-    btn.textContent = rf.researcher_name;
+    btn.textContent = rf.grounding_status !== 'ok'
+      ? `${rf.researcher_name} (grounding unavailable)`
+      : rf.researcher_name;
     btn.addEventListener('click', () => onSelect(rf.researcher_id));
     container.appendChild(btn);
   }
-}
-
-function getProfileSubfields(rf) {
-  return [...new Set(rf.feed.flatMap(fi => fi.matched_subfields || []))];
 }
 
 async function main() {
@@ -197,7 +243,6 @@ async function main() {
 
   function renderAll() {
     const rf = feeds.find(r => r.researcher_id === selectedResearcherId) || feeds[0];
-    const fi = rf.feed.find(f => f.paper_id === selectedPaperId) || rf.feed[0];
 
     renderResearcherSelector(feeds, selectedResearcherId, (id) => {
       selectedResearcherId = id;
@@ -208,13 +253,20 @@ async function main() {
 
     renderFeedSummary(rf);
 
+    if (rf.grounding_status !== 'ok' || !rf.feed.length) {
+      renderGroundingDegraded(rf);
+      return;
+    }
+
+    const fi = rf.feed.find(f => f.paper_id === selectedPaperId) || rf.feed[0];
+
     renderFeedList(rf, fi ? fi.paper_id : '', (paperId) => {
       selectedPaperId = paperId;
       renderAll();
     });
 
     if (fi) {
-      renderDetail(fi, getProfileSubfields(rf));
+      renderDetail(fi, rf.grounded_profile);
     }
   }
 

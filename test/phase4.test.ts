@@ -65,6 +65,7 @@ describe('Phase 4 — degraded-state hardening (v3)', () => {
             { role: 'advocate', argument: 'Directly relevant.', leaning: 'for' },
           ],
           substantive_vs_superficial: 'Substantive: the paper contributes the SAE steering methodology itself.',
+          subfield_weighing: 'Subfield match reinforced the component-driven accept.',
           resolution: 'Accept.',
         },
       });
@@ -92,6 +93,7 @@ describe('Phase 4 — degraded-state hardening (v3)', () => {
             { role: 'skeptic', argument: 'No connection whatsoever.', leaning: 'against' },
           ],
           substantive_vs_superficial: 'No overlap of any kind between GPU scheduling and mechanistic interpretability.',
+          subfield_weighing: 'No subfield match; the paper is outside all selected subfields.',
           resolution: 'Reject.',
         },
       });
@@ -118,6 +120,7 @@ describe('Phase 4 — degraded-state hardening (v3)', () => {
         council_deliberation: {
           voices: [{ role: 'advocate', argument: 'Yes.', leaning: 'for' }],
           substantive_vs_superficial: 'Substantive match — the paper contributes to circuit analysis.',
+          subfield_weighing: 'Subfield match was secondary; the component match drove the accept.',
           resolution: 'Accept.',
         },
       }) + '\n```';
@@ -134,7 +137,7 @@ describe('Phase 4 — degraded-state hardening (v3)', () => {
         relevance_reason: 'Relevant.',
         matched_components: [{ component: 'X', source_paper_ids: ['P'], match_explanation: 'Y' }],
         matched_subfields: ['S'],
-        council_deliberation: { voices: [], substantive_vs_superficial: 'Substantive.', resolution: 'Accept.' },
+        council_deliberation: { voices: [{ role: 'advocate', argument: 'Yes.', leaning: 'for' }], substantive_vs_superficial: 'Substantive.', subfield_weighing: 'Weighed.', resolution: 'Accept.' },
       });
       const result = parseCouncilResult(raw, 'PAP-R1-03', dummyPaper, 'FI-R1-CUSTOM', 'RES-001', logger);
       assert.strictEqual(result.feed_item_id, 'FI-R1-CUSTOM');
