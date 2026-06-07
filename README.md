@@ -6,7 +6,7 @@ Most tools answer *"what is new?"* Atomic Research answers *"what is worth your 
 
 * In a world optimizing for more and faster, we optimized for **right**.
 
-![Atomic Research pipeline](public/pipeline-diagram.png)
+
 
 ## Project Description
 
@@ -37,6 +37,8 @@ We used **[Weave](https://wandb.ai/site/weave)** to record every AI call and dat
 This matters because the system is non-deterministic where it counts. The AI steps reason rather than compute, and the data fetch is a live network call, so there is no single deterministic path to point to after the fact. **Weave's trace _is_ the audit trail.** It proves what the system decided and why — and it guarantees that any failure or degraded state is logged and visible, never silent. It runs alongside **[W&B](https://wandb.ai)**, which logs the higher-level per-run metrics, with both pointing to the same run for cross-reference.
 
 ## Agentic Architecture
+
+![Atomic Research pipeline](public/pipeline-diagram.png)
 
 Atomic Research is built as a pipeline of **bounded, single-purpose agents**, each of which must show its work. There is no monolithic "rank these papers" model call. Instead, distinct agentic stages run in a strict, enforced order, and every stage is fully traced.
 
