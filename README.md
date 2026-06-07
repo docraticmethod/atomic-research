@@ -6,6 +6,8 @@ Most tools answer *"what is new?"* Atomic Research answers *"what is worth your 
 
 * In a world optimizing for more and faster, we optimized for **right**.
 
+[View the pipeline diagram](public/pipeline-diagram.html)
+
 ## Project Description
 
 
