@@ -54,6 +54,6 @@ Only then does the **council** run — multiple specialized agents that delibera
 
 ### 📐 Self-documenting, explainable by construction
 
-Critically, the entire system was **built from a specification, not hand-coded.** Using the **Cascadia spec-driven Console**, the requirements cascade down through strategy, architecture, and build instructions — each layer generated from the one above it. The result is an application that is **self-documenting**: the same specification that governs what the system does also explains why it does it, end to end.
+Critically, the entire system was **built from a specification by Claude Code, not hand-coded.** Using the **[Cascadia](https://github.com/docraticmethod/cascadia) spec-driven Console**, the requirements cascade down through strategy, architecture, and build instructions — each layer generated from the one above it. The result is an application that is **self-documenting**: the same specification that governs what the system does also explains why it does it, end to end.
 
 Combined with full Weave tracing of every agent decision, fetch, and validation step, Atomic Research is **explainable by construction** — every output can be traced back through the agent that produced it, the evidence it used, and the specification that authorized it.
