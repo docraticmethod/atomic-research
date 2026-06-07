@@ -1,8 +1,10 @@
 # STRATEGY.md
 
-## Atomic Research — Paper Relevance Feed: Build Strategy
+## Atomic Research — Paper Relevance Feed (v3): Build Strategy
 
-This document translates REQUIREMENTS.md into an execution plan. It is binding on downstream implementation. Where requirements decided something at requirements-time (model ID, visual treatment, degraded-state contract, observability stack), strategy executes it — it does not relitigate it.
+This document translates the **v3** REQUIREMENTS.md into an execution plan. It is binding on downstream implementation. Where requirements decided something at requirements-time (the council reversal, model ID, visual treatment, degraded-state contract, observability stack), strategy executes it — it does not relitigate it.
+
+**v3 supersede notice.** This STRATEGY supersedes the v2 strategy in full. The load-bearing change is §0 of REQUIREMENTS: **relevance is now DECIDED by a multi-agent council, not computed by a deterministic LLM-free function.** The prior strategy's central design principle — "ranking and recommended action are deterministic pure functions; the LLM only explains" — is **deliberately reversed and removed**. Any phase, risk, or DoD item below that reintroduces a deterministic LLM-free relevance sequencer is wrong and contradicts the requirements.
 
 ---
 
@@ -10,15 +12,15 @@ This document translates REQUIREMENTS.md into an execution plan. It is binding o
 
 A single-page desktop application, run locally, with a clean separation between three layers:
 
-1. **Data layer** — the embedded fixtures (one researcher profile, 10 candidate papers). Loaded once, validated against schema, frozen. No network fetch.
-2. **Compute layer** — deterministic scoring/sequencing (pure functions, no LLM) plus LLM-driven rationale generation (the only LLM surface), instrumented end-to-end with Weave + W&B.
-3. **Presentation layer** — the two-panel editorial UI.
+1. **Data layer** — five normalized, id-joined fixture files (`researchers`, `papers`, `research_components`, `feed_items`, `research_subfield_preferences`). **3 researchers, 30 distinct papers (10 each, no cross-researcher reuse), 30 feed_items.** Loaded once, validated against field contracts, frozen. No network fetch, no embeddings.
+2. **Compute layer** — the **LLM council** that *decides* relevance per (researcher, paper) pair, plus the per-researcher `feed_summary`, instrumented end-to-end with Weave + W&B.
+3. **Presentation layer** — the reused v2 two-panel editorial UI, with a researcher selector added.
 
-The crucial design principle: **the ranking is deterministic and LLM-free; the explanations are LLM-driven**. Scores are mocked fixtures, ordering is a pure function of those scores. The LLM never decides rank — it only explains a rank already computed. This keeps the feed reproducible and the "every position must be defensible by the rule" contract mechanically enforceable.
+The crucial design principle (v3): **the council decides relevance; ranking is a pure presentation-order function of the council's `relevance_score`.** The council produces `relevance_decision`, `relevance_score`, `council_confidence`, `relevance_reason`, and the full `council_deliberation` record. The deliberation record is **the audit trail that buys back the defensibility the determinism gave up** — it is captured per decision and traced in Weave, not optional polish.
 
-**Recommended action is also deterministic**, derived from the same frozen scores (see Phase 1). The LLM produces only the rationale types and the feed summary — it never decides rank or recommended action.
+**What is still deterministic (and only this):** the *display ordering* of a researcher's feed is `relevance_score` descending. Ordering is a mechanical sort over council outputs — it is not a relevance decision and introduces no LLM-free relevance logic.
 
-**Two-stage LLM call ordering is architectural, not incidental.** The per-paper rationale calls form a batch that runs against the *already-sequenced* feed; the `feed_summary` call runs *after* ranking, taking the sorted top-N as input. The summary is never a peer of the per-paper batch and is never issued before the sequencer has produced an order. This ordering is enforced in code, not left to convention (see Phase 2A/2B).
+**Call ordering is architectural, not incidental.** Per researcher: (1) the council decides the full 10-paper set first; (2) the feed is sorted by `relevance_score` descending; (3) the `feed_summary` call runs **after** that researcher's decisions are complete, taking the decided, sorted feed as input. The summary call must be unreachable before the council has finished that researcher's set. Enforced in code, not by convention (see Phase 2A/2B).
 
 ---
 
@@ -27,89 +29,97 @@ The crucial design principle: **the ranking is deterministic and LLM-free; the e
 | Concern | Choice | Rationale |
 |---|---|---|
 | Runtime | Single-page web app, local | Hackathon laptop target; no server infra needed |
-| Language | TypeScript | Type-safe enforcement of the per-paper output contract |
-| LLM calls | Anthropic Message Batches API (per-paper rationales); single call (feed_summary, post-ranking) | Requirements prefer batching for the 10-paper rationale set: ~half token cost, latency-insensitive. The summary is one post-ranking call, not part of the batch. |
+| Language | TypeScript | Type-safe enforcement of the fixture field contracts and council output shape |
+| LLM calls | Anthropic Message Batches API (council deliberations); single call (feed_summary, post-decision) | Requirements prefer batching where call structure allows: the council's multiple deliberations per researcher are not latency-sensitive — batch to halve token cost. The summary is one post-decision call per researcher, not part of the batch. |
 | Application model | `claude-sonnet-4-6` (pinned snapshot) | Requirements-level commitment; dateless pinned ID, bump deliberately. Governs the *built artifact's* runtime calls only — not the Claude Code build session. |
-| Schema validation | JSON Schema validator (e.g. Ajv) | Required dependency for per-paper output contract |
-| Observability — per-call | Weave (`weave.init`, auto-instruments Anthropic SDK; `@weave.op()` on team functions) | Required: per-call audit trail + eval harness |
-| Observability — per-run | Weights & Biases (one run per fixture/prompt iteration) | Required: cross-iteration comparison record |
-| Secrets | `WANDB_API_KEY` from gitignored `.env` | Required: never hardcoded, never committed |
+| Schema validation | Ajv (JSON Schema) | Required dependency; validates all five fixture files against their field contracts |
+| Observability — per-call | Weave (`weave.init`, auto-instruments Anthropic SDK; `@weave.op()` on council orchestration + every eval assertion) | Required and now **load-bearing for auditability**: the deliberation trace tree is part of the audit trail, not just telemetry |
+| Observability — per-run | Weights & Biases (one run per fixture/prompt iteration) | Required: per-researcher decision distributions, confidence distributions, accept/reject counts, batch metadata, eval pass/fail |
+| Secrets | `WANDB_API_KEY` from gitignored `.env`, mounted into Docker (not baked) | Required: never hardcoded, never committed |
+| Sandbox | Docker container; fixtures (INPUT) + dashboard (OUTPUT) wired in; `.env` mounted | Required: build the container before application code |
 | Styling | Hand-authored CSS, no heavy framework | Editorial visual treatment is bespoke; frameworks fight the design |
 
-**Out of scope (must not be built or stubbed with live calls):** OpenAlex/arXiv ingestion, `text-embedding-3-small` embedding, cosine-similarity computation, weekly centroid refresh. These are production-pipeline concerns explicitly frozen for this POC.
+**Out of scope (must not be built or stubbed with live calls):** OpenAlex/arXiv ingestion, embedding computation, cosine-similarity/vector relevance, weekly centroid refresh, any deterministic LLM-free relevance sequencer. These are explicitly frozen or reversed for this POC.
 
 ---
 
-## 2a. Threshold Model (two distinct thresholds — read before Phase 1)
+## 2a. Decision model (read before Phase 1) — what replaced the v2 threshold model
 
-Requirements refer abstractly to "the similarity pre-filter" and "the eligibility threshold" but **never state a numeric eligibility cutoff**, and they require all 10 fixtures (including PAP-10, whose max score is 0.33) to appear in the feed. Strategy therefore distinguishes **two separate thresholds**, which must not be conflated:
+v2 hinged on numeric thresholds (a feed-admission gate, a "component cleared" constant, recommended-action cutoffs) feeding a deterministic sequencer. **v3 deletes all of these.** There is no admission threshold, no "component cleared" constant, and no `Read now / Save / Skip` action mapping in v3. Strategy clarifies what governs decisions now:
 
-1. **Eligibility / feed-admission threshold (pre-filter).** This is the gate that admits a paper into the feed at all. In this POC **all 10 fixtures are pre-admitted as canonical input** — the fixture set *is* the post-pre-filter result. There is therefore **no numeric admission cutoff applied in this build**; PAP-10 (must-rank-low, max 0.33) appears precisely because the fixtures are the canonical, already-filtered input. This is consistent with PAP-10's stated coverage role of "barely clears the threshold": the implied production pre-filter sits *below* 0.60, and in the POC it is satisfied by construction for every fixture.
-2. **"Component cleared" threshold = 0.60 (strategy-fixed code constant).** This governs only (a) multi-component-match *reporting* and (b) tie-break stage (1). It is **not** the feed-admission gate. A paper can be in the feed (e.g. PAP-10) while clearing *zero* components at 0.60.
+1. **The council decides admission, not a threshold.** Each (researcher, paper) pair gets a `relevance_decision` boolean from the council. Items decided against (`false`) are **not dropped** — they render at their `relevance_score` position with reject reasoning visible, so the demo shows the council *declining*. The fixtures are canonical input; the synthetic `feed_items` already carry the council's decision fields, and the runtime council reproduces/validates decisions over the same inputs.
+2. **`relevance_score` (0–1) is the council's calibrated relevance**, and is the *only* ordering signal. Display order is `relevance_score` descending. Ties are broken by `council_confidence` descending, then by `publication_date` recency — a presentation-stability rule, not a relevance judgment.
+3. **`council_confidence` (0–100) is the council's confidence in its own decision** — a distinct axis from `relevance_score`. Both render in the detail panel.
+4. **Subfield match is an explicit council factor**, weighed alongside component match, focus match, and the substantive-vs-superficial test — but it is a *consideration inside deliberation*, never a numeric gate.
 
-**Explicit note:** 0.60 is a strategy-level constant chosen to make "components cleared" and the tie-break mechanically testable; requirements state it abstractly, not numerically. It is **not** the eligibility gate, so it does not contradict PAP-10's must-rank-low role. Both the 0.60 component-cleared constant and the 0.80 Read-now cutoff (Phase 1) are strategy-originated design choices, not derived from requirements.
+**Explicit note:** No numeric cutoffs are strategy-originated in v3. The four decision factors (component / subfield / focus / substantive-vs-superficial) are requirements-level; the council weighs them and records its reasoning in `council_deliberation`. The substantive-vs-superficial test generalizes v2's tangential-honesty rule: a paper matching on surface terms but not substance must be **argued down in deliberation**, not rubber-stamped.
 
 ---
 
 ## 3. Build Phases
 
-### Phase 0 — Scaffold, fixtures & observability wiring
-- Project skeleton, TypeScript config, fixtures embedded as a typed module.
-- JSON Schema for the per-paper output contract; wire the validator.
+### Phase 0 — Docker sandbox, scaffold, fixtures & observability wiring
+- **Build the Docker container first** (requirement): wire the five fixture files (INPUT) and the dashboard (OUTPUT); mount `.env`, do not bake it.
+- Project skeleton, TypeScript config, fixtures loaded as a typed module.
+- **Ajv schemas for all five fixture field contracts**; wire the validator.
 - **`.env` setup:** `WANDB_API_KEY` read from gitignored `.env`; confirm `.env` is in `.gitignore` before any commit. No key hardcoded anywhere.
-- **`weave.init("<team>/atomic-research")`** called once at pipeline startup; confirm the Anthropic SDK is auto-instrumented.
-- Validate that the fixtures honor their stated coverage roles (must-rank-high, multi-component, mid-tier, tangential-near-miss, must-rank-low) and that every paper carries a populated abstract, every component a populated `evidence` field, and the profile a populated `publications` array.
-- **Confirm all 10 fixtures are treated as pre-admitted canonical input** — the fixture set is the post-pre-filter result; no numeric admission cutoff is applied (see §2a).
-- **Exit:** fixtures load and validate; schema rejects a deliberately malformed entry; `weave.init` runs clean; `.env` confirmed gitignored and key not in source.
+- **`weave.init("<team>/atomic-research")`** called once at startup; confirm the Anthropic SDK is auto-instrumented.
+- Validate the fixtures honor their coverage roles **per researcher** (≥1 must-surface, ≥1 must-dismiss, ≥1 genuinely ambiguous, plus a mid-tier spread), that every paper carries a populated abstract, every component a populated `source_paper_ids` provenance, and every researcher populated `description` / `research_interests` / `topics`.
+- **Confirm scale:** exactly 3 researchers, 30 papers (10 distinct per researcher, **no cross-researcher paper reuse**), 30 feed_items, components and subfield preferences per researcher. Confirm all `publication_date` values fall in the trailing 6-month window (2025-12-06 → 2026-06-06) relative to currentDate 2026-06-06.
+- **Confirm synthetic IDs are obviously synthetic** and do not collide with real OpenAlex IDs.
+- **Exit:** container builds; fixtures load and validate; schema rejects a deliberately malformed entry; cross-file id joins resolve with no orphans; `weave.init` runs clean; `.env` confirmed gitignored and key not in source.
 
-### Phase 1 — Deterministic sequencer & recommended action (no LLM)
-- **"Component cleared" threshold:** a component is considered *cleared* when its `component_similarity ≥ 0.60`. This single numeric value governs both multi-component-match reporting and tie-break stage (1). It is a constant in the codebase, not a tunable. **It is the "component cleared" threshold, not the feed-admission gate** (see §2a) — all 10 fixtures appear regardless of whether they clear any component at 0.60.
-- Implement `max(component_similarity)` ranking with the two-stage tie-break: (1) more components at or above the 0.60 threshold, (2) more recent date.
-- **Recency is a gate, not a ranking signal.** All fixtures are in-window (2025-12-06 → 2026-06-06) and eligible; age within the window never changes rank. Verify the window gate as an assertion even though all fixtures pass it.
-- **Tangential flag is orthogonal to ranking.** The flag (semantic judgment, gated by the 0.60 quantitative floor) is determined in Phase 2 and *annotates*; it never re-ranks. A flagged paper keeps its `max(component_similarity)` position. The scoring contract is untouched by flagging.
-- **Recommended action mapping (deterministic, derived from `max(component_similarity)`):**
-  - `Read now` — strongest component similarity ≥ 0.80.
-  - `Save` — strongest component similarity ≥ 0.60 and < 0.80.
-  - `Skip` — strongest component similarity < 0.60.
-  - **Strategy-originated cutoff note:** Requirements define recommended action as a required output (`Read now / Save / Skip`) but **do not specify numeric cutoffs**. The 0.80 Read-now cutoff and the 0.60/0.80 band boundaries are **strategy-level design decisions, not derived from requirements**. The reuse of 0.60 as the `Save` floor aligns with the "component cleared" constant but is itself a strategy choice; neither cutoff is the feed-admission gate, so this mapping does not conflict with pre-filter/eligibility semantics (a paper recommended `Skip`, e.g. PAP-10, still appears in the feed and still renders full per-paper output — see Phase 3).
-  - This mapping is a pure function of frozen scores, reproducible and testable exactly like the ranking. The LLM plays no part in it.
-- **Exit:** all 10 papers ranked 1–10, order is stable and reproducible, each position justifiable by the rule; recommended action assigned to every paper by the mapping above; "components cleared above threshold" is deterministic. Unit tests lock both the order and the recommended-action assignment.
+### Phase 1 — Cross-file join & display ordering (mechanical, no relevance logic)
+- Implement the **explicit, mechanical id-join**: `feed_items.researcher_id` / `.paper_id`, `research_components.researcher_id`, `research_subfield_preferences.researcher_id` all resolve against their parents. The join is never inferred — assert no orphans.
+- **`paper_id` is independent of `researcher_id`.** Even though papers are distinct per researcher in the fixtures, no logic may assume a paper belongs to exactly one researcher. The join is by explicit id only.
+- **Display ordering:** per researcher, sort `feed_items` by `relevance_score` descending; tie-break by `council_confidence` descending, then `publication_date` recency. This is a pure presentation sort over council outputs — **it makes no relevance decision and introduces no LLM-free relevance logic** (see §2a).
+- **No admission filter.** `relevance_decision: false` items are retained and ordered at their score position (no-silent-drop).
+- **Exit:** per researcher, all 10 feed_items joined and ordered stably and reproducibly; reject-decision items present in the order; join asserted orphan-free. Unit tests lock the sort and the no-drop behavior.
 
-### Phase 2A — LLM per-paper rationale batch
-- Batch-call the model (Message Batches API) for: per-component match explanation, relevance rationale, per-position rationale.
-- **Rationale-call context (required):** each per-paper call receives the paper's **abstract** and the matched component's **`evidence`** field. The rationale is grounded in actual content and in why the component exists — never inferred from the title alone.
-- **Depth vs. breadth (required prompt instruction):** the prompt must explicitly distinguish *depth* (strong single-thread match) from *breadth* (cross-component relevance). Because the sequencer ranks on `max(component_similarity)` — i.e. on depth — a breadth paper (e.g. PAP-02) must have its multi-thread relevance explained in prose so its rank is not misread as pure depth.
-- **Tangential-flag determination:** the LLM, reading abstract against matched-component `evidence`, judges substantive fit. The flag fires only on papers above the 0.60 floor whose fit is loose. PAP-07 is the canonical test case, not a special-cased paper — the same logic must be able to fire on any qualifying paper. A flagged paper's rationale must state the match is loose rather than overstate it.
-- **Instrumentation:** the depth/breadth classifier and each eval assertion are decorated with `@weave.op()` so they appear in the same Weave trace tree as the auto-instrumented SDK calls.
-- The LLM produces *only* these rationale types — rank and recommended action are already fixed by Phase 1 and passed into the prompt as given, not chosen by the model.
-- **Exit:** every paper has all three rationale types; tangential flag verified on PAP-07; depth/breadth framing verified present on PAP-02; rationale calls visible in Weave trace tree.
+### Phase 2A — LLM council deliberation (batch, decides relevance)
+- **Per researcher, the council deliberates over the full 10-paper set first.** Batch-call the model (Message Batches API) for the council's per-pair decision.
+- **Council-call context (required):** each deliberation receives the researcher's profile (`description`, `research_interests`, `topics`), the researcher's **research components with `source_paper_ids` provenance**, the researcher's **selected subfields**, and the candidate paper's **abstract** and metadata (title, categories, topics). **The council never reasons from the title alone, and subfield match is an explicit factor.**
+- **Council output per pair (required):** `relevance_decision` (bool), `relevance_score` (0–1), `council_confidence` (0–100), `relevance_reason` (grounded in abstract + matched component(s)/subfield(s)), and `council_deliberation` (the full structured multi-voice reasoning record — the audit trail).
+- **Substantive-vs-superficial (required):** the prompt must require the council to distinguish substantive advancement of a thread from surface keyword overlap. A paper whose apparent match overstates its true relevance must be **argued down in `council_deliberation`**, not rubber-stamped. The ambiguous coverage-role paper per researcher is the canonical test of this — deliberation must show real reasoning, not a coin flip.
+- **Instrumentation:** the council's own orchestration functions and **every eval assertion** are decorated with `@weave.op()`, so the deliberation trace tree sits in the same Weave tree as the auto-instrumented SDK calls. Because the council is non-deterministic, **this trace tree is the auditability mechanism**, not just telemetry.
+- **Exit:** every (researcher, paper) pair carries all five council fields; the per-researcher must-surface / must-dismiss / ambiguous roles are reflected in the decisions; the substantive-vs-superficial reasoning is present in deliberation for the ambiguous case; council calls and `@weave.op()` orchestration visible in the Weave trace tree.
 
-### Phase 2B — Feed summary (post-ranking call)
-- The `feed_summary` call runs **after** the sequencer has produced the order and **after** the per-paper batch — it takes the sorted top-N as input. It is not part of the per-paper batch and must not be issued before the ranking exists. This ordering constraint is enforced in code (the summary call cannot be reached without a completed ranking).
-- The summary names the 2–3 strongest papers and their collective significance — the editorial headline above the per-paper layer.
+### Phase 2B — Feed summary (post-decision, post-sort, per researcher)
+- The `feed_summary` call runs **after** the council has decided that researcher's full set **and after** the feed is sorted by `relevance_score` descending. It takes the decided, sorted feed as input. It is not part of the council batch and **must be unreachable before the council has finished that researcher's set** — enforced in code.
+- The summary is a **post-decision editorial call**: a single narrative per researcher naming the 2–3 strongest papers and their collective significance.
+- Covered by the degraded-state contract: if it fails, the per-item feed still renders in full.
 - Auto-traced by Weave like every other Anthropic call.
-- **Exit:** `feed_summary` generated from the already-sorted top-N; call ordering verified (summary cannot run before ranking); summary visible in Weave trace tree.
+- **Exit:** `feed_summary` generated per researcher from the already-decided, already-sorted feed; call ordering verified (summary cannot run before that researcher's council completes); summary visible in Weave trace tree.
 
-### Phase 3 — Two-panel UI
-- Left feed panel, right detail panel, independent scroll, collapsible sections; collapsed sections retain enough height to show their section label.
-- **Feed summary at top of left panel**, above the ranked list — its own region with its own degraded state.
-- Primary (left, always visible): rank, title, top matched component label, recommended action.
-- Secondary (right detail): per-component similarity, relevance rationale (with depth/breadth framing), tangential flag if present, missing-information note (rendered for *every* paper, "nothing material missing" when applicable), per-position rationale.
-- **Every paper renders full per-paper output regardless of recommended action.** A `Skip`-actioned paper (e.g. PAP-10) is *not* dropped or hidden — it still appears at its score-determined rank and still renders its full detail view (component match(es) + per-component similarity, relevance rationale, recommended action, missing-information note, per-position rationale), consistent with the no-silent-drop and per-paper rendering rules.
-- Editorial visual treatment (dark background, bright legible type, serif paper titles) — built here, not deferred. Required deliverable, executed without iteration.
-- **Exit:** position 1 selected on load, all sections collapsed to label, full layout per spec, feed summary region rendered above the list; a `Skip` paper confirmed to render full detail.
+### Phase 3 — Two-panel UI (reuse v2 dashboard, add researcher selector)
+- Reuse the **existing v2 two-panel dashboard, unchanged in structure.** Left feed panel, right detail panel, independent scroll, collapsible sections; collapsed sections retain enough height to show their section label.
+- **Researcher selector** added (3 researchers). Default selection: first researcher, top-ranked feed item.
+- **Feed summary at top of the left panel**, above the ranked list — its own region with its own degraded state.
+- Left panel feed: per-researcher feed_items in `relevance_score` order, each selectable.
+- **Right detail panel** for the selected item: `relevance_reason`, `relevance_decision`, `council_confidence`, the **`council_deliberation` (inspectable)**, the matched component(s), and the researcher's matched subfield(s).
+- **Researcher profile view** surfaces the researcher's selected subfields (`research_subfield_preferences`) — shown in the profile in addition to being consumed by the council.
+- **Items decided against (`relevance_decision: false`) are not dropped** — they render at their `relevance_score` position with reject reasoning visible, so the demo shows the council *declining*, not only accepting.
+- Editorial visual treatment (dark background, bright legible type, serif paper titles) — **retained as a required deliverable**, built here, not deferred, not demoted to stretch.
+- **Exit:** first researcher + top item selected on load, sections collapsed to label, full layout per spec, summary region above the list, researcher selector functional; a `relevance_decision: false` item confirmed to render at its score position with reject reasoning; deliberation inspectable.
 
 ### Phase 4 — Degraded-state hardening
-- Implement the failure contract: no blank panels, no silently dropped papers.
-  - A paper whose **rationale** failed renders at its score-determined rank with an explicit "rationale unavailable — retry" state.
-  - If **`feed_summary`** fails, the per-paper feed still renders in full; the summary region shows "summary unavailable — retry". The headline is never a single point of failure for the whole feed.
-  - Malformed JSON from any model call is caught, **logged via the observability layer (Weave/W&B)**, and surfaced as a retryable error on the relevant panel.
-- **Exit:** simulated LLM failures (per-paper and feed_summary, independently) render the correct retryable state at the right place without blanking or dropping; malformed-JSON path logged and surfaced.
+- Implement the failure contract: no blank panels, no silently dropped feed items.
+  - A feed item whose **council decision** could not be produced renders at a **conservative position** with an explicit "decision unavailable — retry" state.
+  - If a researcher's **`feed_summary`** fails, that researcher's per-item feed still renders in full; the summary region shows "summary unavailable — retry". The summary is never a single point of failure for the whole feed.
+  - Malformed/partial JSON from any model call is caught, **logged via the observability layer (Weave/W&B)**, and surfaced as a retryable error on the relevant panel.
+- **Exit:** simulated failures (council decision and feed_summary, independently) render the correct retryable state at the right place without blanking or dropping; malformed-JSON path logged and surfaced.
 
 ### Phase 5 — Run logging & eval pass
-- **W&B run:** one `wandb` run per fixture/prompt iteration logs the pipeline-level aggregate — ranked output, component-similarity distributions, batch-call metadata (latency, token count, per-paper rationale status), and eval pass/fail results.
-- **Eval assertions** (each a `@weave.op()`): ranking matches the deterministic contract; PAP-07 flagged loose; PAP-02 carries breadth framing; recommended-action mapping correct; missing-info note present on every paper; every paper (including `Skip`-actioned PAP-10) renders full per-paper output.
-- **Exit:** one clean W&B run logged with aggregate metrics and eval results; Weave trace tree and W&B run cross-reference the same iteration.
+- **W&B run:** one `wandb` run per fixture/prompt iteration logs the aggregate — **per-researcher decision distributions, confidence distributions, accept/reject counts**, batch-call metadata (latency, token count, per-pair decision status), and eval pass/fail.
+- **Eval gates (each a `@weave.op()`); aggregate all errors; on any failure, OUTPUT is not written:**
+  - Every fixture file validates against its field contract (Ajv).
+  - Every cross-file id reference resolves (`feed_items.researcher_id`/`.paper_id`, `research_components.researcher_id`, `research_subfield_preferences.researcher_id`) — no orphans.
+  - Exactly 3 researchers, 30 papers (10 distinct per researcher, no cross-researcher reuse), 30 feed_items.
+  - Every feed_item carries all council fields (decision, score, confidence, reason, deliberation).
+  - Per researcher, coverage roles present (≥1 must-surface, ≥1 must-dismiss, ≥1 ambiguous).
+  - `feed_summary` present per researcher (or its degraded state).
+  - Display order matches `relevance_score`-descending sort; reject-decision items not dropped.
+- **Exit:** one clean W&B run logged with aggregate metrics + eval results; Weave trace tree and W&B run cross-reference the same iteration; OUTPUT written only on full eval pass.
 
 ---
 
@@ -117,51 +127,54 @@ Requirements refer abstractly to "the similarity pre-filter" and "the eligibilit
 
 | Risk | Mitigation |
 |---|---|
-| LLM overstates a tangential match (PAP-07) | Explicit prompt instruction + verification check in Phase 2A exit; flag gated by 0.60 floor |
-| Tangential flag silently re-ranks instead of annotating | Flag is orthogonal to ranking by construction (Phase 1); a flagged paper keeps its score position; eval asserts position unchanged |
-| Breadth paper's rank misread as depth (PAP-02) | Required depth/breadth prompt instruction; Phase 2A exit verifies framing present |
-| `feed_summary` issued before ranking exists | Call ordering enforced in code (Phase 2B); summary unreachable without a completed sequence |
-| `feed_summary` failure blanks the whole feed | Degraded-state contract: per-paper feed renders independently; summary region degrades alone (Phase 4) |
-| Scores drift / ranking becomes non-reproducible | Ranking is a pure function over frozen fixtures; locked by unit tests |
-| Recommended action becomes inconsistent / non-reproducible | Deterministic threshold-based mapping in Phase 1; locked by unit tests, never an LLM output |
-| Two thresholds conflated (admission gate vs. "component cleared") | §2a disambiguates them; 0.60 is "component cleared" only, never the feed-admission gate; all 10 fixtures pre-admitted, so PAP-10 is not contradicted by its must-rank-low role |
-| Strategy-originated cutoffs (0.60 component-cleared, 0.80 Read-now) mistaken for requirements | Flagged explicitly in §2a and Phase 1 as strategy-level decisions, not requirements-derived; confirmed not to conflict with eligibility semantics |
-| `Skip`-actioned paper wrongly dropped or hidden | Phase 3 and Phase 5 eval assert every paper (incl. PAP-10) renders full per-paper output regardless of action; no-silent-drop holds |
-| Threshold left implicit, tie-break untestable | "Component cleared" threshold fixed at 0.60 as a code constant in Phase 1; unit tests cover multi-component and tie-break cases |
-| Rationale reasons from title, not content | Rationale-call context mandates abstract + component `evidence` (Phase 2A); never title-only |
-| Visual treatment demoted to "stretch" under time pressure | Requirements forbid this; Phase 3 treats it as core exit criteria |
-| `WANDB_API_KEY` hardcoded or committed | `.env` gitignored, confirmed in Phase 0 before any commit; key never in source |
-| Observability bolted on late / incompletely | Weave wired in Phase 0; `@weave.op()` decoration in Phase 2; W&B run + evals in Phase 5 — instrumentation is a phase, not an afterthought |
-| Malformed model JSON crashes a panel | Degraded-state contract in Phase 4; caught, logged to observability, surfaced as retryable |
-| Scope creep into production pipeline | Explicit out-of-scope list; no live API calls permitted |
+| **Downstream reintroduces a deterministic LLM-free relevance sequencer** (the v2 reflex) | §0/§1/§2a forbid it explicitly; the council *decides*, ordering is a mechanical sort only; eval and review reject any LLM-free relevance logic |
+| Council non-determinism erodes auditability | `council_deliberation` captured per decision; Weave trace tree of each deliberation is the audit trail; orchestration + evals decorated `@weave.op()` |
+| Council rubber-stamps a superficial match | Substantive-vs-superficial prompt instruction (Phase 2A); the paper must be argued down *in deliberation*; ambiguous coverage-role case is the canonical test |
+| Council reasons from title alone | Council-call context mandates abstract + components (with `source_paper_ids`) + subfields + metadata (Phase 2A); never title-only |
+| Subfield match dropped from deliberation | Subfield match is a required explicit factor (Phase 2A); detail panel + profile both surface subfields (Phase 3) |
+| `feed_summary` issued before that researcher's council completes | Call ordering enforced in code (Phase 2B); summary unreachable without a completed decision set + sort |
+| `feed_summary` failure blanks the whole feed | Degraded-state contract: per-item feed renders independently per researcher; summary region degrades alone (Phase 4) |
+| Reject-decision item silently dropped or hidden | No-silent-drop holds; reject items render at score position with reject reasoning (Phase 1/3); eval asserts presence (Phase 5) |
+| Display order non-reproducible | Order is a pure sort over frozen council outputs (`relevance_score` desc, then confidence, then recency); locked by unit tests (Phase 1) |
+| `paper_id` logic assumes one-researcher ownership | Join is explicit by id; no logic may assume single ownership (Phase 1); asserted |
+| Cross-researcher paper reuse slips into fixtures | Eval asserts 10 distinct papers per researcher, no reuse (Phase 0/5) |
+| Visual treatment demoted to "stretch" under time pressure | Requirements forbid it; Phase 3 treats it as core exit criteria |
+| `WANDB_API_KEY` hardcoded or committed | `.env` gitignored, confirmed Phase 0 before any commit; mounted into Docker, not baked; never in source |
+| `.env` baked into the Docker image | Mounted at runtime, not baked (Phase 0); confirmed before build |
+| Observability bolted on late / incompletely | Weave wired Phase 0; `@weave.op()` on council + evals Phase 2/5; W&B run Phase 5 — instrumentation is a phase |
+| Malformed model JSON crashes a panel | Degraded-state contract Phase 4; caught, logged to observability, surfaced as retryable |
+| Scope creep into production pipeline / embeddings | Explicit out-of-scope list; no live API calls, no embeddings, no vector relevance |
 
 ---
 
 ## 5. Definition of Done
 
-- All 10 papers ranked into a single feed, position 1–10, each defensible by the scoring contract.
-- Two thresholds disambiguated (§2a): no numeric feed-admission cutoff is applied in this POC (all 10 fixtures are pre-admitted canonical input, including PAP-10); the **"component cleared" threshold is fixed at 0.60** as a strategy-level code constant governing only multi-component reporting and tie-break stage (1). "Components cleared above threshold" is deterministic and unit-tested.
-- Recency confirmed as a gate only — never a ranking signal; all fixtures verified in-window.
-- Recommended action (`Read now / Save / Skip`) assigned to every paper by the deterministic threshold mapping (0.80 Read-now / 0.60–0.80 Save / <0.60 Skip — strategy-originated cutoffs, not requirements-derived), reproducible and unit-tested.
-- Every paper renders full per-paper output — component match(es) + per-component similarity, relevance rationale (with depth/breadth framing), recommended action, missing-information note (always present), per-position rationale — **regardless of recommended action**; `Skip`-actioned papers (e.g. PAP-10) are not dropped or hidden.
-- Tangential near-miss (PAP-07) is explicitly flagged as loose in its rationale, and the flag annotates without changing rank.
-- `feed_summary` generated from the sorted top-N *after* ranking, renders at the top of the left panel, and degrades independently of the per-paper feed.
-- Two-panel editorial UI matches the output-surface spec, including default state and visual treatment.
-- Degraded-state contract holds under simulated LLM failure for both per-paper rationale and feed_summary, independently.
-- Observability complete: Weave traces every Anthropic call and every `@weave.op()` team function; one W&B run logs aggregate metrics + eval results; both share the single gitignored `.env` key.
-- No production-pipeline code, no live OpenAlex/arXiv/OpenAI calls.
+- **The council decides relevance** for all 30 (researcher, paper) pairs; each decision carries `relevance_decision`, `relevance_score`, `council_confidence`, `relevance_reason`, and a full `council_deliberation` record. No deterministic LLM-free relevance sequencer exists anywhere in the build.
+- Five fixture files validate against their field contracts; all cross-file id joins resolve orphan-free; the join is explicit and mechanical.
+- Scale confirmed: 3 researchers, 30 papers (10 distinct each, no cross-researcher reuse), 30 feed_items; all `publication_date` in the 2025-12-06 → 2026-06-06 window; synthetic IDs obviously synthetic.
+- Per researcher, coverage roles present (≥1 must-surface, ≥1 must-dismiss, ≥1 genuinely ambiguous with non-trivial deliberation, plus a mid-tier spread).
+- Council-call context complete: profile + components (with `source_paper_ids`) + subfields + paper abstract/metadata; subfield match weighed explicitly; never title-only.
+- Substantive-vs-superficial reasoning preserved in `council_deliberation` for the ambiguous cases — apparent overstatements argued down, not rubber-stamped.
+- Display order is `relevance_score` descending (tie-break confidence, then recency), reproducible and unit-tested; reject-decision items render at their score position, not dropped.
+- `feed_summary` generated per researcher from the decided, sorted feed **after** the council completes that researcher's set; renders at the top of the left panel; degrades independently of the per-item feed.
+- Two-panel editorial UI matches the output-surface spec: researcher selector, default state (first researcher + top item), independent scroll, collapsible sections; detail panel shows reason, decision, confidence, inspectable deliberation, matched component(s), matched subfield(s); researcher profile surfaces selected subfields; **v2 editorial dark theme with serif titles retained**.
+- Degraded-state contract holds under simulated failure for both council decision and `feed_summary`, independently; malformed JSON caught, logged, surfaced as retryable.
+- Observability complete and **load-bearing**: Weave traces every Anthropic call and every `@weave.op()` orchestration + eval function (deliberation trees are the audit trail); one W&B run logs per-researcher decision/confidence distributions, accept/reject counts, batch metadata, eval results; both share the single gitignored `.env` key mounted into Docker.
+- Runs inside the Docker sandbox; fixtures (INPUT) and dashboard (OUTPUT) wired in; `.env` mounted not baked.
+- Eval gates aggregate all errors; OUTPUT is written only on a full pass.
+- No production-pipeline code, no live OpenAlex/arXiv/OpenAI calls, no embeddings, no vector relevance.
 
 ---
 
 ## 6. Explicit Non-Goals
 
+- **No deterministic, LLM-free relevance sequencer** — the v2 principle is reversed; the council decides (§0).
+- No numeric admission threshold, no "component cleared" constant, no `Read now / Save / Skip` action mapping — all removed in v3.
 - No validation against real researchers, papers, or third parties.
-- No citation-graph, venue-quality, or duplicate-detection signals (out of rubric scope).
-- No recency-based ranking (recency is a gate only).
-- No live embedding or similarity computation (fixtures are canonical).
-- No numeric feed-admission cutoff applied in this POC (fixtures are the canonical, pre-admitted input; 0.60 is the "component cleared" threshold, not the admission gate).
-- No LLM-driven ranking or recommended-action selection (both are deterministic functions of frozen scores).
-- No tangential-flag re-ranking (flag annotates only; ranking is orthogonal).
-- No dropping or hiding of `Skip`-actioned papers (every in-feed paper renders full per-paper output).
-- No application-model selection for the Claude Code build session (model ID governs the built artifact's runtime only, advisory on the build environment).
-- No multi-user, no persistence beyond the session, no auth.
+- No citation-graph accuracy claim, venue-quality, or duplicate-detection signals.
+- No live embedding, vector similarity, or cosine relevance (council decides; vector columns omitted).
+- No live OpenAlex/arXiv ingestion (five fixtures are canonical input).
+- No dropping or hiding of `relevance_decision: false` items (every feed item renders at its score position).
+- No assumption that a paper belongs to exactly one researcher (join by explicit id only).
+- No application-model selection for the Claude Code build session (model ID governs the built artifact's runtime only).
+- No multi-user beyond the 3-researcher selector, no persistence beyond the session (status save/dismiss is a dashboard interaction at demo scale), no auth.

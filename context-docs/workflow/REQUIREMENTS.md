@@ -1,283 +1,197 @@
 # REQUIREMENTS.md
 
-# REQUIREMENTS.md
+# Atomic Research — Paper Relevance Feed (v3)
 
-# Atomic Research — Paper Relevance Feed
-## Version 02
+## 0. Supersede notice and the one principle that changed
+
+**This document supersedes the v2 REQUIREMENTS.md in full.** Where v2 and v3 conflict, v3 governs. Downstream layers (STRATEGY, ARCHITECTURE, SYSTEM_INSTRUCTIONS) are regenerated from this document.
+
+**The principle that changed — read this first.** v2's load-bearing rule was: *ranking and the recommended action are deterministic, LLM-free pure functions; the LLM produces only explanatory prose.* **v3 reverses this deliberately.** In v3, relevance is **decided by a multi-agent council** — the council produces the relevance decision (yes/no), a confidence score, and a full deliberation record. This is an intentional, requirements-level reversal, not a drift. Any downstream design that reintroduces a deterministic, LLM-free relevance sequencer is wrong and contradicts this document.
+
+**Consequence, stated honestly:** a deciding council is non-deterministic and harder to audit than v2's pure function. The mitigation is the **`council_deliberation` record** — the full reasoning is captured per decision and traced in Weave (see Observability), so a decision can be inspected and defended after the fact. The deliberation record is not optional polish; it is the audit trail that buys back the defensibility the determinism gave up.
+
 ## Context
 
-An academic researcher scanning recent literature, who needs a fast answer to one question: "why is this paper relevant to me, right now?" The dashboard takes a fixed set of candidate papers and ranks them into a single relevance feed for one researcher, and for each paper states **which of the researcher's Research Components it matches and why**. It runs on the researcher's own laptop as a hackathon prototype. It is **not** validated against any third party, processes no real researcher identity or non-public data, and makes no claim of citation-graph accuracy. All data is synthetic; embedding similarity is mocked.
+A small set of academic researchers, each scanning recent literature, who need a fast answer to "why is this paper relevant to me, right now?" For each researcher, a **council** of LLM agents deliberates over each candidate paper against that researcher's profile, research components, and selected subfields, and decides whether the paper belongs in the feed — with a confidence score, a human-readable reason, and a full deliberation record. The result renders in the **existing v2 two-panel dashboard**, unchanged as an output surface. It runs as a hackathon prototype on the architect's own machine. It is **not** validated against any third party, processes no real researcher identity or non-public data, and makes no claim of citation-graph accuracy. **All data is synthetic, at small demo scale.**
 
 ## Inputs
 
-A single synthetic researcher profile plus a fixed set of synthetic candidate papers, both embedded as fixtures in the Test data section below.
+Five synthetic JSON fixture files, **normalized and id-joined**, mirroring the core tables of the project's relational schema. They are the canonical input — there is no live data fetch in v3.
 
-The researcher profile is represented as a set of **Research Components** — distinct thematic threads, each with an identifier, a short description, and an **`evidence` field** naming which of the researcher's own publications and which patterns drove that component's creation. The profile also carries a **`publications` array** (title, abstract, journal, year) representing the researcher's prior work. Together these make the profile **traceable rather than asserted**: every component points back to the papers that justify it. (In production the components are extracted from publication history and embedded via OpenAI `text-embedding-3-small`, with a weekly-refreshed centroid across the 50 most recent papers; in this POC the embeddings are not computed — see Implementation.)
+- `researchers.json` — one object per researcher (identity and signal fields).
+- `papers.json` — the candidate papers (one object per paper).
+- `research_components.json` — the thematic threads in each researcher's body of work, each traceable to the papers that defined it.
+- `feed_items.json` — one object per (researcher, paper) pair: the council's decision, confidence, reason, and deliberation.
+- `research_subfield_preferences.json` — the OpenAlex subfield selections each researcher made at onboarding.
 
-Each candidate paper carries structured fields (title, authors, venue, publication date, **abstract**) and, **mocked for this POC**, a per-component cosine-similarity score against each Research Component. **The abstract is required on every paper, not optional:** the LLM must ground each relevance rationale in the paper's actual content rather than reasoning from the title alone. In production these papers are sourced from OpenAlex (50 most recent per subfield, past 6 months) with an arXiv-category fallback for daily preprint scanning; here they are frozen fixtures.
+All cross-file references are by id: `feed_items`, `research_components`, and `research_subfield_preferences` carry a `researcher_id` matching `researchers.json`, and `feed_items` carries a `paper_id` matching `papers.json`. The join must be explicit and mechanical — never inferred.
 
-**Temporal scope:** currentDate is 2026-06-06. The relevant window is the **6 months ending on currentDate** (2025-12-06 → 2026-06-06). Recency is a **gate, not a ranking signal**: every paper in the window is eligible; a paper's age within the window does not change its rank.
+**Scale:** **3 researchers, 10 distinct papers each (30 papers total), 30 feed_items.** Papers are distinct per researcher in v3 — no paper appears in more than one researcher's set. `paper_id` is nonetheless independent of `researcher_id` (a paper is identified on its own terms), so no logic may assume a paper belongs to exactly one researcher.
 
-**Completeness expectations:** Real feeds are uneven — some papers match no component well, some match several, abstracts vary in informativeness. The fixtures must reflect this: at least one paper that is a near-miss (matched by the pre-filter but only tangentially relevant on inspection), and at least one that matches multiple components.
+**Temporal scope:** currentDate is 2026-06-06. All synthetic papers carry a `publication_date` within the trailing 6-month window (2025-12-06 → 2026-06-06).
 
-## Domain framework (relevance rubric)
+**Completeness expectations:** Real feeds are uneven. The fixtures must reflect this: per researcher, at least one clear must-surface paper, at least one clear must-dismiss paper, and at least one genuinely ambiguous paper where the council's deliberation is non-trivial.
 
-The system reasons over the factor categories below. The categories are non-overlapping. **This POC is deliberately scoped to two signals** — embedding similarity and recency — so the negative and modulating tiers are intentionally thin rather than padded with factors the team chose not to build.
+**Data shape:** Synthetic rows are shaped to *look like* OpenAlex-sourced data — realistic `openalex_id` / `arxiv_id` strings, `arxiv_categories`, `topics`, reconstructed abstracts — but no live OpenAlex/arXiv ingestion occurs, and no embeddings are computed. Vector columns from the underlying schema are omitted in v3; relevance is decided by the council, not by vector similarity.
 
-### Positive factors (signal of relevance)
+## The council (relevance decision framework)
 
-- **Component similarity:** cosine similarity between the paper and a specific Research Component embedding. This is the **primary and sole ranking signal**. A paper's relevance is always expressed *relative to a named component* — never as a single context-free score.
-- **Multi-component match:** a paper that clears the similarity threshold against more than one component is relevant across multiple of the researcher's threads (reported, but ranked on its strongest single-component score — see Sequencer).
+For each (researcher, paper) pair, a council of LLM agents deliberates and decides. The council reads, as context:
 
-### Negative factors (reduce relevance)
+- the researcher's identity and free-text focus (`description`, `research_interests`, `topics`),
+- the researcher's **research components** (the thematic threads, each with its `source_paper_ids` provenance),
+- the researcher's **selected subfields** (`research_subfield_preferences`) — **subfield match is a factor the council weighs in its decision**,
+- the candidate paper's title, abstract, categories, and topics.
 
-- **Tangential match (generalized flag):** A paper is flagged tangential when **both** conditions hold: (1) it clears the similarity pre-filter — its `max(component_similarity)` is above the eligibility threshold, so it appears in the feed at all — **and** (2) the LLM, reading the paper's abstract against the matched component's `evidence`, judges the substantive fit to be loose: a surface or keyword overlap rather than a genuine topical match. The flag is **not bound to any specific paper**; it fires on any paper meeting both conditions. PAP-07 ("Social Graph Analysis of Online Misinformation Spread," which matches the GNN component on the word *graph*) is the **canonical test case, not a special case**.
-  - **The flag is a semantic judgment gated by a quantitative floor.** It can only fire on papers that scored high enough to appear; a paper that fails the pre-filter is simply absent and is never "tangential." The flag exists to catch papers whose *score overstates their relevance* — exactly the PAP-07 failure.
-  - **The flag annotates; it does not re-rank.** A flagged paper keeps its `max(component_similarity)` position in the sequence — the scoring contract is untouched. The flag surfaces in the rationale and the display ("ranked high on score, but the substantive fit is loose"), rather than silently demoting the paper. Ranking and flagging are orthogonal.
-  - *(No other negative factors are in scope for this POC — no venue-quality, citation, or duplicate-detection signals.)*
+The council produces, per pair:
 
-### Modulating factors (cost/timing)
+- `relevance_decision` — boolean, the council's yes/no verdict on whether the paper belongs in the feed.
+- `relevance_score` — numeric 0–1, the council's calibrated relevance.
+- `council_confidence` — integer 0–100, the council's confidence in its own decision.
+- `relevance_reason` — a concise human-readable explanation, grounded in the paper's abstract and the matched component(s) and/or subfield(s).
+- `council_deliberation` — the full structured reasoning record (the multiple agent voices / considerations that produced the verdict). This is the audit trail.
 
-- **Recency gate:** publication date inside the 6-month window. Acts only as an eligibility gate; does not modulate rank order. *(No other modulating factors — preprint-vs-peer-reviewed, access, length — are in scope for this POC.)*
+**Decision factors (what the council weighs):**
+- **Component match** — does the paper substantively advance one of the researcher's thematic threads (not merely share keywords)?
+- **Subfield match** — does the paper fall within the researcher's selected OpenAlex subfields?
+- **Focus match** — does the paper align with the researcher's stated current focus / interests?
+- **Substantive-vs-superficial** — a paper matching on surface terms but not on substance must be argued down by the council, with that reasoning preserved in the deliberation. (This generalizes v2's "tangential" honesty rule: any paper whose apparent match overstates its true relevance must be caught in deliberation, not rubber-stamped.)
 
 ## Test data
 
-**Fixture-scope philosophy:** Real-world variability. A synthetic feed should mirror the unevenness of an actual OpenAlex/arXiv pull — strong matches, multi-component matches, and tangential near-misses — because the value of the tool is in *explaining* relevance per component, and that explanation is only tested when the matches are uneven. Every candidate paper carries a populated **abstract** (mandatory — the rationale is grounded in it), and the researcher profile carries a **`publications` array** plus per-component **`evidence`**, so the profile is traceable rather than asserted.
+**Fixture-scope philosophy:** Real-world variability at demo scale. The synthetic data must give the council genuinely uneven material to deliberate over — clear accepts, clear rejects, and hard ambiguous cases per researcher — because the council's value is in *adjudicating* mixed signals, and that is only demonstrated when the signals are mixed.
 
-**Coverage requirements:**
+**Coverage requirements (per researcher):**
+- A must-surface paper: strong component + subfield + focus alignment; high confidence accept.
+- A must-dismiss paper: off-topic across components, subfields, and focus; high confidence reject.
+- An ambiguous paper: strong on one axis, weak on another (e.g. on-subfield but off-component, or keyword-matching but substantively tangential) — the council's deliberation must show real reasoning, not a coin flip.
+- A spread of mid-tier cases requiring genuine judgment.
 
-- **Must-rank-high:** very high similarity to a single component; unambiguous strong match.
-- **Multi-component match:** clears threshold on two-plus components; demo of cross-thread relevance.
-- **Ambiguous / mid-tier:** moderate similarity to one component; genuine but not commanding.
-- **Tangential near-miss:** admitted by the pre-filter but only loosely related; the rationale must say so.
-- **Must-rank-low:** lowest qualifying similarity; barely clears the threshold.
-- **A mix of mid-tier cases** requiring the feed to separate close scores sensibly.
+**Size cap:** 3 researchers, 30 papers (10 each), 30 feed_items, plus components and subfield preferences per researcher.
 
-**Size cap:** 10 papers total. One synthetic researcher profile with 3 Research Components.
+**Source and privacy:** Synthetic. No real researcher, paper, author, or institution. Synthetic OpenAlex-style identifiers must be obviously synthetic and must not collide with real OpenAlex IDs.
 
-**Source and privacy:** Synthetic. No real paper, author, or researcher identity. Similarity scores are hand-authored, not computed.
+### Fixture field contracts
 
-### Embedded fixtures
-
+**`researchers.json`** — array of:
 ```json
 {
-  "researcher_profile": {
-    "id": "RES-01",
-    "label": "Synthetic researcher — ML systems & graph learning",
-    "publications": [
-      {
-        "title": "Expressive Message Passing via Subgraph Sampling",
-        "abstract": "We propose a message-passing scheme that samples subgraphs to exceed the 1-WL expressivity bound while keeping per-epoch cost linear in edges, with consistent gains on molecular property prediction.",
-        "journal": "Synthetic Journal of Machine Learning",
-        "year": 2024
-      },
-      {
-        "title": "Scaling Graph Neural Networks to Billion-Edge Graphs",
-        "abstract": "A partitioning and sampling pipeline that trains deep GNNs on billion-edge citation graphs on a single machine, with a memory model that predicts peak usage to within 8%.",
-        "journal": "Synthetic Systems Journal",
-        "year": 2023
-      },
-      {
-        "title": "Quantized Inference for Graph Models on Edge Devices",
-        "abstract": "We show that 4-bit quantization of message-passing layers preserves node-classification accuracy on large graphs, enabling GNN inference on memory-constrained hardware.",
-        "journal": "Synthetic Journal of Efficient ML",
-        "year": 2025
-      },
-      {
-        "title": "Robustness of Graph Representations Under Distribution Shift",
-        "abstract": "An empirical study isolating which structural features of learned graph representations remain predictive when the test-time degree distribution shifts, with a causal account of the stable subset.",
-        "journal": "Synthetic Journal of Machine Learning",
-        "year": 2025
-      }
-    ],
-    "research_components": [
-      {
-        "id": "RC-1",
-        "label": "Graph neural networks",
-        "description": "Message-passing architectures, expressivity, scalable training on large graphs.",
-        "evidence": "Anchored by 'Expressive Message Passing via Subgraph Sampling' (2024) and 'Scaling Graph Neural Networks to Billion-Edge Graphs' (2023). The thread is defined by a recurring focus on expressivity beyond the 1-WL bound and on training at graph scale — the two papers that most define this researcher's identity."
-      },
-      {
-        "id": "RC-2",
-        "label": "Efficient ML systems",
-        "description": "Quantization, sparsity, and serving efficiency for large models.",
-        "evidence": "Driven by 'Quantized Inference for Graph Models on Edge Devices' (2025), which extended the researcher's graph work into the efficiency regime. Distinct from RC-1: the concern here is serving cost and quantization, not representational power."
-      },
-      {
-        "id": "RC-3",
-        "label": "Out-of-distribution generalization",
-        "description": "Robustness, distribution shift, and evaluation under domain change.",
-        "evidence": "Emerged from 'Robustness of Graph Representations Under Distribution Shift' (2025), the researcher's most recent thread. The component captures a turn toward when learned features survive domain change — newer and less established than RC-1."
-      }
-    ]
-  },
-  "candidate_papers": [
-    {
-      "id": "PAP-01",
-      "coverage_role": "must-rank-high",
-      "title": "Provable Expressivity Limits of Subgraph-Aware Message Passing",
-      "authors": ["A. Nardo", "L. Beaumont"],
-      "venue": "Synthetic ML Conference",
-      "publication_date": "2026-05-28",
-      "abstract": "We characterize the representational ceiling of subgraph-aware GNNs and give a construction that provably exceeds the 1-WL bound while remaining tractable to train.",
-      "component_similarity": { "RC-1": 0.93, "RC-2": 0.21, "RC-3": 0.14 }
-    },
-    {
-      "id": "PAP-02",
-      "coverage_role": "multi-component",
-      "title": "Sparse Message Passing: Quantized GNN Inference at Scale",
-      "authors": ["K. Oyelaran", "M. Reyes"],
-      "venue": "Synthetic Systems Workshop",
-      "publication_date": "2026-04-11",
-      "abstract": "A serving stack that fuses graph sparsity with 4-bit quantization, cutting GNN inference latency without measurable accuracy loss on large citation graphs.",
-      "component_similarity": { "RC-1": 0.81, "RC-2": 0.79, "RC-3": 0.18 }
-    },
-    {
-      "id": "PAP-03",
-      "coverage_role": "must-rank-high",
-      "title": "Quantization-Aware Training Beyond 4 Bits for Billion-Parameter Models",
-      "authors": ["S. Haddad"],
-      "venue": "Synthetic ML Conference",
-      "publication_date": "2026-05-02",
-      "abstract": "We push quantization-aware training to sub-4-bit regimes for very large transformers, with a calibration scheme that preserves downstream task accuracy.",
-      "component_similarity": { "RC-1": 0.16, "RC-2": 0.90, "RC-3": 0.22 }
-    },
-    {
-      "id": "PAP-04",
-      "coverage_role": "mid-tier",
-      "title": "Distribution Shift in Graph-Structured Data: A Benchmark",
-      "authors": ["P. Iversen", "R. Mwangi"],
-      "venue": "Synthetic Datasets Track",
-      "publication_date": "2026-03-19",
-      "abstract": "A benchmark suite for evaluating GNN robustness under controlled distribution shift across node, edge, and graph-level tasks.",
-      "component_similarity": { "RC-1": 0.58, "RC-2": 0.12, "RC-3": 0.74 }
-    },
-    {
-      "id": "PAP-05",
-      "coverage_role": "must-rank-high",
-      "title": "When Do Robust Features Survive Domain Change?",
-      "authors": ["T. Volkov", "E. Santos"],
-      "venue": "Synthetic ML Conference",
-      "publication_date": "2026-05-14",
-      "abstract": "We isolate the conditions under which features learned in-distribution remain predictive out-of-distribution, with a causal account of feature stability.",
-      "component_similarity": { "RC-1": 0.19, "RC-2": 0.15, "RC-3": 0.91 }
-    },
-    {
-      "id": "PAP-06",
-      "coverage_role": "mid-tier",
-      "title": "Memory-Efficient Training of Deep GNNs via Activation Checkpointing",
-      "authors": ["N. Aziz"],
-      "venue": "Synthetic Systems Workshop",
-      "publication_date": "2026-02-27",
-      "abstract": "Activation checkpointing strategies tailored to deep message-passing networks, trading compute for a large reduction in peak memory.",
-      "component_similarity": { "RC-1": 0.64, "RC-2": 0.61, "RC-3": 0.17 }
-    },
-    {
-      "id": "PAP-07",
-      "coverage_role": "tangential-near-miss",
-      "title": "Social Graph Analysis of Online Misinformation Spread",
-      "authors": ["D. Park", "C. Lindqvist"],
-      "venue": "Synthetic Computational Social Science Track",
-      "publication_date": "2026-04-30",
-      "abstract": "An empirical study of how misinformation propagates through online social graphs, using network centrality measures to identify amplification hubs.",
-      "component_similarity": { "RC-1": 0.55, "RC-2": 0.08, "RC-3": 0.20 }
-    },
-    {
-      "id": "PAP-08",
-      "coverage_role": "mid-tier",
-      "title": "Calibration Under Covariate Shift for Deployed Classifiers",
-      "authors": ["F. Bianchi"],
-      "venue": "Synthetic ML Conference",
-      "publication_date": "2026-03-08",
-      "abstract": "Post-hoc calibration methods that remain reliable when the deployment distribution drifts from training, evaluated across vision and tabular domains.",
-      "component_similarity": { "RC-1": 0.11, "RC-2": 0.24, "RC-3": 0.69 }
-    },
-    {
-      "id": "PAP-09",
-      "coverage_role": "mid-tier",
-      "title": "Structured Sparsity Patterns for Faster Transformer Serving",
-      "authors": ["G. Adeyemi", "H. Watanabe"],
-      "venue": "Synthetic Systems Workshop",
-      "publication_date": "2026-05-21",
-      "abstract": "We identify hardware-friendly structured sparsity patterns that accelerate transformer inference on commodity accelerators.",
-      "component_similarity": { "RC-1": 0.13, "RC-2": 0.72, "RC-3": 0.19 }
-    },
-    {
-      "id": "PAP-10",
-      "coverage_role": "must-rank-low",
-      "title": "A Survey of Visualization Techniques for High-Dimensional Embeddings",
-      "authors": ["J. Okonkwo"],
-      "venue": "Synthetic Visualization Track",
-      "publication_date": "2026-01-23",
-      "abstract": "A broad survey of dimensionality-reduction and visualization methods for inspecting learned embedding spaces.",
-      "component_similarity": { "RC-1": 0.31, "RC-2": 0.33, "RC-3": 0.29 }
-    }
-  ]
+  "researcher_id": "RES-001",
+  "name": "...",
+  "full_name": "...",
+  "description": "researcher's plain-text statement of focus",
+  "research_interests": ["...", "..."],
+  "topics": [{ "id": "T...", "display_name": "...", "score": 0.0 }]
 }
 ```
 
+**`papers.json`** — array of:
+```json
+{
+  "paper_id": "PAP-...",
+  "openalex_id": "W...synthetic",
+  "arxiv_id": "....synthetic",
+  "title": "...",
+  "abstract": "reconstructed-style abstract text",
+  "authors": [{ "name": "...", "openalex_id": "A...synthetic" }],
+  "publication_date": "2026-..-..",
+  "year": 2026,
+  "arxiv_categories": ["cs.LG", "cs.AI"],
+  "topics": [{ "id": "T...", "display_name": "...", "score": 0.0 }],
+  "citation_count": 0,
+  "is_open_access": true
+}
+```
+
+**`research_components.json`** — array of:
+```json
+{
+  "component_id": "RC-...",
+  "researcher_id": "RES-001",
+  "name": "...",
+  "description": "LLM-style description of the thematic thread",
+  "source_paper_ids": ["PAP-...", "PAP-..."],
+  "is_active": true
+}
+```
+`source_paper_ids` makes the component **traceable** to the papers that defined it — this is the v2.1 traceability fix, structural rather than asserted.
+
+**`research_subfield_preferences.json`** — array of:
+```json
+{
+  "id": "SFP-...",
+  "researcher_id": "RES-001",
+  "subfield_id": "subfields/....",
+  "subfield_name": "...",
+  "field_id": "fields/..",
+  "field_name": "..."
+}
+```
+
+**`feed_items.json`** — array of (one per researcher × paper = 30 rows):
+```json
+{
+  "id": "FI-...",
+  "researcher_id": "RES-001",
+  "paper_id": "PAP-...",
+  "relevance_score": 0.0,
+  "relevance_reason": "<council prose, grounded in abstract + matched component/subfield>",
+  "relevance_decision": true,
+  "council_confidence": 0,
+  "council_deliberation": { "...": "full structured reasoning record" },
+  "council_version": "v3",
+  "status": "pending",
+  "surfaced_at": "2026-..-..T..:..:..Z"
+}
+```
+`status` lifecycle: `pending → saved | dismissed`. In v3 the synthetic rows are `pending`; save/dismiss is a dashboard interaction.
+
 ## Outputs
 
-**Per-feed (one, generated after ranking):**
+**Per researcher feed** (rendered in the dashboard): the researcher's `feed_items`, ordered by `relevance_score` descending, each carrying the council's decision, confidence, reason, and a way to inspect the deliberation. Items the council decided against (`relevance_decision: false`) are **not dropped** — they render at their score position with their reject reasoning visible, so the demo shows the council *declining*, not just accepting.
 
-- **`feed_summary`:** a single LLM-generated narrative naming the 2–3 strongest papers in the feed and their collective significance — a human-readable editorial layer above the per-paper quantitative ranking ("this week, the standout threads are X and Y…"). **This is a post-ranking call:** it takes the already-sorted top-N as input and runs *after* the sequencer has produced the order — it is not a peer of the per-paper rationale calls and must not run before the ranking exists. It is covered by the degraded-state contract (see Implementation): if `feed_summary` fails, the per-paper feed still renders in full.
-
-**For each paper:**
-
-- **Component match:** which Research Component(s) it matches and the similarity to each — relevance is **always named against a specific component**, never a bare global score.
-- **Relevance rationale:** a brief LLM-generated explanation of *why* this paper is relevant to the named component, in the researcher's terms — the literal answer to "why is this relevant to me, right now?" The rationale is **grounded in the paper's abstract and the matched component's `evidence`**, not the title alone. The prompt must explicitly **distinguish depth from breadth**: a strong single-thread match is *depth* (deeply relevant to one component); a cross-component match is *breadth* (relevant across several threads). Because the sequencer ranks on `max(component_similarity)` — i.e. on depth — a breadth paper must have its multi-thread relevance explained in prose so the researcher does not misread its rank as pure depth. For tangential-flagged papers, the rationale must state the match is loose rather than overstate it.
-- **Recommended action:** `Read now / Save / Skip`.
-- **Missing-information note** (rendered for every paper): what is not present that would sharpen the relevance call (e.g. full text beyond abstract, author overlap with the researcher's network) — even when nothing is missing, the section renders as "nothing material missing."
-
-## Sequencer
-
-All 10 papers are ordered into a single relevance feed, position 1 to 10, position 1 most relevant. **Ordering is by the paper's strongest single-component similarity score, descending** — this is the only ranking signal. Recency is a gate (all papers are in-window and eligible); it does not affect order. The three governing principles still hold but collapse onto the one signal here: value = strongest component similarity; urgency = satisfied uniformly by the recency gate; conservatism = a tangential near-miss is ranked by its score but flagged in the rationale so a high keyword-driven score cannot masquerade as a strong fit.
-
-**Scoring contract (required, not advisory).** Rank by `max(component_similarity)` descending. Tie-break, in order: (1) higher number of components cleared above the relevance threshold (multi-thread relevance wins), then (2) more recent publication_date. Every position must be defensible by this rule — "the model preferred it" is not acceptable.
-
-**Per-entry rationale:** N entries produce N rationales — one per position, each naming the matched component and why this paper sits above the one below it. There is no single global ordering explanation.
+**Per-feed editorial summary (`feed_summary`):** a single council-generated narrative per researcher naming the 2–3 strongest papers and their collective significance. It is a **post-decision call** — it runs after the council has decided the full set for that researcher and takes the decided, sorted feed as input. It is covered by the degraded-state contract: if it fails, the per-item feed still renders in full.
 
 ## Output surface
 
-**Layout:**
-- Two-panel structure.
-- Left panel: the ranked feed, top-to-bottom in sequencer order, each entry selectable, showing rank, paper title, and recommended action.
-- Right panel: detail view of the selected paper — all per-paper output sections.
-- Both panels scroll independently.
-- Collapsed sections retain enough height to show their section label.
-
-**Information hierarchy:**
-- **Feed summary (top of left panel, above the ranked list):** the `feed_summary` narrative — the editorial headline naming the 2–3 strongest papers. Renders its degraded "summary unavailable — retry" state here if the call failed, without affecting the list below.
-- Primary (always visible in the left panel): rank, title, top matched component label, recommended action.
-- Secondary (in the right detail panel): per-component similarity, relevance rationale (with depth/breadth framing), tangential flag if present, missing-information note, per-position rationale.
-
-**Default state:** position 1 selected on load; all detail sections collapsed (label only).
-
-**Visual treatment:** High-contrast editorial — dark background, bright legible type, with paper titles in a readable serif to signal an academic-reading context rather than a dashboard. This visual treatment is a required deliverable, decided at requirements time and executed without iteration. Downstream layers must not demote it to "stretch."
+**Reuse the existing v2 two-panel dashboard, unchanged in structure.**
+- Left panel: per-researcher ranked feed (feed_items in `relevance_score` order), each selectable; with a researcher selector since there are now 3 researchers.
+- Left panel top: the `feed_summary` editorial region, with its own degraded state.
+- Right panel: detail for the selected feed item — relevance reason, decision, confidence, the council deliberation (inspectable), the matched component(s), and the researcher's matched subfield(s).
+- **Researcher profile view** surfaces the researcher's selected subfields (`research_subfield_preferences`) — these are shown in the profile, in addition to being consumed by the council.
+- Default selection: first researcher, top-ranked feed item. Detail sections collapsed to label on load. Panels scroll independently.
+- **Visual treatment:** the v2 editorial dark theme with serif titles is retained as a required deliverable — not re-litigated, not demoted to stretch.
 
 ## Implementation
 
-**LLM commitment:** This application is LLM-driven. The component-match explanations, relevance rationales, per-position rationales, and the `feed_summary` are produced by LLM calls. This is a requirements-level commitment, not a strategy-level option. (The similarity scores themselves are fixture-mocked, not LLM-produced and not computed — see below.)
+**LLM commitment.** v3 is LLM-driven. The council decisions (decision, score, confidence, reason, deliberation) and the per-researcher `feed_summary` are produced by LLM calls. **This is the reversal named in §0: the LLM now decides relevance, it does not merely explain a precomputed score.**
 
-**Rationale-call context:** Each per-paper rationale call receives, as context, the paper's **abstract** and the matched component's **`evidence`** field — so the explanation is grounded in actual content and in why that component exists, not inferred from the title. The rationale prompt must explicitly instruct the model to distinguish **depth** (strong single-thread match) from **breadth** (cross-component relevance), per the Outputs section.
+**Council-call context (required):** each council deliberation receives the researcher's profile, research components (with `source_paper_ids`), selected subfields, and the candidate paper's abstract and metadata. The council never reasons from the title alone, and subfield match is an explicit factor.
 
-**Call ordering:** The per-paper rationale calls run as a batch; the **`feed_summary` call runs after ranking is complete**, taking the sorted top-N as input. It is not part of the per-paper batch and must not be issued before the sequencer has produced the order.
+**Call ordering:** per researcher, the council decides the full paper set first; the `feed_summary` call runs **after** that researcher's decisions are complete, on the decided and sorted feed. The summary call must be unreachable before the council has finished that researcher's set.
 
-**Mocked pipeline (POC scope):** Embedding generation and cosine similarity are **not** executed in this POC. The `component_similarity` values are hand-authored in the fixtures. The production pipeline — OpenAlex/arXiv ingestion, `text-embedding-3-small`, weekly centroid refresh — is out of scope for the hackathon build and must not be implemented or stubbed with live API calls.
+**Target application model:** `claude-sonnet-4-6` (pinned snapshot; dateless format but not an evergreen pointer — bump deliberately). The council's multiple deliberations per researcher are not latency-sensitive; prefer the Message Batches API where the call structure allows, to halve token cost.
 
-**Target application model:** `claude-sonnet-4-6`. Pinned-snapshot identifier (dateless format, not an evergreen pointer — bump deliberately on the next Sonnet generation). For the full 10-paper set, prefer the Message Batches API: rationales are not latency-sensitive and batching roughly halves token cost.
+**Model-ID scope note:** this identifier governs the application's runtime API calls, not the Claude Code session that builds the application.
 
-**Model-ID scope note:** This identifier governs the *application's* API calls at runtime. It does **not** govern the Claude Code session that builds the application — Claude Code manages its own model selection. The field is binding on the built artifact, advisory on the build environment.
+**Degraded-state contract (required, carried from v2).** When any LLM call fails, times out, or returns malformed/partial output, no surface renders a blank panel and no feed item is silently dropped.
+- A feed item whose council decision could not be produced renders at a conservative position with an explicit "decision unavailable — retry" state.
+- If a researcher's `feed_summary` fails, that researcher's per-item feed still renders in full; the summary region shows "summary unavailable — retry".
+- Malformed JSON from any model call is caught, logged via the observability layer, and surfaced as a retryable error on the relevant panel.
 
-**Degraded-state contract (required).** When any LLM call fails, times out, or returns malformed or partial output, no surface renders a blank panel and no paper is silently dropped from the feed.
-- A paper whose **rationale** could not be produced renders in the feed at its score-determined rank with an explicit "rationale unavailable — retry" state.
-- If the **`feed_summary`** call fails, the per-paper feed still renders in full; the summary region shows an explicit "summary unavailable — retry" state rather than blanking the page. The headline editorial layer is never a single point of failure for the whole feed.
-- Malformed JSON from any model call is caught, logged (see Observability), and surfaced as a retryable error on the relevant panel.
+**Observability (Weave + W&B, carried from v2 — now load-bearing for auditability).**
+- **Weave traces the calls.** `weave.init("<team>/atomic-research")` once at startup; the Anthropic SDK is auto-instrumented so every council deliberation and every `feed_summary` call is traced — inputs, outputs, latency, token cost. **Because the council now *decides* (non-deterministic), the Weave trace tree of each deliberation is part of the audit trail, not just telemetry.** Decorate the council's own orchestration functions and every eval assertion with `@weave.op()`.
+- **W&B logs the run.** One run per fixture/prompt iteration logs the aggregate: per-researcher decision distributions, confidence distributions, accept/reject counts, batch-call metadata, and eval pass/fail.
+- **Secrets:** `WANDB_API_KEY` read from a **gitignored `.env`**, mounted into the Docker container (not baked into the image), never hardcoded, never committed. Confirm `.env` is gitignored before any commit.
 
-**Observability (Weave + Weights & Biases).** The pipeline is instrumented with two complementary W&B layers, authenticated by a single `WANDB_API_KEY` read from the `.env` file — **never hardcoded, never committed** (`.env` is gitignored).
+**Docker sandbox (carried from v2).** The application runs inside a Docker sandbox; build the container before application code. The five fixture files (INPUT) and the dashboard output (OUTPUT) are wired into the container; `.env` is mounted, not baked.
 
-- **Weave traces the calls.** `weave.init("<team>/atomic-research")` is called once at pipeline startup. Weave auto-instruments the Anthropic SDK, so every rationale call and the `feed_summary` call are traced automatically — inputs (abstract + component evidence), outputs (rationale text), latency, and token cost captured with no per-call code. The team's own functions — the depth/breadth classifier and each eval assertion — are decorated with `@weave.op()` so they appear in the same trace tree. Weave is the per-call audit trail and eval harness.
-- **W&B logs the run.** One `wandb` run per fixture/prompt iteration logs the pipeline-level aggregate: the ranked output, component-similarity distributions, batch-call metadata (latency, token count, per-paper rationale status), and eval pass/fail results. This is the cross-iteration comparison record.
-- **Division of labor:** Weave traces the calls; W&B logs the run. The microscope and the lab notebook. Both share the one `.env` key.
+**Eval gates.** Aggregate all errors; on any failure, OUTPUT is not written. Each assertion is a `@weave.op()`. At minimum:
+- Every fixture file validates against its field contract (Ajv).
+- Every cross-file id reference resolves (`feed_items.researcher_id` and `.paper_id`, `research_components.researcher_id`, `research_subfield_preferences.researcher_id`) — no orphans.
+- Exactly 3 researchers, 30 papers (10 distinct per researcher, no cross-researcher paper reuse), 30 feed_items.
+- Every feed_item carries all council fields (decision, score, confidence, reason, deliberation).
+- Per researcher, coverage roles are present (≥1 must-surface, ≥1 must-dismiss, ≥1 ambiguous).
+- `feed_summary` present per researcher (or its degraded state).
 
-**Other dependencies:** `weave` and `wandb` (observability, above); JSON schema validator for the per-paper output contract; the fixtures above are the canonical input — no external fetch, no OpenAlex/arXiv/OpenAI calls in this build.
+**Other dependencies:** `@anthropic-ai/sdk`, `ajv`, `typescript`/`tsx`, `weave`, `wandb`. The five fixtures are canonical input — no external fetch, no embeddings, no live OpenAlex/arXiv calls in v3.
